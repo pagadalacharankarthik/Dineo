@@ -371,3 +371,16 @@ model PasswordReset {
 
   @@map("password_resets")
 }
+
+// ─────────────────────────────────────────────
+// ADMIN EMAIL OTP VERIFICATION
+// ─────────────────────────────────────────────
+model AdminOTP {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("admin_otps")
+}

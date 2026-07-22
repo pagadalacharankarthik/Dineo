@@ -11,7 +11,8 @@ import {
   Mail, 
   LogOut, 
   Menu, 
-  X 
+  X,
+  Settings
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/restaurants", label: "Restaurants", icon: Store },
     { href: "/admin/qr-kits", label: "QR Kit Requests", icon: QrCode },
     { href: "/admin/contact", label: "Contact Enquiries", icon: Mail },
+    { href: "/admin/settings", label: "Profile Settings", icon: Settings },
   ];
 
   return (
