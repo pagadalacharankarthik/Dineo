@@ -56,7 +56,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json();
-    const { planName, planStatus, trialEndDate, planExpiresAt } = body;
+    const { planName, planStatus, trialEndDate, planExpiresAt, showTrialBanner, showOfferBanner } = body;
 
     const restaurant = await db.restaurant.update({
       where: { id },
@@ -65,6 +65,8 @@ export async function PUT(
         planStatus: planStatus || undefined,
         trialEndDate: trialEndDate ? new Date(trialEndDate) : undefined,
         planExpiresAt: planExpiresAt ? new Date(planExpiresAt) : undefined,
+        showTrialBanner: showTrialBanner !== undefined ? showTrialBanner : undefined,
+        showOfferBanner: showOfferBanner !== undefined ? showOfferBanner : undefined,
       },
     });
 

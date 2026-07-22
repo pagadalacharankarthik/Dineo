@@ -73,6 +73,8 @@ model Restaurant {
   trialStartDate  DateTime @default(now())
   trialEndDate    DateTime?
   planExpiresAt   DateTime?
+  showTrialBanner Boolean  @default(true)
+  showOfferBanner Boolean  @default(false)
 
   // Owner relation
   ownerId String @unique

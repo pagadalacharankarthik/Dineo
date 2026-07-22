@@ -32,6 +32,8 @@ interface Restaurant {
   planStatus: string;
   trialEndDate: string | null;
   planExpiresAt: string | null;
+  showTrialBanner: boolean;
+  showOfferBanner: boolean;
   owner: {
     name: string;
     email: string;
@@ -55,6 +57,8 @@ export default function AdminRestaurantsPage() {
   const [planStatus, setPlanStatus] = useState("ACTIVE");
   const [trialEndDate, setTrialEndDate] = useState("");
   const [planExpiresAt, setPlanExpiresAt] = useState("");
+  const [showTrialBanner, setShowTrialBanner] = useState(false);
+  const [showOfferBanner, setShowOfferBanner] = useState(false);
   const [isSavingSub, setIsSavingSub] = useState(false);
 
   // Get months dynamically
@@ -174,6 +178,8 @@ export default function AdminRestaurantsPage() {
     setPlanStatus(rest.planStatus);
     setTrialEndDate(rest.trialEndDate ? new Date(rest.trialEndDate).toISOString().split("T")[0] : "");
     setPlanExpiresAt(rest.planExpiresAt ? new Date(rest.planExpiresAt).toISOString().split("T")[0] : "");
+    setShowTrialBanner(rest.showTrialBanner);
+    setShowOfferBanner(rest.showOfferBanner);
   };
 
   const handleSaveSubscription = async (e: React.FormEvent) => {
@@ -190,6 +196,8 @@ export default function AdminRestaurantsPage() {
           planStatus,
           trialEndDate: trialEndDate || null,
           planExpiresAt: planExpiresAt || null,
+          showTrialBanner,
+          showOfferBanner,
         }),
       });
 
@@ -489,6 +497,31 @@ export default function AdminRestaurantsPage() {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPlanExpiresAt(e.target.value)}
                   className="bg-zinc-955 border-zinc-800 text-zinc-200"
                 />
+              </div>
+
+              <div className="space-y-3 pt-2 border-t border-zinc-800">
+                <label className="block text-xs font-semibold text-zinc-400 uppercase">Dashboard Promotion Banners</label>
+                <div className="grid grid-cols-1 gap-2">
+                  <label className="flex items-center gap-2 p-2 rounded-lg border border-zinc-800 bg-zinc-950/40 text-xs font-medium cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showTrialBanner}
+                      onChange={(e) => setShowTrialBanner(e.target.checked)}
+                      className="rounded text-red-500 bg-zinc-900 border-zinc-800 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                    />
+                    <span>Show Free Trial Expiry Banner</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 p-2 rounded-lg border border-zinc-800 bg-zinc-950/40 text-xs font-medium cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showOfferBanner}
+                      onChange={(e) => setShowOfferBanner(e.target.checked)}
+                      className="rounded text-red-500 bg-zinc-900 border-zinc-800 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                    />
+                    <span>Show Special Offers Banner</span>
+                  </label>
+                </div>
               </div>
 
               <div className="flex justify-end gap-2.5 pt-4">

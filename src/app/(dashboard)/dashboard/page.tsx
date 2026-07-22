@@ -37,6 +37,8 @@ interface DashboardStats {
   totalQrScans: number;
   qrDownloads: number;
   isActive: boolean;
+  showTrialBanner: boolean;
+  showOfferBanner: boolean;
 }
 
 export default function DashboardPage() {
@@ -133,7 +135,42 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Promotion Banners */}
+      {stats?.showTrialBanner && (
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs sm:text-sm font-semibold flex items-center justify-between gap-4 animate-fadeIn shadow-xs">
+          <div className="flex items-center gap-2">
+            <span>⚠️</span>
+            <p>
+              Your restaurant menu is currently on the <strong>Free Trial Plan</strong>. Upgrade your subscription to keep scan metrics active and customize your QR codes!
+            </p>
+          </div>
+          <Link
+            href="/subscription"
+            className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg transition-colors shrink-0 text-center"
+          >
+            Upgrade Plan
+          </Link>
+        </div>
+      )}
+
+      {stats?.showOfferBanner && (
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-semibold flex items-center justify-between gap-4 animate-fadeIn shadow-xs">
+          <div className="flex items-center gap-2">
+            <span>🎉</span>
+            <p>
+              Exclusive Offer: Get <strong>20% Off</strong> your first order of physical NFC Table Standees! Request your kit today.
+            </p>
+          </div>
+          <Link
+            href="/qr-kit"
+            className="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition-colors shrink-0 text-center"
+          >
+            Claim Offer
+          </Link>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
