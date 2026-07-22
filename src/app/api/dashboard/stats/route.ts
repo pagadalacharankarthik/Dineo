@@ -22,7 +22,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       data: {
-        hasRestaurant: true,
+        hasRestaurant: Boolean(restaurant!.logo && restaurant!.address && restaurant!.mobile),
         restaurantName: restaurant!.name,
         restaurantSlug: restaurant!.slug,
         publicUrl,

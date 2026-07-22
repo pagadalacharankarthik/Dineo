@@ -8,6 +8,7 @@ import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { OnboardingTour } from "@/components/shared/OnboardingTour";
 
 export default function DashboardLayout({
   children,
@@ -53,6 +54,8 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-background">
+      <OnboardingTour />
+      
       {/* Suspension banner */}
       {isSuspended && (
         <div className="bg-amber-600 text-zinc-950 font-bold text-center px-4 py-2 text-xs flex items-center justify-center gap-2 relative z-50 animate-pulse shadow-md">

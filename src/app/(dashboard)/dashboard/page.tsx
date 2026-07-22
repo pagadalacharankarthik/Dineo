@@ -108,6 +108,30 @@ export default function DashboardPage() {
     }
   };
 
+  if (!loading && !stats?.hasRestaurant) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] max-w-lg mx-auto text-center space-y-6">
+        <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-orange-500/20 to-amber-500/10 border border-orange-500/20 shadow-inner">
+          <Building2 className="h-12 w-12 text-orange-600 dark:text-orange-400" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-extrabold tracking-tight">
+            Welcome to Dineo, {firstName}! 🚀
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Let's get your digital menu up and running. First, you must upload your restaurant logo and add your full contact details.
+          </p>
+        </div>
+        <Link
+          href="/restaurant"
+          className="inline-flex items-center gap-2 gradient-primary text-white font-bold px-8 py-4 rounded-2xl text-lg hover:shadow-xl hover:-translate-y-0.5 transition-all w-full justify-center"
+        >
+          Setup Restaurant Account <ArrowRight className="h-5 w-5" />
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -132,26 +156,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Restaurant not setup banner */}
-      {!loading && !stats?.hasRestaurant && (
-        <div className="flex items-center gap-4 p-5 rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/10 border border-orange-200 dark:border-orange-900">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl gradient-primary flex-shrink-0">
-            <Building2 className="h-6 w-6 text-white" />
-          </div>
-          <div className="flex-1">
-            <p className="font-semibold">Complete your restaurant setup</p>
-            <p className="text-sm text-muted-foreground">
-              Add your restaurant details to get started with QR menus.
-            </p>
-          </div>
-          <Link
-            href="/restaurant"
-            className="flex-shrink-0 inline-flex items-center gap-1.5 gradient-primary text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity"
-          >
-            Setup <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      )}
+
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">

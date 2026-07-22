@@ -147,6 +147,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
               <Link
                 key={item.href}
                 href={item.href}
+                id={`tour-${item.href.replace("/", "")}`}
                 title={collapsed ? item.label : undefined}
                 onClick={onMobileClose}
                 className={cn(

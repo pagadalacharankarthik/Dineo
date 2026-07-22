@@ -57,7 +57,140 @@ interface RestaurantData {
   planName?: string;
 }
 
+type Language = "en" | "es" | "hi" | "fr" | "tel";
+
+const translations: Record<Language, Record<string, string>> = {
+  en: {
+    searchPlaceholder: "Search for dishes, starters, drinks...",
+    applyPromoCode: "Apply Promo Code",
+    enterPromoCode: "Enter Promo Code (e.g. SAVE10)",
+    apply: "Apply",
+    remove: "Remove",
+    codeApplied: "Code Applied",
+    applied: "Applied",
+    allItems: "All Items",
+    noItemsFound: "No items found",
+    trySearchingDifferent: "Try searching with a different dish name or category.",
+    outOfStock: "Out of stock",
+    menuUpdated: "Menu updated",
+    downloadPdf: "Download PDF Menu",
+    restaurantClosed: "Restaurant is currently closed",
+    showingPreview: "Showing menu preview",
+    returnHome: "Return to Home",
+    menuNotFound: "Menu Not Found",
+    menuUnavailable: "The menu you are looking for is currently unavailable or inactive.",
+    poweredBy: "Powered by",
+    recommended: "Recommended",
+    bestseller: "Bestseller",
+    chefSpecial: "Chef Special",
+    reviewGoogle: "Review us on Google",
+  },
+  es: {
+    searchPlaceholder: "Buscar platos, entradas, bebidas...",
+    applyPromoCode: "Aplicar código de promoción",
+    enterPromoCode: "Ingrese el código (ej. SAVE10)",
+    apply: "Aplicar",
+    remove: "Eliminar",
+    codeApplied: "Código aplicado",
+    applied: "Aplicado",
+    allItems: "Todos los platos",
+    noItemsFound: "No se encontraron platos",
+    trySearchingDifferent: "Intente buscar con otra palabra.",
+    outOfStock: "Agotado",
+    menuUpdated: "Menú actualizado",
+    downloadPdf: "Descargar menú PDF",
+    restaurantClosed: "El restaurante está cerrado",
+    showingPreview: "Mostrando vista previa del menú",
+    returnHome: "Volver al inicio",
+    menuNotFound: "Menú no encontrado",
+    menuUnavailable: "El menú no está disponible o está inactivo.",
+    poweredBy: "Desarrollado por",
+    recommended: "Recomendado",
+    bestseller: "Más vendido",
+    chefSpecial: "Especial del Chef",
+    reviewGoogle: "Danos tu opinión en Google",
+  },
+  hi: {
+    searchPlaceholder: "व्यंजन, स्टार्टर्स, ड्रिंक्स खोजें...",
+    applyPromoCode: "प्रोमो कोड लागू करें",
+    enterPromoCode: "कोड दर्ज करें (उदा. SAVE10)",
+    apply: "लागू करें",
+    remove: "हटाएं",
+    codeApplied: "कोड लागू हो गया",
+    applied: "लागू",
+    allItems: "सभी व्यंजन",
+    noItemsFound: "कोई आइटम नहीं मिला",
+    trySearchingDifferent: "किसी अन्य नाम से खोजें।",
+    outOfStock: "उपलब्ध नहीं है",
+    menuUpdated: "मेन्यू अपडेट किया गया",
+    downloadPdf: "PDF मेन्यू डाउनलोड करें",
+    restaurantClosed: "रेस्तरां अभी बंद है",
+    showingPreview: "पूर्वावलोकन दिखा रहा है",
+    returnHome: "होम पर जाएं",
+    menuNotFound: "मेन्यू नहीं मिला",
+    menuUnavailable: "यह मेन्यू वर्तमान में अनुपलब्ध या निष्क्रिय है।",
+    poweredBy: "संचालित द्वारा",
+    recommended: "अनुशंसित",
+    bestseller: "बेस्टसेलर",
+    chefSpecial: "शेफ स्पेशल",
+    reviewGoogle: "गूगल पर समीक्षा करें",
+  },
+  fr: {
+    searchPlaceholder: "Rechercher des plats, entrées, boissons...",
+    applyPromoCode: "Appliquer le code promo",
+    enterPromoCode: "Entrez le code promo (ex. SAVE10)",
+    apply: "Appliquer",
+    remove: "Supprimer",
+    codeApplied: "Code appliqué",
+    applied: "Appliqué",
+    allItems: "Tous les articles",
+    noItemsFound: "Aucun article trouvé",
+    trySearchingDifferent: "Essayez avec d'autres mots-clés.",
+    outOfStock: "Rupture de stock",
+    menuUpdated: "Menu mis à jour",
+    downloadPdf: "Télécharger le menu PDF",
+    restaurantClosed: "Le restaurant est fermé",
+    showingPreview: "Affichage de l'aperçu du menu",
+    returnHome: "Retour à l'accueil",
+    menuNotFound: "Menu non trouvé",
+    menuUnavailable: "Ce menu est indisponible ou inactif.",
+    poweredBy: "Propulsé par",
+    recommended: "Recommandé",
+    bestseller: "Best-seller",
+    chefSpecial: "Spécial Chef",
+    reviewGoogle: "Avis sur Google",
+  },
+  tel: {
+    searchPlaceholder: "వంటకాలు, పానీయాల కోసం వెతకండి...",
+    applyPromoCode: "ప్రోమో కోడ్ ఉపయోగించండి",
+    enterPromoCode: "కోడ్ నమోదు చేయండి (ఉదా. SAVE10)",
+    apply: "వర్తించు",
+    remove: "తొలగించు",
+    codeApplied: "కోడ్ వర్తించబడింది",
+    applied: "వర్తించబడింది",
+    allItems: "అన్ని వంటకాలు",
+    noItemsFound: "ఏ వంటకాలూ లభించలేదు",
+    trySearchingDifferent: "మరొక పేరుతో వెతకండి.",
+    outOfStock: "స్టాక్ లేదు",
+    menuUpdated: "మెనూ నవీకరించబడింది",
+    downloadPdf: "PDF మెనూ డౌన్‌లోడ్ చేయండి",
+    restaurantClosed: "రెస్టారెంట్ ప్రస్తుతం మూసివేయబడింది",
+    showingPreview: "మెనూ ప్రివ్యూ చూపబడుతోంది",
+    returnHome: "హోమ్ కి వెళ్ళండి",
+    menuNotFound: "మెనూ కనుగొనబడలేదు",
+    menuUnavailable: "ఈ మెనూ ప్రస్తుతం అందుబాటులో లేదు.",
+    poweredBy: "సహకారంతో",
+    recommended: "సిఫార్సు చేయబడింది",
+    bestseller: "బెస్ట్ సెల్లర్",
+    chefSpecial: "షెఫ్ స్పెషల్",
+    reviewGoogle: "గూగుల్ లో రివ్యూ చేయండి",
+  }
+};
+
 export default function PublicMenuClient({ slug }: { slug: string }) {
+  const [lang, setLang] = useState<Language>("en");
+  const t = (key: string) => translations[lang]?.[key] || translations["en"]?.[key] || key;
+
   const [restaurant, setRestaurant] = useState<RestaurantData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -328,15 +461,15 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
         <div className="p-4 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 mb-4">
           <UtensilsCrossed className="h-8 w-8" />
         </div>
-        <h1 className="text-xl font-extrabold mb-1">Menu Not Found</h1>
+        <h1 className="text-xl font-extrabold mb-1">{t("menuNotFound")}</h1>
         <p className="text-sm text-muted-foreground max-w-sm mb-6">
-          {error || "The menu you are looking for is currently unavailable or inactive."}
+          {error || t("menuUnavailable")}
         </p>
         <a
           href="/"
           className="gradient-primary text-white font-semibold px-5 py-2.5 rounded-xl text-sm shadow-md"
         >
-          Return to Home
+          {t("returnHome")}
         </a>
       </div>
     );
@@ -363,12 +496,27 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
       {isClosed && (
         <div className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-b border-amber-500/20 py-3 px-4 text-center text-xs font-bold flex items-center justify-center gap-2 shadow-xs">
           <Clock className="h-4 w-4 text-amber-500 animate-spin-slow" />
-          <span>Restaurant is currently closed ({restaurant.openingTime} - {restaurant.closingTime}). Showing menu preview.</span>
+          <span>{t("restaurantClosed")} ({restaurant.openingTime} - {restaurant.closingTime}). {t("showingPreview")}.</span>
         </div>
       )}
 
       {/* Cover Image & Header */}
       <div className="relative bg-gradient-to-b from-orange-500 to-amber-600 text-white pb-8 pt-12 px-4 sm:px-6">
+        {/* Language Selector */}
+        <div className="absolute top-4 right-4 z-10">
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value as Language)}
+            className="bg-black/20 hover:bg-black/35 backdrop-blur-md text-white border border-white/20 text-xs font-bold py-1.5 px-2.5 rounded-xl outline-none cursor-pointer shadow-sm transition-all"
+          >
+            <option value="en" className="text-slate-900 bg-white">🇺🇸 EN</option>
+            <option value="es" className="text-slate-900 bg-white">🇪🇸 ES</option>
+            <option value="hi" className="text-slate-900 bg-white">🇮🇳 HI</option>
+            <option value="fr" className="text-slate-900 bg-white">🇫🇷 FR</option>
+            <option value="tel" className="text-slate-900 bg-white">🇮🇳 TE</option>
+          </select>
+        </div>
+
         <div className="max-w-3xl mx-auto flex flex-col items-center text-center">
           {/* Logo */}
           <div className="h-20 w-20 rounded-2xl bg-white p-1 shadow-xl mb-4 flex items-center justify-center overflow-hidden border-2 border-white/20">
@@ -399,7 +547,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
           {restaurant.lastUpdated && (
             <div className="text-[10px] font-bold text-white/80 bg-white/10 px-3.5 py-1 rounded-full mt-2.5 inline-flex items-center gap-1">
               <Clock className="w-3 h-3 text-white/70" />
-              Menu updated: {new Date(restaurant.lastUpdated).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
+              {t("menuUpdated")}: {new Date(restaurant.lastUpdated).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
             </div>
           )}
 
@@ -434,7 +582,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
               ) : (
                 <Download className="h-3 w-3" />
               )}
-              Download PDF Menu
+              {t("downloadPdf")}
             </button>
           </div>
         </div>
@@ -446,7 +594,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
           <Search className="absolute left-4 top-3.5 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search for dishes, starters, drinks..."
+            placeholder={t("searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-11 pr-4 py-3 bg-card border border-border text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-primary shadow-xs"
@@ -457,14 +605,14 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
         <div className="bg-card border border-border rounded-2xl p-4 mb-4 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold flex items-center gap-1.5 text-foreground">
-              <Ticket className="h-4 w-4 text-primary" /> Apply Promo Code
+              <Ticket className="h-4 w-4 text-primary" /> {t("applyPromoCode")}
             </h3>
             {appliedCoupon && (
               <button
                 onClick={handleRemoveCoupon}
                 className="text-[10px] text-red-500 font-bold hover:underline"
               >
-                Remove
+                {t("remove")}
               </button>
             )}
           </div>
@@ -472,7 +620,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Enter Promo Code (e.g. SAVE10)"
+                placeholder={t("enterPromoCode")}
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                 className="flex-1 px-3 py-2 bg-background border border-border text-xs font-semibold rounded-xl uppercase outline-hidden focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground/60"
@@ -483,13 +631,13 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                 className="gradient-primary text-white font-semibold text-xs px-4 py-2 rounded-xl disabled:opacity-50 flex items-center gap-1.5"
               >
                 {validatingCoupon && <Loader2 className="h-3 w-3 animate-spin" />}
-                Apply
+                {t("apply")}
               </button>
             </div>
           ) : (
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-              <span>Code Applied: {appliedCoupon.code} ({appliedCoupon.discountType === "PERCENT" ? `${appliedCoupon.discountValue}% Off` : `₹${appliedCoupon.discountValue} Off`})</span>
-              <span className="text-emerald-600 dark:text-emerald-400">✓ Applied</span>
+              <span>{t("codeApplied")}: {appliedCoupon.code} ({appliedCoupon.discountType === "PERCENT" ? `${appliedCoupon.discountValue}% Off` : `₹${appliedCoupon.discountValue} Off`})</span>
+              <span className="text-emerald-600 dark:text-emerald-400">✓ {t("applied")}</span>
             </div>
           )}
         </div>
@@ -504,7 +652,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                 : "bg-card text-muted-foreground hover:text-foreground"
             }`}
           >
-            All Items
+            {t("allItems")}
           </button>
           {restaurant.categories.map((cat) => (
             <button
@@ -525,9 +673,9 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
         {filteredCategories.length === 0 ? (
           <div className={`text-center py-16 rounded-3xl p-6 ${getCardStyle()}`}>
             <UtensilsCrossed className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-50" />
-            <p className="font-bold text-sm">No items found</p>
+            <p className="font-bold text-sm">{t("noItemsFound")}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Try searching with a different dish name or category.
+              {t("trySearchingDifferent")}
             </p>
           </div>
         ) : (
@@ -570,7 +718,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                           {!item.isAvailable && (
                             <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center">
                               <span className="text-[9px] font-extrabold text-white bg-red-600 px-1.5 py-0.5 rounded uppercase">
-                                Sold Out
+                                {t("outOfStock")}
                               </span>
                             </div>
                           )}
@@ -627,17 +775,17 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                           <div className="flex flex-wrap gap-1">
                             {item.isRecommended && (
                               <span className="bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
-                                <Sparkles className="h-2.5 w-2.5" /> Recommended
+                                <Sparkles className="h-2.5 w-2.5" /> {t("recommended")}
                               </span>
                             )}
                             {item.isBestSeller && (
                               <span className="bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
-                                <Flame className="h-2.5 w-2.5" /> Bestseller
+                                <Flame className="h-2.5 w-2.5" /> {t("bestseller")}
                               </span>
                             )}
                             {item.isChefSpecial && (
                               <span className="bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
-                                <ChefHat className="h-2.5 w-2.5" /> Chef Special
+                                <ChefHat className="h-2.5 w-2.5" /> {t("chefSpecial")}
                               </span>
                             )}
                           </div>
@@ -660,7 +808,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
 
       {/* Footer Branding */}
       <div className="mt-16 text-center text-xs text-muted-foreground">
-        Powered by <span className="font-bold gradient-text">Dineo</span> · Smart Digital Menu
+        {t("poweredBy")} <span className="font-bold gradient-text">Dineo</span> · Smart Digital Menu
       </div>
 
       {restaurant.googleReviewUrl && (
@@ -671,7 +819,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
           className="fixed bottom-4 right-4 z-40 bg-card border border-border shadow-2xl rounded-full px-4 py-2.5 flex items-center gap-2 hover:-translate-y-0.5 transition-all text-xs font-bold text-foreground hover:shadow-lg cursor-pointer"
         >
           <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
-          <span>Review us on Google</span>
+          <span>{t("reviewGoogle")}</span>
         </a>
       )}
     </div>

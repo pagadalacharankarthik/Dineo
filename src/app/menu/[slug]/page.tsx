@@ -16,7 +16,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = restaurant ? `${restaurant.name} — Digital Menu | Dineo` : `${slug.toUpperCase()} — Digital Menu | Dineo`;
   const description = restaurant?.description || `Scan and view the official digital menu for ${restaurant?.name || slug} powered by Dineo. Replace printed menu cards with smart QR menus.`;
-  const images = restaurant?.logo ? [{ url: restaurant.logo }] : [];
+  
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  let imageUrl = "";
+  if (restaurant?.logo) {
+    imageUrl = restaurant.logo.startsWith("http") ? restaurant.logo : `${baseUrl}${restaurant.logo}`;
+  }
+
+  const images = imageUrl ? [{ url: imageUrl }] : [];
 
   return {
     title,
@@ -26,12 +33,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       images,
       type: "website",
+      url: `${baseUrl}/menu/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: restaurant?.logo ? [restaurant.logo] : [],
+      images: imageUrl ? [imageUrl] : [],
     },
   };
 }

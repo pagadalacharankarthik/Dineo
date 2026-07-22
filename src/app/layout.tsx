@@ -42,7 +42,10 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  manifest: "/manifest.json",
 };
+
+import { PWARegister } from "@/components/shared/PWARegister";
 
 export default function RootLayout({
   children,
@@ -66,6 +69,7 @@ export default function RootLayout({
             duration={4000}
           />
           <CookieBanner />
+          <PWARegister />
         </ThemeProvider>
       </body>
     </html>
