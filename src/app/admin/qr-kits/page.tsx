@@ -32,6 +32,7 @@ interface QRKitRequest {
   notes: string | null;
   status: string;
   createdAt: string;
+  restaurantSlug: string | null;
 }
 
 export default function AdminQRKitsPage() {
@@ -148,6 +149,42 @@ export default function AdminQRKitsPage() {
                       <div className="p-3 bg-zinc-950/60 rounded border border-zinc-850 text-xs text-zinc-400">
                         <span className="font-semibold text-zinc-300 block mb-1">Owner Notes:</span>
                         {req.notes}
+                      </div>
+                    )}
+
+                    {req.restaurantSlug ? (
+                      <div className="p-4 bg-zinc-950/40 rounded-xl border border-zinc-800 text-xs space-y-3.5">
+                        <div className="space-y-1">
+                          <span className="font-bold text-zinc-300 block">Print QR Target URL:</span>
+                          <span className="text-zinc-500 font-mono select-all bg-zinc-950/50 p-2 rounded-lg border border-zinc-900 block truncate">
+                            {window.location.origin}/menu/{req.restaurantSlug}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${window.location.origin}/menu/${req.restaurantSlug}`);
+                              toast.success("Copied to clipboard!");
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="bg-zinc-850 text-zinc-200 border-zinc-800 text-xs hover:bg-zinc-800 hover:text-zinc-100 flex-1 cursor-pointer"
+                          >
+                            Copy Link
+                          </Button>
+                          <a
+                            href={`https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(`${window.location.origin}/menu/${req.restaurantSlug}`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center bg-red-650 hover:bg-red-600 text-white font-semibold text-xs px-3 rounded-lg flex-1 cursor-pointer transition-colors"
+                          >
+                            Download QR
+                          </a>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-zinc-950/20 rounded border border-zinc-850 border-dashed text-xs text-zinc-500 italic">
+                        ⚠️ No registered restaurant matches this request name or email.
                       </div>
                     )}
                   </div>

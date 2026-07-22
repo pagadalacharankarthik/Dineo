@@ -15,9 +15,29 @@ export async function GET() {
       },
     });
 
+    const enrichedRequests = await Promise.all(
+      requests.map(async (req) => {
+        const restaurant = await db.restaurant.findFirst({
+          where: {
+            OR: [
+              { owner: { email: req.email } },
+              { email: req.email },
+              { name: { contains: req.restaurantName, mode: "insensitive" } }
+            ]
+          },
+          select: { slug: true }
+        });
+
+        return {
+          ...req,
+          restaurantSlug: restaurant?.slug || null,
+        };
+      })
+    );
+
     return NextResponse.json({
       success: true,
-      data: requests,
+      data: enrichedRequests,
     });
   } catch (error) {
     console.error("GET /api/admin/qr-kits error:", error);
