@@ -9,30 +9,25 @@ export async function GET() {
   if (errorResponse) return errorResponse;
 
   try {
-    const totalRestaurants = await db.restaurant.count({
-      where: { isDeleted: false },
-    });
-
-    const activeRestaurants = await db.restaurant.count({
-      where: { isDeleted: false, isActive: true, isSuspended: false },
-    });
-
-    const totalUsers = await db.user.count();
-
-    const totalScans = await db.qRScan.count();
-
-    const totalQRKitRequests = await db.qRKitRequest.count();
-
-    const totalContactEnquiries = await db.contactEnquiry.count();
-
-    // Get simple growth / stats over time or plans
-    const trialCount = await db.restaurant.count({
-      where: { planName: "FREE_TRIAL", isDeleted: false },
-    });
-
-    const proCount = await db.restaurant.count({
-      where: { planName: "PRO", isDeleted: false },
-    });
+    const [
+      totalRestaurants,
+      activeRestaurants,
+      totalUsers,
+      totalScans,
+      totalQRKitRequests,
+      totalContactEnquiries,
+      trialCount,
+      proCount
+    ] = await Promise.all([
+      db.restaurant.count({ where: { isDeleted: false } }),
+      db.restaurant.count({ where: { isDeleted: false, isActive: true, isSuspended: false } }),
+      db.user.count(),
+      db.qRScan.count(),
+      db.qRKitRequest.count(),
+      db.contactEnquiry.count(),
+      db.restaurant.count({ where: { planName: "FREE_TRIAL", isDeleted: false } }),
+      db.restaurant.count({ where: { planName: "PRO", isDeleted: false } })
+    ]);
 
     return NextResponse.json({
       success: true,

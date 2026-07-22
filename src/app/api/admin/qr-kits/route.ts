@@ -15,25 +15,40 @@ export async function GET() {
       },
     });
 
-    const enrichedRequests = await Promise.all(
-      requests.map(async (req) => {
-        const restaurant = await db.restaurant.findFirst({
-          where: {
-            OR: [
-              { owner: { email: req.email } },
-              { email: req.email },
-              { name: { contains: req.restaurantName, mode: "insensitive" } }
-            ]
-          },
-          select: { slug: true }
-        });
+    const emails = requests.map((r) => r.email).filter(Boolean);
+    const names = requests.map((r) => r.restaurantName).filter(Boolean);
 
-        return {
-          ...req,
-          restaurantSlug: restaurant?.slug || null,
-        };
-      })
-    );
+    const restaurants = await db.restaurant.findMany({
+      where: {
+        OR: [
+          { email: { in: emails } },
+          { owner: { email: { in: emails } } },
+          { name: { in: names } }
+        ]
+      },
+      select: {
+        name: true,
+        slug: true,
+        email: true,
+        owner: {
+          select: { email: true }
+        }
+      }
+    });
+
+    const enrichedRequests = requests.map((req) => {
+      const match = restaurants.find(
+        (rest) =>
+          rest.email === req.email ||
+          rest.owner?.email === req.email ||
+          rest.name.toLowerCase().includes(req.restaurantName.toLowerCase()) ||
+          req.restaurantName.toLowerCase().includes(rest.name.toLowerCase())
+      );
+      return {
+        ...req,
+        restaurantSlug: match?.slug || null,
+      };
+    });
 
     return NextResponse.json({
       success: true,
