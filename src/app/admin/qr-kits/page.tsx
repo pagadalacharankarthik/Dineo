@@ -1,0 +1,210 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { 
+  Loader2, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Layers, 
+  Calendar, 
+  CheckCircle2, 
+  Clock, 
+  TrendingUp, 
+  XCircle 
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+interface QRKitRequest {
+  id: string;
+  restaurantName: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  tableCount: number;
+  quantityNeeded: number;
+  notes: string | null;
+  status: string;
+  createdAt: string;
+}
+
+export default function AdminQRKitsPage() {
+  const [requests, setRequests] = useState<QRKitRequest[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchRequests = () => {
+    setIsLoading(true);
+    fetch("/api/admin/qr-kits")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setRequests(data.data);
+        }
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setIsLoading(false));
+  };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const handleStatusChange = async (id: string, status: string) => {
+    try {
+      const res = await fetch(`/api/admin/qr-kits/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to update status");
+      }
+      toast.success("QR Kit request status updated");
+      fetchRequests();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update status");
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">Pending</span>;
+      case "CONTACTED":
+        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400">Contacted</span>;
+      case "IN_PROGRESS":
+        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/20 text-purple-400">In Progress</span>;
+      case "COMPLETED":
+        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">Completed</span>;
+      case "CANCELLED":
+        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-400">Cancelled</span>;
+      default:
+        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">{status}</span>;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-zinc-100">QR Stands & Kits Leads</h1>
+        <p className="text-zinc-400 text-sm mt-1">Manage physical merchandise orders and sales pipelines.</p>
+      </div>
+
+      {isLoading ? (
+        <div className="min-h-[40vh] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-red-500 animate-spin" />
+        </div>
+      ) : requests.length === 0 ? (
+        <Card className="bg-zinc-900/20 border-zinc-800/80 p-12 text-center">
+          <CardContent className="text-zinc-500">No QR Kit requests recorded yet.</CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6">
+          {requests.map((req) => (
+            <Card key={req.id} className="bg-zinc-900/40 border-zinc-800/80 backdrop-blur-sm shadow-xl">
+              <CardContent className="p-6">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                  {/* Lead Info */}
+                  <div className="space-y-4 flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div>
+                        <h2 className="text-lg font-semibold text-zinc-100">{req.restaurantName}</h2>
+                        <p className="text-xs text-zinc-500 mt-0.5">Contact: {req.contactPerson}</p>
+                      </div>
+                      <div>{getStatusBadge(req.status)}</div>
+                    </div>
+
+                    <div className="grid gap-3 text-sm text-zinc-400 md:grid-cols-2 lg:grid-cols-3">
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-zinc-600" />
+                        <span className="truncate">{req.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-zinc-600" />
+                        <span>{req.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-zinc-600" />
+                        <span>{new Date(req.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center gap-2 col-span-1 md:col-span-2">
+                        <MapPin className="w-4 h-4 text-zinc-600" />
+                        <span className="truncate">{req.address}, {req.city}, {req.state} - {req.pincode}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-zinc-600" />
+                        <span>Qty: {req.quantityNeeded} (Tables: {req.tableCount})</span>
+                      </div>
+                    </div>
+
+                    {req.notes && (
+                      <div className="p-3 bg-zinc-950/60 rounded border border-zinc-850 text-xs text-zinc-400">
+                        <span className="font-semibold text-zinc-300 block mb-1">Owner Notes:</span>
+                        {req.notes}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Lead Management Control Actions */}
+                  <div className="flex flex-wrap lg:flex-col items-center gap-2 border-t lg:border-t-0 lg:border-l border-zinc-850 pt-4 lg:pt-0 lg:pl-6 lg:w-44 justify-end">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 lg:block hidden mb-1 self-start">Update Status</span>
+                    
+                    <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 w-full">
+                      <Button
+                        onClick={() => handleStatusChange(req.id, "CONTACTED")}
+                        variant="outline"
+                        size="sm"
+                        disabled={req.status === "CONTACTED"}
+                        className="w-full text-xs h-8 border-zinc-800 hover:bg-zinc-850"
+                      >
+                        <Clock className="w-3.5 h-3.5 mr-1 text-blue-400" />
+                        Contacted
+                      </Button>
+                      <Button
+                        onClick={() => handleStatusChange(req.id, "IN_PROGRESS")}
+                        variant="outline"
+                        size="sm"
+                        disabled={req.status === "IN_PROGRESS"}
+                        className="w-full text-xs h-8 border-zinc-800 hover:bg-zinc-850"
+                      >
+                        <TrendingUp className="w-3.5 h-3.5 mr-1 text-purple-400" />
+                        In Progress
+                      </Button>
+                      <Button
+                        onClick={() => handleStatusChange(req.id, "COMPLETED")}
+                        variant="outline"
+                        size="sm"
+                        disabled={req.status === "COMPLETED"}
+                        className="w-full text-xs h-8 border-zinc-800 hover:bg-zinc-850"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                        Complete
+                      </Button>
+                      <Button
+                        onClick={() => handleStatusChange(req.id, "CANCELLED")}
+                        variant="outline"
+                        size="sm"
+                        disabled={req.status === "CANCELLED"}
+                        className="w-full text-xs h-8 border-zinc-850 text-red-400 hover:bg-red-950/10 hover:border-red-900/30"
+                      >
+                        <XCircle className="w-3.5 h-3.5 mr-1 text-red-500" />
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

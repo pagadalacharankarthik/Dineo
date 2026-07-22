@@ -1,0 +1,373 @@
+// Prisma schema for Neon PostgreSQL (Prisma 7)
+// Connection URLs are configured in prisma.config.ts
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────────
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  mobile        String?
+  role          UserRole  @default(RESTAURANT_OWNER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  restaurant     Restaurant?
+  sessions       Session[]
+  accounts       Account[]
+  passwordResets PasswordReset[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  RESTAURANT_OWNER
+}
+
+// ─────────────────────────────────────────────
+// RESTAURANT
+// ─────────────────────────────────────────────
+model Restaurant {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  logo        String?
+  coverImage  String?
+  description String?
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  pincode     String?
+  mobile      String?
+  email       String?
+  website     String?
+  instagram   String?
+  facebook    String?
+  openingTime String?
+  closingTime String?
+  googleReviewUrl String?
+  isActive    Boolean  @default(true)
+  isSuspended Boolean  @default(false)
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Subscription metadata (Batch 4 — no payment yet)
+  planName        String   @default("FREE_TRIAL")
+  planStatus      String   @default("ACTIVE")
+  trialStartDate  DateTime @default(now())
+  trialEndDate    DateTime?
+  planExpiresAt   DateTime?
+
+  // Owner relation
+  ownerId String @unique
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  // Batch 2 relations
+  categories Category[]
+  menuItems  MenuItem[]
+  qrCodes    QRCode[]
+  coupons    Coupon[]
+
+  // Future module placeholders
+  // tables      RestaurantTable[]
+  // orders      Order[]
+
+  @@map("restaurants")
+}
+
+// ─────────────────────────────────────────────
+// MENU CATEGORIES (Batch 2)
+// ─────────────────────────────────────────────
+model Category {
+  id           String   @id @default(cuid())
+  restaurantId String
+  name         String
+  description  String?
+  isHidden     Boolean  @default(false)
+  isDisabled   Boolean  @default(false)
+  displayOrder Int      @default(0)
+  viewsCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  menuItems  MenuItem[]
+
+  @@index([restaurantId])
+  @@map("categories")
+}
+
+// ─────────────────────────────────────────────
+// MENU ITEMS (Batch 2)
+// ─────────────────────────────────────────────
+model MenuItem {
+  id            String   @id @default(cuid())
+  restaurantId  String
+  categoryId    String
+  name          String
+  description   String?
+  price         Float
+  imageUrl      String?
+  discountPrice Float?
+  isVeg         Boolean  @default(true)
+  isRecommended Boolean  @default(false)
+  isBestSeller  Boolean  @default(false)
+  isChefSpecial Boolean  @default(false)
+  isAvailable   Boolean  @default(true)
+  isHidden      Boolean  @default(false)
+  displayOrder  Int      @default(0)
+  viewsCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId])
+  @@index([categoryId])
+  @@map("menu_items")
+}
+
+// ─────────────────────────────────────────────
+// QR CODES (Batch 2)
+// ─────────────────────────────────────────────
+model QRCode {
+  id            String   @id @default(cuid())
+  restaurantId  String
+  code          String   @unique
+  targetUrl     String
+  qrType        QRType   @default(RESTAURANT_MAIN)
+  scansCount    Int      @default(0)
+  downloadsCount Int     @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  scans      QRScan[]
+
+  @@index([restaurantId])
+  @@map("qr_codes")
+}
+
+// ─────────────────────────────────────────────
+// QR SCANS / ANALYTICS (Batch 3)
+// ─────────────────────────────────────────────
+model QRScan {
+  id           String   @id @default(cuid())
+  qrCodeId     String
+  restaurantId String
+  scannedAt    DateTime @default(now())
+  deviceType   String?
+  browser      String?
+  os           String?
+  city         String?
+  country      String?
+  referrer     String?
+  visitorId    String?
+
+  qrCode QRCode @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId])
+  @@index([qrCodeId])
+  @@index([scannedAt])
+  @@map("qr_scans")
+}
+
+// ─────────────────────────────────────────────
+// CONTACT ENQUIRIES (Batch 3)
+// ─────────────────────────────────────────────
+model ContactEnquiry {
+  id             String           @id @default(cuid())
+  name           String
+  restaurantName String?
+  email          String
+  phone          String?
+  message        String
+  isRead         Boolean          @default(false)
+  status         EnquiryStatus    @default(NEW)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@map("contact_enquiries")
+}
+
+// ─────────────────────────────────────────────
+// QR KIT INTEREST REQUESTS (Batch 3)
+// ─────────────────────────────────────────────
+model QRKitRequest {
+  id             String        @id @default(cuid())
+  restaurantName String
+  contactPerson  String
+  phone          String
+  email          String
+  address        String
+  city           String
+  state          String
+  pincode        String
+  tableCount     Int
+  quantityNeeded Int
+  notes          String?
+  status         QRKitStatus   @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@map("qr_kit_requests")
+}
+
+enum QRKitStatus {
+  PENDING
+  PROCESSING
+  CONTACTED
+  IN_PROGRESS
+  COMPLETED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// ─────────────────────────────────────────────
+// COUPONS (Batch 4 Extension)
+// ─────────────────────────────────────────────
+model Coupon {
+  id            String   @id @default(cuid())
+  restaurantId  String
+  code          String
+  discountType  String   @default("PERCENT") // "PERCENT" | "FIXED"
+  discountValue Float
+  isActive      Boolean  @default(true)
+  expiresAt     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, code])
+  @@map("coupons")
+}
+
+enum QRType {
+  RESTAURANT_MAIN
+  TABLE_SPECIFIC
+}
+
+enum EnquiryStatus {
+  NEW
+  REPLIED
+  CLOSED
+}
+
+// ─────────────────────────────────────────────
+// ADMIN USERS (Batch 4)
+// ─────────────────────────────────────────────
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         AdminRole @default(SUPER_ADMIN)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions AdminSession[]
+
+  @@map("admin_users")
+}
+
+model AdminSession {
+  id        String    @id @default(cuid())
+  adminId   String
+  token     String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  admin AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@map("admin_sessions")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+}
+
+// ─────────────────────────────────────────────
+// AUTH — Better Auth required tables
+// ─────────────────────────────────────────────
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verifications")
+}
+
+// ─────────────────────────────────────────────
+// PASSWORD RESET
+// ─────────────────────────────────────────────
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_resets")
+}
