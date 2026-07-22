@@ -11,7 +11,7 @@ We have successfully completed all core features in **Batch 4**, finalizing the 
 - Synchronized the live CockroachDB/Neon database using `npx prisma db push`.
 
 ### 2. Standalone Admin Seeding Script (`scripts/seed-admin.js`)
-- Created a seeding script to easily register the first super administrator (`admin@qrmenu.com` / `AdminPassword123!`).
+- Created a seeding script to easily register the first super administrator (`admin@dineo.com` / `AdminPassword123!`).
 - Instantiated Neon WebSocket driver adapter wrapper in the script to ensure direct DB connectivity matching Next.js.
 
 ### 3. Middleware & Session Isolation (`src/middleware.ts` & `src/lib/admin-auth.ts`)

@@ -16,7 +16,7 @@ const adapter = new PrismaNeon({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const email = "admin@qrmenu.com";
+  const email = "admin@dineo.com";
   const password = "AdminPassword123!";
   const name = "Super Admin";
 
