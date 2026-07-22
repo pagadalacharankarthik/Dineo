@@ -58,7 +58,7 @@ BETTER_AUTH_URL="http://localhost:3000"
 
 # Application domain settings
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NEXT_PUBLIC_APP_NAME="QRMenu"
+NEXT_PUBLIC_APP_NAME="Dineo"
 ```
 
 ---
