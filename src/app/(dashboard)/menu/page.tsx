@@ -56,6 +56,12 @@ export default function MenuPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+
+  // Bulk Modal State
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [bulkCategoryId, setBulkCategoryId] = useState("");
+  const [bulkText, setBulkText] = useState("");
+  const [bulkSaving, setBulkSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     categoryId: "",
@@ -98,6 +104,94 @@ export default function MenuPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const openBulkAddModal = () => {
+    setBulkCategoryId(selectedCategory !== "all" ? selectedCategory : (categories[0]?.id || ""));
+    setBulkText("");
+    setIsBulkModalOpen(true);
+  };
+
+  const handleBulkSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bulkCategoryId) {
+      toast.error("Please select a category");
+      return;
+    }
+
+    const lines = bulkText.split("\n");
+    const parsedItems: { name: string; price: number; description?: string; isVeg: boolean }[] = [];
+    let hasError = false;
+
+    lines.forEach((line, index) => {
+      if (hasError) return;
+      const trimmed = line.trim();
+      if (!trimmed) return;
+
+      const parts = trimmed.split("|");
+      const name = parts[0]?.trim();
+      const priceRaw = parts[1]?.trim();
+      const description = parts[2]?.trim() || "";
+      const vegIndicator = parts[3]?.trim()?.toLowerCase() || "v";
+
+      if (!name) {
+        toast.error(`Line ${index + 1}: Dish name is missing.`);
+        hasError = true;
+        return;
+      }
+      if (!priceRaw) {
+        toast.error(`Line ${index + 1}: Price is missing.`);
+        hasError = true;
+        return;
+      }
+
+      const price = parseFloat(priceRaw);
+      if (isNaN(price) || price < 0) {
+        toast.error(`Line ${index + 1}: Invalid price "${priceRaw}".`);
+        hasError = true;
+        return;
+      }
+
+      parsedItems.push({
+        name,
+        price,
+        description: description || undefined,
+        isVeg: vegIndicator === "v" || vegIndicator === "veg",
+      });
+    });
+
+    if (hasError) return;
+
+    if (parsedItems.length === 0) {
+      toast.error("Please enter at least one valid item to add.");
+      return;
+    }
+
+    setBulkSaving(true);
+    try {
+      const res = await fetch("/api/menu-items/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          categoryId: bulkCategoryId,
+          items: parsedItems,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to bulk add items");
+      }
+
+      toast.success(data.message || `Successfully added ${parsedItems.length} items!`);
+      setIsBulkModalOpen(false);
+      fetchData();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "An error occurred";
+      toast.error(msg);
+    } finally {
+      setBulkSaving(false);
+    }
+  };
 
   const openAddModal = () => {
     setEditingItem(null);
@@ -367,6 +461,13 @@ export default function MenuPage() {
             className="inline-flex items-center justify-center gap-2 border border-border bg-card hover:bg-muted font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer"
           >
             <Download className="h-4 w-4 text-primary" /> Download PDF Menu
+          </button>
+          <button
+            disabled={categories.length === 0}
+            onClick={openBulkAddModal}
+            className="inline-flex items-center justify-center gap-2 border border-primary text-primary hover:bg-primary/5 font-semibold px-4 py-2.5 rounded-xl text-sm transition-all disabled:opacity-50 cursor-pointer shadow-xs"
+          >
+            <Plus className="h-4 w-4" /> Bulk Add Items
           </button>
           <button
             disabled={categories.length === 0}
@@ -855,6 +956,95 @@ export default function MenuPage() {
                 >
                   {saving && <Loader2 className="h-4 w-4 animate-spin" />}
                   {editingItem ? "Update Menu Item" : "Create Menu Item"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Add Menu Items Modal */}
+      {isBulkModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-card border border-border rounded-3xl p-6 w-full max-w-2xl shadow-2xl my-8 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div>
+                <h2 className="text-lg font-bold">Bulk Add Menu Items</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Add multiple items at once to a selected category.</p>
+              </div>
+              <button
+                onClick={() => setIsBulkModalOpen(false)}
+                className="p-1 rounded-lg text-muted-foreground hover:bg-muted"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleBulkSave} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase text-muted-foreground mb-1">
+                  Destination Category <span className="text-red-500">*</span>
+                </label>
+                <select
+                  required
+                  value={bulkCategoryId}
+                  onChange={(e) => setBulkCategoryId(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm focus:outline-hidden focus:ring-2 focus:ring-primary"
+                >
+                  <option value="" disabled>
+                    Select Category
+                  </option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold uppercase text-muted-foreground">
+                    Menu Items Data <span className="text-red-500">*</span>
+                  </label>
+                  <span className="text-[10px] text-muted-foreground font-medium">
+                    Format: Name | Price | Description | Veg (V/N)
+                  </span>
+                </div>
+                <textarea
+                  rows={8}
+                  required
+                  placeholder={`e.g.\nPaneer Tikka | 250 | Grilled cottage cheese | V\nChicken Biryani | 350 | Slow cooked basmati rice | N\nCold Coffee | 120 | Blended ice cream and espresso | V`}
+                  value={bulkText}
+                  onChange={(e) => setBulkText(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-border bg-background text-sm font-mono focus:outline-hidden focus:ring-2 focus:ring-primary resize-none"
+                />
+              </div>
+
+              <div className="bg-muted/40 border border-border p-3.5 rounded-2xl text-xs space-y-1">
+                <p className="font-semibold text-foreground">💡 Instructions:</p>
+                <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                  <li>Write one dish per line.</li>
+                  <li>Separate each value using a pipe character (<code className="font-bold">|</code>).</li>
+                  <li>Use <code className="font-bold">V</code> or <code className="font-bold">Veg</code> for vegetarian, and <code className="font-bold">N</code> or <code className="font-bold">Non-Veg</code> for non-vegetarian.</li>
+                </ul>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-border">
+                <button
+                  type="button"
+                  onClick={() => setIsBulkModalOpen(false)}
+                  className="px-4 py-2 rounded-xl text-sm font-medium border border-border hover:bg-muted transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={bulkSaving}
+                  className="inline-flex items-center gap-2 gradient-primary text-white font-semibold px-5 py-2 rounded-xl text-sm disabled:opacity-50"
+                >
+                  {bulkSaving && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Bulk Import Items
                 </button>
               </div>
             </form>

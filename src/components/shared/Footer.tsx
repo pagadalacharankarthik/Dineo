@@ -56,9 +56,14 @@ export function Footer() {
                 <Mail className="h-4 w-4" />
                 charanlabssupport@gmail.com
               </a>
-              <p className="text-xs text-muted-foreground">
-                📞 +91 99125 51260
-              </p>
+              <a
+                href="https://wa.me/919912551260"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors mt-1"
+              >
+                <span>💬 WhatsApp: +91 99125 51260</span>
+              </a>
             </div>
           </div>
 

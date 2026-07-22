@@ -19,7 +19,7 @@ import {
   Sparkles,
   ChevronRight,
   Mail,
-  Phone,
+  MessageCircle,
   Send,
   Loader2,
   X,
@@ -596,13 +596,18 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-4 bg-card rounded-2xl border border-border shadow-xs">
-                <Phone className="h-5 w-5 text-primary flex-shrink-0" />
+              <a
+                href="https://wa.me/919912551260"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-4 bg-card rounded-2xl border border-border shadow-xs hover:border-primary/30 transition-all"
+              >
+                <MessageCircle className="h-5 w-5 text-primary flex-shrink-0" />
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Call/WhatsApp</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">WhatsApp Support</p>
                   <p className="text-xs font-semibold truncate mt-0.5">+91 99125 51260</p>
                 </div>
-              </div>
+              </a>
             </div>
 
             {/* Actual Form */}
