@@ -241,7 +241,7 @@ export default function AdminRestaurantsPage() {
             variant="outline" 
             size="sm"
             onClick={() => setIncludeDeleted(!includeDeleted)}
-            className={`border-zinc-850 hover:bg-zinc-900 transition-all ${includeDeleted ? "bg-red-955/20 text-red-400 border-red-500/30 hover:bg-red-950/20" : "text-zinc-400"}`}
+            className={`border-zinc-850 hover:bg-zinc-900 transition-all ${includeDeleted ? "bg-red-950/20 text-red-400 border-red-500/30 hover:bg-red-950/20" : "text-zinc-400"}`}
           >
             {includeDeleted ? "Hiding Deleted" : "Show Deleted Archive"}
           </Button>
@@ -312,8 +312,8 @@ export default function AdminRestaurantsPage() {
                 key={rest.id} 
                 className={`
                   bg-zinc-900/40 border-zinc-800/80 backdrop-blur-sm shadow-xl transition-all duration-200
-                  ${isSusp ? "border-amber-900/30 bg-amber-955/5" : ""}
-                  ${isDel ? "border-red-900/30 bg-red-955/5 opacity-70" : ""}
+                  ${isSusp ? "border-amber-900/30 bg-amber-950/5" : ""}
+                  ${isDel ? "border-red-900/30 bg-red-950/5 opacity-70" : ""}
                 `}
               >
                 <CardContent className="p-6">
