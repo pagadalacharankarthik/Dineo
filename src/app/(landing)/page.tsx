@@ -292,7 +292,7 @@ export default function HomePage() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full px-4 py-1.5 text-sm font-medium mb-8">
+          <div className="inline-flex items-center gap-2 bg-orange-500/10 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 rounded-full px-4 py-1.5 text-sm font-medium mb-8">
             <Star className="h-3.5 w-3.5 fill-current" />
             Trusted by 500+ restaurants across India
           </div>

@@ -16,7 +16,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           // Variants
           variant === "default" && "bg-primary text-primary-foreground hover:opacity-90 shadow-md",
           variant === "destructive" && "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md",
-          variant === "outline" && "border border-input bg-background hover:bg-muted text-foreground",
+          variant === "outline" && "border border-input bg-transparent hover:bg-muted text-foreground",
           variant === "ghost" && "hover:bg-muted text-muted-foreground hover:text-foreground",
           // Sizes
           size === "default" && "h-10 px-4 py-2.5",
