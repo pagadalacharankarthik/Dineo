@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedAdmin, verifyPassword, hashPassword } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
+import { sendMail } from "@/lib/email";
 
 export async function POST(req: Request) {
   const { admin, errorResponse } = await getAuthenticatedAdmin();
@@ -92,6 +93,29 @@ export async function POST(req: Request) {
     // Clean up OTP record if email was successfully updated
     if (updateData.email) {
       await db.adminOTP.delete({ where: { email: updateData.email } }).catch(() => {});
+    }
+
+    // Send security alert email if password was changed
+    if (updateData.passwordHash) {
+      const html = `
+        <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); text-align: center;">
+          <h2 style="color: #ea580c; margin-top: 0; margin-bottom: 8px;">Dineo Admin Alert</h2>
+          <p style="color: #64748b; font-size: 14px; margin-top: 0;">Super Admin Password Changed Successfully</p>
+          
+          <p style="color: #475569; font-size: 14px; line-height: 1.6; text-align: left; margin-top: 20px;">
+            Hi ${updatedAdmin.name},<br/><br/>
+            This is a confirmation that the password for your Dineo Super Admin account (<strong>${updatedAdmin.email}</strong>) has been changed successfully.<br/><br/>
+            If you made this change, you don't need to do anything. If you did not make this change, please contact support immediately to secure your admin account.
+          </p>
+          
+          <p style="font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 25px;">This is an automated security notification. Please do not reply directly to this email.</p>
+        </div>
+      `;
+      await sendMail({
+        to: updatedAdmin.email,
+        subject: "Dineo Admin - Your password was changed",
+        html,
+      }).catch(err => console.error("Failed to send admin password change notification:", err));
     }
 
     return NextResponse.json({

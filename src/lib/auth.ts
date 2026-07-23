@@ -65,6 +65,35 @@ export const auth = betterAuth({
   trustedOrigins: [
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   ],
+  events: {
+    password: {
+      changed: async ({ user }: { user: any }) => {
+        try {
+          const html = `
+            <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); text-align: center;">
+              <h2 style="color: #ea580c; margin-top: 0; margin-bottom: 8px;">Dineo Account Alert</h2>
+              <p style="color: #64748b; font-size: 14px; margin-top: 0;">Password Changed Successfully</p>
+              
+              <p style="color: #475569; font-size: 14px; line-height: 1.6; text-align: left; margin-top: 20px;">
+                Hi ${user.name},<br/><br/>
+                This is a confirmation that the password for your Dineo merchant account (<strong>${user.email}</strong>) has been changed successfully.<br/><br/>
+                If you made this change, you don't need to do anything. If you did not make this change, please contact support immediately to secure your account.
+              </p>
+              
+              <p style="font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 25px;">This is an automated security notification. Please do not reply directly to this email.</p>
+            </div>
+          `;
+          await sendMail({
+            to: user.email,
+            subject: "Dineo - Your password was changed",
+            html,
+          });
+        } catch (error) {
+          console.error("Failed to send password changed email:", error);
+        }
+      }
+    }
+  }
 });
 
 export type Session = typeof auth.$Infer.Session;
