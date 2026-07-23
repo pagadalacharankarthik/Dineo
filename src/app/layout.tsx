@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
-import { CookieBanner } from "@/components/shared/CookieBanner";
+import { CookieConsent } from "@/components/shared/CookieConsent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -68,7 +68,7 @@ export default function RootLayout({
             closeButton
             duration={4000}
           />
-          <CookieBanner />
+          <CookieConsent />
           <PWARegister />
         </ThemeProvider>
       </body>
