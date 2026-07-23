@@ -27,8 +27,8 @@ export default function AdminSettingsPage() {
         const res = await fetch("/api/admin/auth/me");
         const data = await res.json();
         if (data.success) {
-          setAdminUser(data.admin);
-          setNewEmail(data.admin.email);
+          setAdminUser(data.data);
+          setNewEmail(data.data.email);
         } else {
           toast.error("Failed to load profile details");
         }

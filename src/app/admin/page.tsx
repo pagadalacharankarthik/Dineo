@@ -19,6 +19,7 @@ interface Stats {
   totalScans: number;
   totalQRKitRequests: number;
   totalContactEnquiries: number;
+  activeOffersCount: number;
   plans: {
     FREE_TRIAL: number;
     PRO: number;
@@ -116,6 +117,36 @@ export default function AdminDashboard() {
           );
         })}
       </div>
+
+      {/* Promotion Banners Overview */}
+      <Card className="bg-zinc-900/40 border-zinc-800/80 backdrop-blur-sm shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-sm font-semibold tracking-wider uppercase text-zinc-300">
+            Active Promotion Banners Overview
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 md:grid-cols-2">
+          <div className="flex justify-between items-center pb-2 border-b border-zinc-850">
+            <div className="space-y-0.5">
+              <span className="text-zinc-400 text-sm font-medium">Free Trial Expiry Banner</span>
+              <p className="text-[10px] text-zinc-550">Active on merchant dashboards</p>
+            </div>
+            <span className="font-bold text-amber-500 text-lg">
+              {stats?.plans.FREE_TRIAL || 0}
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center pb-2 border-b border-zinc-850">
+            <div className="space-y-0.5">
+              <span className="text-zinc-400 text-sm font-medium">Special Offer Banner</span>
+              <p className="text-[10px] text-zinc-550">Active on merchant dashboards</p>
+            </div>
+            <span className="font-bold text-emerald-500 text-lg">
+              {stats?.activeOffersCount || 0}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Extra Details */}
       <div className="grid gap-6 md:grid-cols-2">
