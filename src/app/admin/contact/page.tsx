@@ -159,7 +159,13 @@ export default function AdminContactPage() {
                       )}
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-zinc-400 dark:text-zinc-650" />
-                        <span>{new Date(enq.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(enq.createdAt).toLocaleDateString()} at{" "}
+                          {new Date(enq.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
                       </div>
                     </div>
 

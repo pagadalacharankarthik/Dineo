@@ -208,7 +208,13 @@ export default function AdminQRKitsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-zinc-400 dark:text-zinc-600" />
-                        <span>{new Date(req.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(req.createdAt).toLocaleDateString()} at{" "}
+                          {new Date(req.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 col-span-1 md:col-span-2">
                         <MapPin className="w-4 h-4 text-zinc-400 dark:text-zinc-600" />

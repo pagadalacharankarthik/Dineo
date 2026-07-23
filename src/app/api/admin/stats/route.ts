@@ -18,7 +18,9 @@ export async function GET() {
       totalContactEnquiries,
       trialCount,
       proCount,
-      activeOffersCount
+      activeOffersCount,
+      unreadContacts,
+      pendingKits
     ] = await Promise.all([
       db.restaurant.count({ where: { isDeleted: false } }),
       db.restaurant.count({ where: { isDeleted: false, isActive: true, isSuspended: false } }),
@@ -28,7 +30,9 @@ export async function GET() {
       db.contactEnquiry.count(),
       db.restaurant.count({ where: { planName: "FREE_TRIAL", isDeleted: false } }),
       db.restaurant.count({ where: { planName: "PRO", isDeleted: false } }),
-      db.restaurant.count({ where: { showOfferBanner: true, isDeleted: false } })
+      db.restaurant.count({ where: { showOfferBanner: true, isDeleted: false } }),
+      db.contactEnquiry.count({ where: { isRead: false } }),
+      db.qRKitRequest.count({ where: { status: "PENDING" } })
     ]);
 
     return NextResponse.json({
@@ -41,6 +45,8 @@ export async function GET() {
         totalQRKitRequests,
         totalContactEnquiries,
         activeOffersCount,
+        unreadContacts,
+        pendingKits,
         plans: {
           FREE_TRIAL: trialCount,
           PRO: proCount,

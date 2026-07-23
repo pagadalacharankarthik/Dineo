@@ -25,11 +25,34 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const [badgeCounts, setBadgeCounts] = useState({ unreadContacts: 0, pendingKits: 0 });
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (pathname === "/admin/login") return;
+
+    async function fetchBadgeCounts() {
+      try {
+        const res = await fetch("/api/admin/stats");
+        const data = await res.json();
+        if (data.success && data.data) {
+          setBadgeCounts({
+            unreadContacts: data.data.unreadContacts ?? 0,
+            pendingKits: data.data.pendingKits ?? 0,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load admin badge counts:", err);
+      }
+    }
+
+    fetchBadgeCounts();
+    const interval = setInterval(fetchBadgeCounts, 15000); // refresh counts every 15 seconds
+    return () => clearInterval(interval);
+  }, [pathname]);
 
   // Skip layout wrapper for the login page
   if (pathname === "/admin/login") {
@@ -115,6 +138,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
+
+            let badge: number | null = null;
+            if (link.href === "/admin/contact") {
+              badge = badgeCounts.unreadContacts;
+            } else if (link.href === "/admin/qr-kits") {
+              badge = badgeCounts.pendingKits;
+            }
+
             return (
               <Link
                 key={link.href}
@@ -129,7 +160,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 `}
               >
                 <Icon className={`w-4 h-4 ${isActive ? "text-red-500 dark:text-red-400" : "text-zinc-400 dark:text-zinc-500"}`} />
-                {link.label}
+                <span className="flex-1">{link.label}</span>
+                {badge !== null && badge > 0 && (
+                  <span className="bg-red-500 text-white text-[10px] font-black h-5 px-1.5 min-w-5 rounded-full flex items-center justify-center shadow-md animate-pulse">
+                    {badge}
+                  </span>
+                )}
               </Link>
             );
           })}
