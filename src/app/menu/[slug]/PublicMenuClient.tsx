@@ -198,8 +198,8 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [isClosed, setIsClosed] = useState(false);
 
-  // Coupons State
   const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState<string | null>(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
@@ -296,11 +296,12 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
   const handleApplyCoupon = async () => {
     const cleanCode = couponCode.trim().toUpperCase();
     if (!cleanCode) {
-      toast.error("Please enter a coupon code");
+      setCouponError("Please enter a coupon code");
       return;
     }
 
     setValidatingCoupon(true);
+    setCouponError(null);
     try {
       const res = await fetch("/api/public/coupon/validate", {
         method: "POST",
@@ -310,12 +311,14 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
       const data = await res.json();
       if (res.ok && data.success) {
         setAppliedCoupon(data.data);
+        setCouponError(null);
         toast.success(`Coupon "${cleanCode}" applied successfully!`);
       } else {
-        toast.error(data.error || "Invalid coupon code");
+        setCouponError(data.error || "Invalid coupon code");
+        setAppliedCoupon(null);
       }
     } catch {
-      toast.error("Failed to apply coupon");
+      setCouponError("Failed to apply coupon");
     } finally {
       setValidatingCoupon(false);
     }
@@ -324,6 +327,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
     setCouponCode("");
+    setCouponError(null);
     toast.success("Coupon removed");
   };
 
@@ -617,22 +621,32 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             )}
           </div>
           {!appliedCoupon ? (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder={t("enterPromoCode")}
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                className="flex-1 px-3 py-2 bg-background border border-border text-xs font-semibold rounded-xl uppercase outline-hidden focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground/60"
-              />
-              <button
-                onClick={handleApplyCoupon}
-                disabled={validatingCoupon}
-                className="gradient-primary text-white font-semibold text-xs px-4 py-2 rounded-xl disabled:opacity-50 flex items-center gap-1.5"
-              >
-                {validatingCoupon && <Loader2 className="h-3 w-3 animate-spin" />}
-                {t("apply")}
-              </button>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder={t("enterPromoCode")}
+                  value={couponCode}
+                  onChange={(e) => {
+                    setCouponCode(e.target.value.toUpperCase());
+                    setCouponError(null);
+                  }}
+                  className="flex-1 px-3 py-2 bg-background border border-border text-xs font-semibold rounded-xl uppercase outline-hidden focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground/60"
+                />
+                <button
+                  onClick={handleApplyCoupon}
+                  disabled={validatingCoupon}
+                  className="gradient-primary text-white font-semibold text-xs px-4 py-2 rounded-xl disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  {validatingCoupon && <Loader2 className="h-3 w-3 animate-spin" />}
+                  {t("apply")}
+                </button>
+              </div>
+              {couponError && (
+                <p className="text-[10px] text-red-500 font-semibold px-1">
+                  ⚠ {couponError}
+                </p>
+              )}
             </div>
           ) : (
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-600 dark:text-emerald-400">
