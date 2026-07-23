@@ -36,6 +36,8 @@ export async function GET() {
         ...qrCode,
         restaurantName: restaurant!.name,
         restaurantSlug: restaurant!.slug,
+        restaurantLogo: restaurant!.logo,
+        planName: restaurant!.planName,
         targetUrl,
       },
     });

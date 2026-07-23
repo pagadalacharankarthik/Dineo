@@ -23,6 +23,8 @@ interface QRDetails {
   scansCount: number;
   restaurantName: string;
   restaurantSlug: string;
+  restaurantLogo?: string | null;
+  planName?: string;
 }
 
 export default function QRCodePage() {
@@ -40,7 +42,7 @@ export default function QRCodePage() {
       const data = await res.json();
       if (data.success) {
         setQrData(data.data);
-        generateQRCodes(data.data.targetUrl);
+        generateQRCodes(data.data);
       }
     } catch {
       toast.error("Failed to load QR details");
@@ -49,30 +51,118 @@ export default function QRCodePage() {
     }
   };
 
-  const generateQRCodes = async (url: string) => {
+  const generateQRCodes = async (details: QRDetails) => {
     try {
-      // High Res PNG
-      const png = await QRCodeLib.toDataURL(url, {
-        width: 1024,
-        margin: 2,
-        color: {
-          dark: "#000000",
-          light: "#FFFFFF",
-        },
-      });
-      setDataUrl(png);
+      const { targetUrl, restaurantLogo, planName } = details;
+      const isPro = planName === "PRO";
+      const hasLogo = restaurantLogo && restaurantLogo.trim() !== "";
 
-      // SVG
-      const svg = await QRCodeLib.toString(url, {
-        type: "svg",
-        margin: 2,
-        color: {
-          dark: "#000000",
-          light: "#FFFFFF",
-        },
-      });
-      const blob = new Blob([svg], { type: "image/svg+xml" });
-      setSvgUrl(URL.createObjectURL(blob));
+      // Embed logo for PRO plan users on Canvas
+      if (isPro && hasLogo) {
+        const canvas = document.createElement("canvas");
+        const canvasSize = 1024;
+        canvas.width = canvasSize;
+        canvas.height = canvasSize;
+
+        // Use High Error Correction Level 'H' to ensure QR is readable with central logo overlay
+        await QRCodeLib.toCanvas(canvas, targetUrl, {
+          width: canvasSize,
+          margin: 2,
+          errorCorrectionLevel: "H",
+          color: {
+            dark: "#000000",
+            light: "#FFFFFF",
+          },
+        });
+
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          const logoImg = new Image();
+          logoImg.crossOrigin = "anonymous";
+          logoImg.src = restaurantLogo!;
+
+          await new Promise<void>((resolve) => {
+            logoImg.onload = () => {
+              // Logo size is 22% of QR size for safety
+              const logoSize = canvasSize * 0.22;
+              const x = (canvasSize - logoSize) / 2;
+              const y = (canvasSize - logoSize) / 2;
+
+              // Draw white border box
+              ctx.fillStyle = "#FFFFFF";
+              const radius = logoSize * 0.2;
+              ctx.beginPath();
+              ctx.moveTo(x + radius, y);
+              ctx.lineTo(x + logoSize - radius, y);
+              ctx.quadraticCurveTo(x + logoSize, y, x + logoSize, y + radius);
+              ctx.lineTo(x + logoSize, y + logoSize - radius);
+              ctx.quadraticCurveTo(x + logoSize, y + logoSize, x + logoSize - radius, y + logoSize);
+              ctx.lineTo(x + radius, y + logoSize);
+              ctx.quadraticCurveTo(x, y + logoSize, x, y + logoSize - radius);
+              ctx.lineTo(x, y + radius);
+              ctx.quadraticCurveTo(x, y, x + radius, y);
+              ctx.closePath();
+              ctx.fill();
+
+              // Border stroke
+              ctx.lineWidth = 6;
+              ctx.strokeStyle = "#F1F5F9";
+              ctx.stroke();
+
+              // Draw logo inside
+              const margin = logoSize * 0.12;
+              const size = logoSize - (margin * 2);
+              ctx.drawImage(logoImg, x + margin, y + margin, size, size);
+              resolve();
+            };
+
+            logoImg.onerror = () => {
+              console.warn("Failed to load restaurant logo, generating fallback plain QR code");
+              resolve();
+            };
+          });
+        }
+
+        const png = canvas.toDataURL("image/png");
+        setDataUrl(png);
+
+        // SVG fallback
+        const svg = await QRCodeLib.toString(targetUrl, {
+          type: "svg",
+          margin: 2,
+          errorCorrectionLevel: "H",
+          color: {
+            dark: "#000000",
+            light: "#FFFFFF",
+          },
+        });
+        const blob = new Blob([svg], { type: "image/svg+xml" });
+        setSvgUrl(URL.createObjectURL(blob));
+      } else {
+        // Standard code generation
+        const png = await QRCodeLib.toDataURL(targetUrl, {
+          width: 1024,
+          margin: 2,
+          errorCorrectionLevel: "M",
+          color: {
+            dark: "#000000",
+            light: "#FFFFFF",
+          },
+        });
+        setDataUrl(png);
+
+        const svg = await QRCodeLib.toString(targetUrl, {
+          type: "svg",
+          margin: 2,
+          errorCorrectionLevel: "M",
+          color: {
+            dark: "#000000",
+            light: "#FFFFFF",
+          },
+        });
+        const blob = new Blob([svg], { type: "image/svg+xml" });
+        setSvgUrl(URL.createObjectURL(blob));
+      }
     } catch (err) {
       console.error("QR generation error:", err);
     }
@@ -221,6 +311,28 @@ export default function QRCodePage() {
                 <Download className="h-4 w-4" /> Download SVG
               </button>
             </div>
+
+            {qrData?.planName === "FREE_TRIAL" && (
+              <div className="mt-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-left space-y-2">
+                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
+                  <Sparkles className="h-4 w-4" /> Professional Tier Feature
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Embed your restaurant's logo in the center of your menu QR codes for a custom, branded look! Upgrade your plan to Professional to unlock.
+                </p>
+              </div>
+            )}
+            
+            {qrData?.planName === "PRO" && (
+              <div className="mt-4 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-left space-y-2">
+                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+                  <Check className="h-4 w-4" /> Custom Branding Enabled
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Your custom logo is successfully embedded in the center of the QR code. You can update your logo under the Restaurant Profile settings page.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Right Info & Public URL Card */}
