@@ -42,7 +42,24 @@ export const auth = betterAuth({
         html,
       });
     },
-    sendVerificationEmail: async ({ user, url }: { user: any; url: string }) => {
+    sendVerificationEmail: async ({ user }: { user: any }) => {
+      // Generate a 6-digit numeric OTP code
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Clear any old verification codes for this email
+      await db.verification.deleteMany({
+        where: { identifier: user.email },
+      });
+
+      // Save the OTP code to database with 10 minutes expiration
+      await db.verification.create({
+        data: {
+          identifier: user.email,
+          value: otpCode,
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
+        },
+      });
+
       const html = `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 25px;">
@@ -52,11 +69,15 @@ export const auth = betterAuth({
           </div>
           <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; font-weight: 700; text-align: center;">Verify Your Account Email</h2>
           <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-top: 15px;">Hi ${user.name},</p>
-          <p style="color: #475569; font-size: 14px; line-height: 1.6;">Thank you for registering on Dineo! Click the verification button below to activate your restaurant menu management dashboard:</p>
+          <p style="color: #475569; font-size: 14px; line-height: 1.6;">Thank you for registering on Dineo! Use the following 6-digit verification code to complete your registration:</p>
           
-          <div style="text-align: center; margin: 25px 0;">
-            <a href="${url}" style="display: inline-block; padding: 12px 28px; background-color: #ea580c; color: #ffffff; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 14px; box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.2);">Verify Email Address</a>
+          <div style="text-align: center; margin: 30px 0;">
+            <span style="font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #ea580c; padding: 12px 28px; background-color: #fff7ed; border: 1px dashed #fdba74; border-radius: 12px; display: inline-block; box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.05);">
+              ${otpCode}
+            </span>
           </div>
+          
+          <p style="color: #64748b; font-size: 11px; text-align: center; line-height: 1.5; margin-top: 20px;">This code is valid for 10 minutes. If you did not request this registration code, please ignore this email.</p>
           
           <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; line-height: 1.5;">
             © ${new Date().getFullYear()} Dineo. All rights reserved.<br/>
@@ -64,9 +85,10 @@ export const auth = betterAuth({
           </div>
         </div>
       `;
+
       await sendMail({
         to: user.email,
-        subject: "Dineo Onboarding - Verify your email",
+        subject: `Dineo Security - Verification Code: ${otpCode}`,
         html,
       });
     },

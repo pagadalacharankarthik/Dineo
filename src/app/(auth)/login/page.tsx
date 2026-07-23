@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -10,18 +10,28 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const emailParam = searchParams.get("email") || "";
   const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { rememberMe: false },
+    defaultValues: { email: emailParam, rememberMe: false },
   });
+
+  // Prefill email if it changes in URL
+  useEffect(() => {
+    if (emailParam) {
+      setValue("email", emailParam);
+    }
+  }, [emailParam, setValue]);
 
   const onSubmit = async (data: LoginInput) => {
     try {
@@ -138,5 +148,18 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-[40vh] space-y-3">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <p className="text-xs text-muted-foreground">Loading login portal...</p>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
