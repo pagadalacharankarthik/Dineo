@@ -9,7 +9,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false, // Set to true when SMTP is configured
+    requireEmailVerification: true, // Requires email verification before login is allowed
     minPasswordLength: 8,
     maxPasswordLength: 128,
     sendResetPassword: async ({ user, url }: { user: any; url: string }) => {
