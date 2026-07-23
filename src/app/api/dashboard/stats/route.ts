@@ -7,13 +7,14 @@ export async function GET() {
     const { restaurant, errorResponse } = await getAuthenticatedRestaurant();
     if (errorResponse) return errorResponse;
 
-    const [totalCategories, totalMenuItems, availableItems, outOfStockItems, qrCode] =
+    const [totalCategories, totalMenuItems, availableItems, outOfStockItems, qrCode, settings] =
       await Promise.all([
         db.category.count({ where: { restaurantId: restaurant!.id } }),
         db.menuItem.count({ where: { restaurantId: restaurant!.id } }),
         db.menuItem.count({ where: { restaurantId: restaurant!.id, isAvailable: true } }),
         db.menuItem.count({ where: { restaurantId: restaurant!.id, isAvailable: false } }),
         db.qRCode.findFirst({ where: { restaurantId: restaurant!.id, qrType: "RESTAURANT_MAIN" } }),
+        db.globalSettings.findUnique({ where: { id: "singleton" } }),
       ]);
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -37,7 +38,8 @@ export async function GET() {
         qrDownloads: qrCode?.downloadsCount ?? 0,
         isActive: restaurant!.isActive,
         showTrialBanner: restaurant!.planName === "FREE_TRIAL" ? restaurant!.showTrialBanner : false,
-        showOfferBanner: restaurant!.planName === "FREE_TRIAL" ? restaurant!.showOfferBanner : false,
+        showOfferBanner: restaurant!.planName === "FREE_TRIAL" ? (settings?.merchantBannerActive ?? true) : false,
+        offerBannerText: settings?.merchantBannerText ?? "🎉 Exclusive Offer: Get 20% Off your first order of physical NFC Table Standees! Request your kit today.",
       },
     });
   } catch (error) {

@@ -391,11 +391,13 @@ model AdminOTP {
 // GLOBAL PLATFORM SETTINGS
 // ─────────────────────────────────────────────
 model GlobalSettings {
-  id                String   @id @default("singleton")
-  guestBannerActive Boolean  @default(true)
-  guestBannerText   String   @default("🎉 Special Launch Offer: Get 20% off physical NFC standee kits. Register your restaurant now!")
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                  String   @id @default("singleton")
+  guestBannerActive   Boolean  @default(true)
+  guestBannerText     String   @default("🎉 Special Launch Offer: Get 20% off physical NFC standee kits. Register your restaurant now!")
+  merchantBannerActive Boolean  @default(true)
+  merchantBannerText   String   @default("🎉 Exclusive Offer: Get 20% Off your first order of physical NFC Table Standees! Request your kit today.")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   @@map("global_settings")
 }

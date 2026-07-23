@@ -56,6 +56,7 @@ export default function RestaurantPage() {
   const [planName, setPlanName] = useState("STARTER");
   const [showTrialBanner, setShowTrialBanner] = useState(false);
   const [showOfferBanner, setShowOfferBanner] = useState(false);
+  const [offerBannerText, setOfferBannerText] = useState("");
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -79,6 +80,7 @@ export default function RestaurantPage() {
           setPlanName(data.data.planName || "STARTER");
           setShowTrialBanner(data.data.showTrialBanner ?? false);
           setShowOfferBanner(data.data.showOfferBanner ?? false);
+          setOfferBannerText(data.data.offerBannerText || "");
           // Fill empty strings for null values
           const cleaned = Object.fromEntries(
             Object.entries(data.data).map(([k, v]) => [k, v ?? ""])
@@ -173,9 +175,7 @@ export default function RestaurantPage() {
         <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-semibold flex items-center justify-between gap-4 animate-fadeIn shadow-xs">
           <div className="flex items-center gap-2">
             <span>🎉</span>
-            <p>
-              Exclusive Offer: Get <strong>20% Off</strong> your first order of physical NFC Table Standees! Request your kit today.
-            </p>
+            <p>{offerBannerText}</p>
           </div>
           <Link
             href="/qr-kit"

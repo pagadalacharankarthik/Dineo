@@ -8,9 +8,18 @@ export async function GET() {
     const { restaurant, errorResponse } = await getAuthenticatedRestaurant();
     if (errorResponse) return errorResponse;
 
+    const settings = await db.globalSettings.findUnique({
+      where: { id: "singleton" },
+    });
+
     return NextResponse.json({
       success: true,
-      data: restaurant,
+      data: {
+        ...restaurant,
+        showTrialBanner: restaurant!.planName === "FREE_TRIAL" ? restaurant!.showTrialBanner : false,
+        showOfferBanner: restaurant!.planName === "FREE_TRIAL" ? (settings?.merchantBannerActive ?? true) : false,
+        offerBannerText: settings?.merchantBannerText ?? "🎉 Exclusive Offer: Get 20% Off your first order of physical NFC Table Standees! Request your kit today.",
+      },
     });
   } catch (error) {
     console.error("GET /api/restaurant error:", error);

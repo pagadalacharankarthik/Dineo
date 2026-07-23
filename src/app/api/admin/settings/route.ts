@@ -7,18 +7,22 @@ export async function POST(req: Request) {
   if (errorResponse) return errorResponse;
 
   try {
-    const { guestBannerActive, guestBannerText } = await req.json();
+    const { guestBannerActive, guestBannerText, merchantBannerActive, merchantBannerText } = await req.json();
 
     const settings = await db.globalSettings.upsert({
       where: { id: "singleton" },
       update: {
         guestBannerActive: guestBannerActive !== undefined ? guestBannerActive : undefined,
         guestBannerText: guestBannerText !== undefined ? guestBannerText : undefined,
+        merchantBannerActive: merchantBannerActive !== undefined ? merchantBannerActive : undefined,
+        merchantBannerText: merchantBannerText !== undefined ? merchantBannerText : undefined,
       },
       create: {
         id: "singleton",
         guestBannerActive: guestBannerActive !== undefined ? guestBannerActive : true,
         guestBannerText: guestBannerText !== undefined ? guestBannerText : "🎉 Special Launch Offer: Get 20% off physical NFC standee kits. Register your restaurant now!",
+        merchantBannerActive: merchantBannerActive !== undefined ? merchantBannerActive : true,
+        merchantBannerText: merchantBannerText !== undefined ? merchantBannerText : "🎉 Exclusive Offer: Get 20% Off your first order of physical NFC Table Standees! Request your kit today.",
       },
     });
 

@@ -15,6 +15,8 @@ export async function GET() {
           id: "singleton",
           guestBannerActive: true,
           guestBannerText: "🎉 Special Launch Offer: Get 20% off physical NFC standee kits. Register your restaurant now!",
+          merchantBannerActive: true,
+          merchantBannerText: "🎉 Exclusive Offer: Get 20% Off your first order of physical NFC Table Standees! Request your kit today.",
         },
       });
     }
