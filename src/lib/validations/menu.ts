@@ -11,8 +11,22 @@ export const restaurantSlugSchema = z.object({
     .max(50)
     .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
   description: z.string().max(500).optional().nullable(),
-  logo: z.string().url("Invalid logo URL").or(z.string().startsWith("data:image/")).or(z.string().startsWith("/")).optional().nullable(),
-  coverImage: z.string().url("Invalid cover image URL").or(z.string().startsWith("data:image/")).or(z.string().startsWith("/")).optional().nullable(),
+  logo: z
+    .string()
+    .url("Invalid logo URL")
+    .or(z.string().startsWith("data:image/"))
+    .or(z.string().startsWith("/"))
+    .or(z.literal(""))
+    .optional()
+    .nullable(),
+  coverImage: z
+    .string()
+    .url("Invalid cover image URL")
+    .or(z.string().startsWith("data:image/"))
+    .or(z.string().startsWith("/"))
+    .or(z.literal(""))
+    .optional()
+    .nullable(),
   address: z.string().max(250).optional().nullable(),
   mobile: z.string().max(20).optional().nullable(),
   openingTime: z.string().max(20).optional().nullable(),
@@ -45,6 +59,7 @@ export const menuItemBaseSchema = z.object({
     .url("Invalid image URL")
     .or(z.string().startsWith("data:image/"))
     .or(z.string().startsWith("/"))
+    .or(z.literal(""))
     .optional()
     .nullable(),
   isVeg: z.boolean().default(true),
