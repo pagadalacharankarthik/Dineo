@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { signUp } from "@/lib/auth-client";
+import { signUp, authClient } from "@/lib/auth-client";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 
 export default function RegisterPage() {
@@ -46,6 +46,12 @@ export default function RegisterPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: data.email, restaurantName: data.restaurantName }),
+      });
+
+      // Explicitly trigger verification email dispatch to guarantee OTP code delivery
+      await authClient.sendVerificationEmail({
+        email: data.email,
+        callbackURL: `${window.location.origin}/dashboard`,
       });
 
       toast.success("Account created! Check your inbox to verify your email.");
