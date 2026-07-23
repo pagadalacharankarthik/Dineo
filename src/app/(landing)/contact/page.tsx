@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Mail, MessageCircle, Clock } from "lucide-react";
+import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -74,78 +75,7 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <div className="p-8 rounded-2xl border border-border bg-card">
-            <h2 className="text-xl font-bold mb-6">Send us a message</h2>
-            <form className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="contact-name"
-                    className="block text-sm font-medium mb-1.5"
-                  >
-                    Full Name
-                  </label>
-                  <input
-                    id="contact-name"
-                    type="text"
-                    placeholder="John Doe"
-                    className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="contact-email"
-                    className="block text-sm font-medium mb-1.5"
-                  >
-                    Email
-                  </label>
-                  <input
-                    id="contact-email"
-                    type="email"
-                    placeholder="john@restaurant.com"
-                    className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-              </div>
-              <div>
-                <label
-                  htmlFor="contact-subject"
-                  className="block text-sm font-medium mb-1.5"
-                >
-                  Subject
-                </label>
-                <input
-                  id="contact-subject"
-                  type="text"
-                  placeholder="How can we help?"
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="contact-message"
-                  className="block text-sm font-medium mb-1.5"
-                >
-                  Message
-                </label>
-                <textarea
-                  id="contact-message"
-                  rows={5}
-                  placeholder="Tell us more about your question..."
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full gradient-primary text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity"
-              >
-                Send Message
-              </button>
-              <p className="text-xs text-muted-foreground text-center">
-                We typically respond within 24 hours.
-              </p>
-            </form>
-          </div>
+          <ContactForm />
         </div>
       </div>
     </div>
