@@ -99,7 +99,7 @@ export default function AdminLoginPage() {
             </div>
             <Button
               type="submit"
-              className="w-full bg-red-650 hover:bg-red-700 text-zinc-100 font-semibold shadow-lg hover:shadow-red-900/10 transition-all duration-200 mt-2"
+              className="w-full bg-red-600 hover:bg-red-700 text-zinc-100 font-semibold shadow-lg hover:shadow-red-900/10 transition-all duration-200 mt-2"
               disabled={isLoading}
             >
               {isLoading ? (

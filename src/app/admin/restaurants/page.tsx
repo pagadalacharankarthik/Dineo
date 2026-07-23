@@ -241,7 +241,7 @@ export default function AdminRestaurantsPage() {
             variant="outline" 
             size="sm"
             onClick={() => setIncludeDeleted(!includeDeleted)}
-            className={`border-zinc-200 dark:border-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all ${includeDeleted ? "bg-red-50 dark:bg-red-950/20 text-red-650 dark:text-red-400 border-red-500/30 hover:bg-red-100 dark:hover:bg-red-950/20" : "text-zinc-500 dark:text-zinc-400"}`}
+            className={`border-zinc-200 dark:border-zinc-850 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all ${includeDeleted ? "bg-red-550/10 text-red-600 dark:text-red-400 border-red-500/30 hover:bg-red-100 dark:hover:bg-red-950/20" : "text-zinc-500 dark:text-zinc-400"}`}
           >
             {includeDeleted ? "Hiding Deleted" : "Show Deleted Archive"}
           </Button>
@@ -357,7 +357,7 @@ export default function AdminRestaurantsPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Eye className="w-4 h-4 text-zinc-400 dark:text-zinc-650" />
-                          <span>Slug: <a href={`/menu/${rest.slug}`} target="_blank" rel="noreferrer" className="text-red-650 dark:text-red-400 hover:underline">/menu/{rest.slug}</a></span>
+                          <span>Slug: <a href={`/menu/${rest.slug}`} target="_blank" rel="noreferrer" className="text-red-600 dark:text-red-400 hover:underline">/menu/{rest.slug}</a></span>
                         </div>
                       </div>
 
@@ -383,7 +383,7 @@ export default function AdminRestaurantsPage() {
                           onClick={() => handleEditSubscription(rest)} 
                           variant="ghost" 
                           size="sm" 
-                          className="text-red-650 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 hover:bg-red-500/10 text-xs px-2.5 h-7"
+                          className="text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 hover:bg-red-500/10 text-xs px-2.5 h-7"
                         >
                           Modify Subscription
                         </Button>
@@ -429,7 +429,7 @@ export default function AdminRestaurantsPage() {
                             onClick={() => handleAction(rest.id, "delete")}
                             variant="destructive"
                             size="sm"
-                            className="w-full flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/30 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-650 dark:text-red-400 text-xs"
+                            className="w-full flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/30 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 text-xs"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                             Soft Delete
@@ -535,7 +535,7 @@ export default function AdminRestaurantsPage() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-red-650 hover:bg-red-700 text-white font-semibold"
+                  className="bg-red-600 hover:bg-red-700 text-white font-semibold"
                   disabled={isSavingSub}
                 >
                   {isSavingSub ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}

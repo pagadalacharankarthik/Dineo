@@ -85,7 +85,7 @@ export default function AdminQRKitsPage() {
       case "COMPLETED":
         return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">Completed</span>;
       case "CANCELLED":
-        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400">Cancelled</span>;
+        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">Cancelled</span>;
       default:
         return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">{status}</span>;
     }
@@ -176,7 +176,7 @@ export default function AdminQRKitsPage() {
                             href={`https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(`${window.location.origin}/menu/${req.restaurantSlug}`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center bg-red-650 hover:bg-red-600 text-white font-semibold text-xs px-3 rounded-lg flex-1 cursor-pointer transition-colors"
+                            className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold text-xs px-3 rounded-lg flex-1 cursor-pointer transition-colors"
                           >
                             Download QR
                           </a>
@@ -229,7 +229,7 @@ export default function AdminQRKitsPage() {
                         variant="outline"
                         size="sm"
                         disabled={req.status === "CANCELLED"}
-                        className="w-full text-xs h-8 border-zinc-200 dark:border-zinc-850 text-red-650 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-900/30 font-semibold"
+                        className="w-full text-xs h-8 border-zinc-200 dark:border-zinc-850 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-900/30 font-semibold"
                       >
                         <XCircle className="w-3.5 h-3.5 mr-1 text-red-500" />
                         Cancel

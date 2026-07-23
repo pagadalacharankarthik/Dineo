@@ -89,7 +89,7 @@ export default function AdminContactPage() {
 
   const getStatusBadge = (status: string, isRead: boolean) => {
     if (!isRead) {
-      return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-650 dark:text-red-400">Unread</span>;
+      return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">Unread</span>;
     }
     switch (status) {
       case "NEW":
@@ -125,7 +125,7 @@ export default function AdminContactPage() {
               key={enq.id} 
               className={`
                 bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/80 backdrop-blur-sm shadow-sm dark:shadow-xl transition-all duration-200
-                ${!enq.isRead ? "border-l-2 border-l-red-550" : ""}
+                ${!enq.isRead ? "border-l-2 border-l-red-500" : ""}
               `}
             >
               <CardContent className="p-6">

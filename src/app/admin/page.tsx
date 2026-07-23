@@ -164,7 +164,7 @@ export default function AdminDashboard() {
             </div>
             <div className="flex justify-between items-center pb-2 border-b border-zinc-150 dark:border-zinc-850">
               <span className="text-zinc-600 dark:text-zinc-400 text-sm">Pro tier</span>
-              <span className="font-bold text-red-650 dark:text-red-400">{stats?.plans.PRO || 0}</span>
+              <span className="font-bold text-red-600 dark:text-red-400">{stats?.plans.PRO || 0}</span>
             </div>
             <div className="flex justify-between items-center text-xs text-zinc-500 pt-1">
               <span>Ready for billing engine gateway migration</span>

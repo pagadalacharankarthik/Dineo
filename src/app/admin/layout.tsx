@@ -123,7 +123,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
                   ${isActive 
-                    ? "bg-red-550/10 text-red-650 dark:text-red-400 border-l-2 border-red-500 pl-3.5 shadow-inner" 
+                    ? "bg-red-500/10 text-red-600 dark:text-red-400 border-l-2 border-red-500 pl-3.5 shadow-inner" 
                     : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/40"
                   }
                 `}
