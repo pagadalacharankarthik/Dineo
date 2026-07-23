@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedRestaurant } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 import { categorySchema } from "@/lib/validations/menu";
+import { getLimitsForPlan } from "@/lib/limits";
 
 export async function GET() {
   try {
@@ -38,6 +39,21 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const validated = categorySchema.parse(body);
+
+    // Enforce Plan Limits
+    const limits = getLimitsForPlan(restaurant!.planName);
+    if (limits.maxCategories !== Infinity) {
+      const currentCount = await db.category.count({
+        where: { restaurantId: restaurant!.id },
+      });
+      
+      if (currentCount >= limits.maxCategories) {
+        return NextResponse.json(
+          { success: false, error: `Your ${restaurant!.planName} plan is limited to ${limits.maxCategories} categories. Please upgrade to Pro.` },
+          { status: 403 }
+        );
+      }
+    }
 
     // Duplicate check for category name in same restaurant
     const existing = await db.category.findFirst({

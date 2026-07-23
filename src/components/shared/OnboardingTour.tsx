@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 
 const Joyride = dynamic<any>(() => import("react-joyride").then(mod => mod.Joyride), { ssr: false });
 
-export function OnboardingTour() {
+export function OnboardingTour({ userCreatedAt }: { userCreatedAt?: Date | string | null }) {
   const [run, setRun] = useState(false);
   const { theme } = useTheme();
 
@@ -44,23 +44,38 @@ export function OnboardingTour() {
   ];
 
   useEffect(() => {
-    const hasCompletedTour = localStorage.getItem("dineo_tour_completed");
+    // Check both localStorage and cookies for the flag
+    const hasCompletedLocal = localStorage.getItem("dineo_tour_completed");
+    const hasCompletedCookie = document.cookie.includes("dineo_tour_completed=true");
     
-    if (!hasCompletedTour) {
+    // Check if the user is an "old" user (created more than 1 day ago)
+    // This ensures old users who sign in on a new device don't get the tour again
+    const isOldUser = userCreatedAt 
+      ? (new Date().getTime() - new Date(userCreatedAt).getTime() > 86400000) 
+      : false;
+
+    if (!hasCompletedLocal && !hasCompletedCookie && !isOldUser) {
+      // SET FLAGS IMMEDIATELY
+      // This ensures if they refresh the page while the tour is running, it doesn't show again
+      localStorage.setItem("dineo_tour_completed", "true");
+      document.cookie = "dineo_tour_completed=true; max-age=31536000; path=/";
+
       const timer = setTimeout(() => {
         setRun(true);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [userCreatedAt]);
 
   const handleJoyrideCallback = (data: any) => {
-    const { status } = data;
+    const { status, action } = data;
     const finishedStatuses = ["finished", "skipped"];
 
-    if (finishedStatuses.includes(status)) {
+    // If user closes or finishes the tour, mark it completed to prevent it from showing again
+    if (finishedStatuses.includes(status) || action === "close") {
       setRun(false);
       localStorage.setItem("dineo_tour_completed", "true");
+      document.cookie = "dineo_tour_completed=true; max-age=31536000; path=/"; // 1 year cookie
     }
   };
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedRestaurant } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 import { couponSchema } from "@/lib/validations/coupon";
+import { getLimitsForPlan } from "@/lib/limits";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,21 @@ export async function POST(req: Request) {
     }
 
     const { code, discountType, discountValue, expiresAt, isActive } = parsed.data;
+
+    // Enforce Plan Limits
+    const limits = getLimitsForPlan(restaurant!.planName);
+    if (limits.maxCoupons !== Infinity) {
+      const currentCount = await db.coupon.count({
+        where: { restaurantId: restaurant!.id },
+      });
+      
+      if (currentCount >= limits.maxCoupons) {
+        return NextResponse.json(
+          { success: false, error: `Your ${restaurant!.planName} plan is limited to ${limits.maxCoupons} promo code. Please upgrade to Pro.` },
+          { status: 403 }
+        );
+      }
+    }
 
     // Check code duplication for this restaurant
     const existing = await db.coupon.findUnique({

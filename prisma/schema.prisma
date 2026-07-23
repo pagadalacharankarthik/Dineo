@@ -68,13 +68,17 @@ model Restaurant {
   updatedAt   DateTime @updatedAt
 
   // Subscription metadata (Batch 4 — no payment yet)
-  planName        String   @default("FREE_TRIAL")
-  planStatus      String   @default("ACTIVE")
-  trialStartDate  DateTime @default(now())
-  trialEndDate    DateTime?
-  planExpiresAt   DateTime?
-  showTrialBanner Boolean  @default(true)
-  showOfferBanner Boolean  @default(false)
+  planName               String    @default("FREE_TRIAL")
+  planStatus             String    @default("ACTIVE")
+  trialStartDate         DateTime  @default(now())
+  trialEndDate           DateTime?
+  planExpiresAt          DateTime?
+  showTrialBanner        Boolean   @default(true)
+  showOfferBanner        Boolean   @default(false)
+  
+  // Payment Integrations
+  razorpaySubscriptionId String?   @unique
+  razorpayCustomerId     String?
 
   // Owner relation
   ownerId String @unique
@@ -201,6 +205,7 @@ model ContactEnquiry {
   email          String
   phone          String?
   message        String
+  qrColor        String?
   isRead         Boolean          @default(false)
   status         EnquiryStatus    @default(NEW)
   createdAt      DateTime         @default(now())
@@ -225,6 +230,7 @@ model QRKitRequest {
   tableCount     Int
   quantityNeeded Int
   notes          String?
+  qrColor        String        @default("orange")
   status         QRKitStatus   @default(PENDING)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt

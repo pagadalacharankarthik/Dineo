@@ -96,6 +96,19 @@ export default function QRKitPage() {
   const [preferredPlan, setPreferredPlan] = useState("STARTER");
   const [kitType, setKitType] = useState("ACRYLIC_STAND");
   const [notes, setNotes] = useState("");
+  const [qrColor, setQrColor] = useState("orange");
+
+  const colorOptions = {
+    orange: { gradient: "from-orange-500 via-amber-500 to-amber-600", hex: "#ea580c" },
+    black: { gradient: "from-zinc-800 via-neutral-900 to-black", hex: "#000000" },
+    blue: { gradient: "from-blue-500 via-cyan-500 to-blue-600", hex: "#2563eb" },
+    purple: { gradient: "from-purple-500 via-violet-500 to-purple-600", hex: "#7c3aed" },
+    dark: { gradient: "from-slate-800 via-slate-900 to-black", hex: "#0f172a" },
+    emerald: { gradient: "from-emerald-500 via-teal-500 to-emerald-600", hex: "#059669" },
+    rose: { gradient: "from-rose-500 via-pink-500 to-rose-600", hex: "#e11d48" },
+    gold: { gradient: "from-amber-400 via-yellow-500 to-amber-600", hex: "#d97706" },
+    red: { gradient: "from-red-500 via-rose-600 to-red-650", hex: "#dc2626" },
+  };
 
   const fetchRequests = async () => {
     setLoadingRequests(true);
@@ -150,6 +163,7 @@ export default function QRKitPage() {
           tableCount: Number(tableCount),
           quantityNeeded: Number(quantityNeeded),
           notes: notes ? `${notes} | Kit Type: ${kitType} | Preferred Plan: ${preferredPlan}` : `Kit Type: ${kitType} | Preferred Plan: ${preferredPlan}`,
+          qrColor,
         }),
       });
       const json = await res.json();
@@ -431,6 +445,33 @@ export default function QRKitPage() {
                 </div>
               </div>
 
+              {/* Color Selector */}
+              <div className="space-y-3 pt-2">
+                <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" /> Select your QR Poster Color
+                </label>
+                <div className="flex flex-wrap items-center gap-4">
+                  {(Object.keys(colorOptions) as Array<keyof typeof colorOptions>).map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setQrColor(color)}
+                      className={`relative flex items-center justify-center w-10 h-10 rounded-full border-2 shadow-sm transition-all ${
+                        qrColor === color ? "border-primary scale-110 ring-4 ring-primary/10" : "border-transparent hover:scale-105"
+                      } bg-gradient-to-br ${colorOptions[color].gradient}`}
+                      title={color.charAt(0).toUpperCase() + color.slice(1)}
+                    >
+                      {qrColor === color && (
+                        <div className="w-3 h-3 bg-white rounded-full shadow-md" />
+                      )}
+                    </button>
+                  ))}
+                  <span className="text-xs text-muted-foreground ml-2 capitalize font-medium">
+                    {qrColor} Theme Selected
+                  </span>
+                </div>
+              </div>
+
               {/* Notes */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-muted-foreground">Additional Notes / Custom Requests</label>
@@ -442,6 +483,71 @@ export default function QRKitPage() {
                   className="w-full text-sm font-medium px-4 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-hidden resize-none"
                 />
               </div>
+
+              {/* Dynamic Amount Summary Box */}
+              {(() => {
+                const getKitPrice = (type: string) => {
+                  switch (type) {
+                    case "ACRYLIC_STAND": return 199;
+                    case "STICKER_PACK": return 99;
+                    case "WINDOW_STICKER": return 149;
+                    case "COMBO_PACK": return 299;
+                    default: return 0;
+                  }
+                };
+                const getKitName = (type: string) => {
+                  switch (type) {
+                    case "ACRYLIC_STAND": return "Acrylic Table QR Stands";
+                    case "STICKER_PACK": return "Waterproof Table Stickers";
+                    case "WINDOW_STICKER": return "Window Cling Stickers";
+                    case "COMBO_PACK": return "Combo Pack (Stands + Stickers)";
+                    default: return "QR Kit Item";
+                  }
+                };
+                const unitPrice = getKitPrice(kitType);
+                const subtotal = unitPrice * quantityNeeded;
+                const deliveryCharge = subtotal >= 1000 ? 0 : 99;
+                const totalAmount = subtotal + deliveryCharge;
+                return (
+                  <div className="p-4 rounded-xl bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/20 space-y-2 mt-4 text-xs">
+                    <div className="flex justify-between items-center font-medium">
+                      <span className="text-muted-foreground">Selected Item:</span>
+                      <span className="font-semibold text-foreground">{getKitName(kitType)}</span>
+                    </div>
+                    <div className="flex justify-between items-center font-medium">
+                      <span className="text-muted-foreground">Unit Price:</span>
+                      <span className="font-semibold text-foreground">₹{unitPrice}</span>
+                    </div>
+                    <div className="flex justify-between items-center font-medium">
+                      <span className="text-muted-foreground">Quantity Ordered:</span>
+                      <span className="font-semibold text-foreground">{quantityNeeded}</span>
+                    </div>
+                    <div className="flex justify-between items-center font-medium border-t border-orange-500/5 pt-1.5">
+                      <span className="text-muted-foreground">Subtotal:</span>
+                      <span className="font-semibold text-foreground">₹{subtotal}</span>
+                    </div>
+                    <div className="flex justify-between items-center font-medium">
+                      <span className="text-muted-foreground">Delivery Charges:</span>
+                      <span className="font-semibold text-foreground">
+                        {deliveryCharge === 0 ? (
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded">Free Delivery</span>
+                        ) : (
+                          `₹${deliveryCharge}`
+                        )}
+                      </span>
+                    </div>
+                    <div className="border-t border-orange-500/10 pt-2 flex justify-between items-center text-sm font-extrabold text-primary">
+                      <span>Total Estimated Cost:</span>
+                      <span>₹{totalAmount}</span>
+                    </div>
+                    {deliveryCharge > 0 && (
+                      <p className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold text-center pt-1">
+                        🎁 Add items worth ₹{1000 - subtotal} more to unlock <b>FREE Delivery</b>!
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               <button
                 type="submit"

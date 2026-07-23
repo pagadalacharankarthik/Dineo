@@ -13,11 +13,11 @@ export default function AuthLayout({
       <div className="hidden lg:flex flex-col justify-between p-12 gradient-primary">
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/logo-dark.png"
+            src="/logo.svg"
             alt="Dineo Logo"
-            width={120}
-            height={40}
-            className="h-10 w-auto"
+            width={56}
+            height={56}
+            className="h-12 w-12 object-contain"
           />
         </Link>
 
@@ -54,18 +54,18 @@ export default function AuthLayout({
           {/* Mobile Logo */}
           <div className="flex lg:hidden items-center justify-center gap-2 mb-8">
             <Image
-              src="/logo-light.png"
+              src="/logo.svg"
               alt="Dineo Logo"
-              width={120}
-              height={40}
-              className="h-10 w-auto dark:hidden"
+              width={240}
+              height={80}
+              className="h-20 w-auto dark:hidden object-contain"
             />
             <Image
-              src="/logo-dark.png"
+              src="/logo.svg"
               alt="Dineo Logo"
-              width={120}
-              height={40}
-              className="h-10 w-auto hidden dark:block"
+              width={240}
+              height={80}
+              className="h-20 w-auto hidden dark:block invert hue-rotate-180 brightness-110 object-contain"
             />
           </div>
           {children}

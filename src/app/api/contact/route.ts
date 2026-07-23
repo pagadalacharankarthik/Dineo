@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { contactEnquirySchema } from "@/lib/validations/forms";
+import { sendTelegramMessage } from "@/lib/telegram";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const validatedData = contactEnquirySchema.parse(body);
+    const parsed = contactEnquirySchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, error: parsed.error.issues[0].message },
+        { status: 400 }
+      );
+    }
+    const validatedData = parsed.data;
 
     const enquiry = await db.contactEnquiry.create({
       data: {
@@ -14,8 +22,20 @@ export async function POST(req: Request) {
         email: validatedData.email,
         phone: validatedData.phone || null,
         message: validatedData.message,
+        qrColor: validatedData.qrColor,
       },
     });
+
+    // Send Telegram Notification (Safe / Non-blocking)
+    sendTelegramMessage(`
+<b>New Contact Enquiry! 💬</b>
+<b>Name:</b> ${validatedData.name}
+<b>Restaurant:</b> ${validatedData.restaurantName || "N/A"}
+<b>Email:</b> ${validatedData.email}
+<b>Phone:</b> ${validatedData.phone || "N/A"}
+<b>QR Color Pref:</b> ${validatedData.qrColor || "None"}
+<b>Message:</b> ${validatedData.message}
+    `.trim()).catch(err => console.error("Telegram contact enquiry notify failed:", err));
 
     return NextResponse.json({
       success: true,

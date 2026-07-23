@@ -14,6 +14,7 @@ export const contactEnquirySchema = z.object({
     .optional()
     .nullable(),
   message: z.string().min(10, "Message must be at least 10 characters").max(2000),
+  qrColor: z.string().optional().nullable(),
 });
 
 export type ContactEnquiryInput = z.infer<typeof contactEnquirySchema>;
@@ -33,6 +34,7 @@ export const qrKitRequestSchema = z.object({
   tableCount: z.number().int().min(1, "Number of tables must be at least 1"),
   quantityNeeded: z.number().int().min(1, "Quantity must be at least 1"),
   notes: z.string().max(500).optional().nullable(),
+  qrColor: z.enum(["orange", "blue", "purple", "black", "dark", "emerald", "rose", "gold", "red"]).default("orange"),
 });
 
 export type QRKitRequestInput = z.infer<typeof qrKitRequestSchema>;

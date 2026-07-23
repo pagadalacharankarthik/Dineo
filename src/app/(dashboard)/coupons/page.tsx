@@ -28,7 +28,7 @@ interface Coupon {
 export default function CouponsPage() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
-  const [planName, setPlanName] = useState("STARTER");
+  const [planName, setPlanName] = useState("FREE_TRIAL");
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,7 +56,7 @@ export default function CouponsPage() {
         setCoupons(couponsJson.data);
       }
       if (restaurantJson.success && restaurantJson.data) {
-        setPlanName(restaurantJson.data.planName || "STARTER");
+        setPlanName(restaurantJson.data.planName || "FREE_TRIAL");
       }
     } catch {
       toast.error("Failed to load coupons");
@@ -156,28 +156,7 @@ export default function CouponsPage() {
     return new Date(expiry) < new Date();
   };
 
-  if (planName === "STARTER" && !loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-8 bg-card border border-border rounded-3xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 bg-primary/10 text-primary text-[10px] font-black uppercase px-4 py-1.5 rounded-bl-2xl">
-          Pro Feature
-        </div>
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/30 text-amber-600 mb-6">
-          <Ticket className="h-8 w-8" />
-        </div>
-        <h2 className="text-xl sm:text-2xl font-extrabold mb-2 text-foreground">Unlock Promo Coupons</h2>
-        <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6 leading-relaxed">
-          Create percentage discounts or flat price cuts to boost customer order checkouts. This feature is exclusive to the **Professional** and **Enterprise** subscription tiers.
-        </p>
-        <a
-          href="/settings"
-          className="inline-flex items-center gap-2 gradient-primary text-white font-bold px-6 py-3 rounded-xl text-sm shadow-md cursor-pointer"
-        >
-          Upgrade to Professional Tier
-        </a>
-      </div>
-    );
-  }
+
 
   return (
     <div className="space-y-6">
@@ -198,6 +177,16 @@ export default function CouponsPage() {
           <Plus className="h-4 w-4" /> Add Coupon
         </button>
       </div>
+
+      {planName === "FREE_TRIAL" && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
+            <Sparkles className="h-4 w-4 text-amber-500 flex-shrink-0" />
+            <span>Your Starter (Free Trial) plan is limited to **1 active coupon code**. Upgrade to Professional for unlimited coupons.</span>
+          </div>
+          <a href="/settings" className="text-primary hover:underline font-bold whitespace-nowrap">Upgrade Now &rarr;</a>
+        </div>
+      )}
 
       {/* Coupons List */}
       {loading ? (

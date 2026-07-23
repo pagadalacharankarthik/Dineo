@@ -61,12 +61,12 @@ export async function PUT(
     const restaurant = await db.restaurant.update({
       where: { id },
       data: {
-        planName: planName || undefined,
-        planStatus: planStatus || undefined,
-        trialEndDate: trialEndDate ? new Date(trialEndDate) : undefined,
-        planExpiresAt: planExpiresAt ? new Date(planExpiresAt) : undefined,
-        showTrialBanner: showTrialBanner !== undefined ? showTrialBanner : undefined,
-        showOfferBanner: showOfferBanner !== undefined ? showOfferBanner : undefined,
+        ...(planName !== undefined && { planName }),
+        ...(planStatus !== undefined && { planStatus }),
+        ...(trialEndDate !== undefined && { trialEndDate: trialEndDate ? new Date(trialEndDate) : null }),
+        ...(planExpiresAt !== undefined && { planExpiresAt: planExpiresAt ? new Date(planExpiresAt) : null }),
+        ...(showTrialBanner !== undefined && { showTrialBanner }),
+        ...(showOfferBanner !== undefined && { showOfferBanner }),
       },
     });
 

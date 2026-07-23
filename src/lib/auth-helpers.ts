@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { sendMail } from "@/lib/email";
+import { sendTelegramMessage } from "@/lib/telegram";
 
 export async function getAuthenticatedRestaurant() {
   const reqHeaders = await headers();
@@ -36,6 +37,15 @@ export async function getAuthenticatedRestaurant() {
         ownerId: session.user.id,
       },
     });
+
+    // Send Telegram Notification (Safe / Non-blocking)
+    sendTelegramMessage(`
+<b>New Restaurant Onboarded! 🎉</b>
+<b>Name:</b> ${restaurant.name}
+<b>Owner Name:</b> ${session.user.name}
+<b>Owner Email:</b> ${session.user.email}
+<b>Slug:</b> /menu/${restaurant.slug}
+    `.trim()).catch(err => console.error("Telegram onboarding notify failed:", err));
 
     // Create default main QR code for restaurant
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

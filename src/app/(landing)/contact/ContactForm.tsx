@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { contactEnquirySchema, type ContactEnquiryInput } from "@/lib/validations/forms";
 
 export default function ContactForm() {
@@ -11,6 +11,8 @@ export default function ContactForm() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ContactEnquiryInput>({
     resolver: zodResolver(contactEnquirySchema),
@@ -20,8 +22,23 @@ export default function ContactForm() {
       email: "",
       phone: "",
       message: "",
+      qrColor: "orange",
     },
   });
+
+  const selectedColor = watch("qrColor");
+
+  const colorOptions = {
+    orange: { gradient: "from-orange-500 via-amber-500 to-amber-600", hex: "#ea580c" },
+    black: { gradient: "from-zinc-800 via-neutral-900 to-black", hex: "#000000" },
+    blue: { gradient: "from-blue-500 via-cyan-500 to-blue-600", hex: "#2563eb" },
+    purple: { gradient: "from-purple-500 via-violet-500 to-purple-600", hex: "#7c3aed" },
+    dark: { gradient: "from-slate-800 via-slate-900 to-black", hex: "#0f172a" },
+    emerald: { gradient: "from-emerald-500 via-teal-500 to-emerald-600", hex: "#059669" },
+    rose: { gradient: "from-rose-500 via-pink-500 to-rose-600", hex: "#e11d48" },
+    gold: { gradient: "from-amber-400 via-yellow-500 to-amber-600", hex: "#d97706" },
+    red: { gradient: "from-red-500 via-rose-600 to-red-650", hex: "#dc2626" },
+  };
 
   const onSubmit = async (data: ContactEnquiryInput) => {
     try {
@@ -139,6 +156,33 @@ export default function ContactForm() {
           {errors.message && (
             <p className="mt-1.5 text-xs text-destructive">{errors.message.message}</p>
           )}
+        </div>
+
+        {/* Color Selector */}
+        <div className="space-y-3 pt-2">
+          <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
+            <Sparkles className="h-4 w-4 text-primary" /> Preferred QR Poster Color <span className="text-xs text-muted-foreground font-normal">(Optional)</span>
+          </label>
+          <div className="flex flex-wrap items-center gap-4">
+            {(Object.keys(colorOptions) as Array<keyof typeof colorOptions>).map((color) => (
+              <button
+                key={color}
+                type="button"
+                onClick={() => setValue("qrColor", color)}
+                className={`relative flex items-center justify-center w-10 h-10 rounded-full border-2 shadow-sm transition-all ${
+                  selectedColor === color ? "border-primary scale-110 ring-4 ring-primary/10" : "border-transparent hover:scale-105"
+                } bg-gradient-to-br ${colorOptions[color].gradient}`}
+                title={color.charAt(0).toUpperCase() + color.slice(1)}
+              >
+                {selectedColor === color && (
+                  <div className="w-3 h-3 bg-white rounded-full shadow-md" />
+                )}
+              </button>
+            ))}
+            <span className="text-sm text-muted-foreground ml-2 capitalize font-medium">
+              {selectedColor}
+            </span>
+          </div>
         </div>
 
         <button

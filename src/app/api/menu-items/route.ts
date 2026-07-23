@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedRestaurant } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
 import { menuItemSchema } from "@/lib/validations/menu";
+import { getLimitsForPlan } from "@/lib/limits";
 
 export async function GET(req: Request) {
   try {
@@ -44,6 +45,21 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const validated = menuItemSchema.parse(body);
+
+    // Enforce Plan Limits
+    const limits = getLimitsForPlan(restaurant!.planName);
+    if (limits.maxMenuItems !== Infinity) {
+      const currentCount = await db.menuItem.count({
+        where: { restaurantId: restaurant!.id },
+      });
+      
+      if (currentCount >= limits.maxMenuItems) {
+        return NextResponse.json(
+          { success: false, error: `Your ${restaurant!.planName} plan is limited to ${limits.maxMenuItems} items. Please upgrade to Pro.` },
+          { status: 403 }
+        );
+      }
+    }
 
     // Verify category belongs to user's restaurant
     const category = await db.category.findFirst({

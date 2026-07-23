@@ -63,18 +63,18 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/logo-light.png"
+              src="/logo.svg"
               alt="Dineo Logo"
-              width={130}
-              height={42}
-              className="h-11 w-auto dark:hidden"
+              width={180}
+              height={60}
+              className="h-16 w-auto dark:hidden object-contain"
             />
             <Image
-              src="/logo-dark.png"
+              src="/logo.svg"
               alt="Dineo Logo"
-              width={130}
-              height={42}
-              className="h-11 w-auto hidden dark:block"
+              width={180}
+              height={60}
+              className="h-16 w-auto hidden dark:block invert hue-rotate-180 brightness-110 object-contain"
             />
           </Link>
 

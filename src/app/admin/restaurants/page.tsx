@@ -307,6 +307,15 @@ export default function AdminRestaurantsPage() {
           {filtered.map((rest) => {
             const isSusp = rest.isSuspended;
             const isDel = rest.isDeleted;
+            
+            const formatPlanName = (plan: string) => {
+              if (plan === "FREE_TRIAL") return "Starter";
+              if (plan === "EARLY_ADOPTER") return "Early Adopter";
+              if (plan === "PRO") return "Professional";
+              if (plan === "ENTERPRISE") return "Enterprise";
+              return plan;
+            };
+
             return (
               <Card 
                 key={rest.id} 
@@ -338,7 +347,7 @@ export default function AdminRestaurantsPage() {
                           </span>
                         )}
                         <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
-                          {rest.planName}
+                          {formatPlanName(rest.planName)}
                         </span>
                       </div>
                       
@@ -365,7 +374,7 @@ export default function AdminRestaurantsPage() {
                       <div className="mt-4 p-3 bg-zinc-50 dark:bg-zinc-900/60 rounded-lg border border-zinc-150 dark:border-zinc-850 flex flex-wrap items-center justify-between gap-4 text-xs">
                         <div className="space-y-1">
                           <div className="text-zinc-500 dark:text-zinc-450">Plan Meta</div>
-                          <div className="text-zinc-700 dark:text-zinc-300 font-medium">Status: {rest.planStatus}</div>
+                          <div className="text-zinc-700 dark:text-zinc-300 font-medium">Plan: <span className="font-bold text-red-600 dark:text-red-400">{formatPlanName(rest.planName)}</span> | Status: {rest.planStatus}</div>
                         </div>
                         {rest.trialEndDate && (
                           <div className="space-y-1">
@@ -460,7 +469,8 @@ export default function AdminRestaurantsPage() {
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPlanName(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md p-2 text-zinc-800 dark:text-zinc-100 focus:outline-none focus:border-red-500/50"
                 >
-                  <option value="STARTER" className="bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100">Starter Plan</option>
+                  <option value="FREE_TRIAL" className="bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100">Starter (Free Trial)</option>
+                  <option value="EARLY_ADOPTER" className="bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100">Early Adopter (First 10)</option>
                   <option value="PRO" className="bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100">Professional Plan</option>
                   <option value="ENTERPRISE" className="bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100">Enterprise Plan</option>
                 </select>

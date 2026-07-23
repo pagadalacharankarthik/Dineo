@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import * as QRCodeLib from "qrcode";
 import {
   QrCode,
   Smartphone,
@@ -24,6 +25,7 @@ import {
   Loader2,
   X,
   ShoppingBag,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -184,6 +186,7 @@ const starterKits = [
 export default function HomePage() {
   const [notifyModalOpen, setNotifyModalOpen] = useState(false);
   const [selectedKit, setSelectedKit] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
 
   // Contact Form State
   const [contactName, setContactName] = useState("");
@@ -204,7 +207,38 @@ export default function HomePage() {
   const [interestPincode, setInterestPincode] = useState("");
   const [interestTables, setInterestTables] = useState(10);
   const [interestQty, setInterestQty] = useState(10);
+  const [interestQrColor, setInterestQrColor] = useState("orange");
   const [submittingInterest, setSubmittingInterest] = useState(false);
+
+  const colorOptions = {
+    orange: { gradient: "from-orange-500 via-amber-500 to-amber-600", hex: "#ea580c" },
+    black: { gradient: "from-zinc-800 via-neutral-900 to-black", hex: "#000000" },
+    blue: { gradient: "from-blue-500 via-cyan-500 to-blue-600", hex: "#2563eb" },
+    purple: { gradient: "from-purple-500 via-violet-500 to-purple-600", hex: "#7c3aed" },
+    dark: { gradient: "from-slate-800 via-slate-900 to-black", hex: "#0f172a" },
+    emerald: { gradient: "from-emerald-500 via-teal-500 to-emerald-600", hex: "#059669" },
+    rose: { gradient: "from-rose-500 via-pink-500 to-rose-600", hex: "#e11d48" },
+    gold: { gradient: "from-amber-400 via-yellow-500 to-amber-600", hex: "#d97706" },
+    red: { gradient: "from-red-500 via-rose-600 to-red-650", hex: "#dc2626" },
+  };
+
+  useEffect(() => {
+    // Generate static high-contrast data URL for QR Code menu demo
+    if (typeof window !== "undefined") {
+      const targetUrl = `${window.location.origin}/menu/demo`;
+      QRCodeLib.toDataURL(targetUrl, {
+        width: 300,
+        margin: 1,
+        color: {
+          dark: "#000000", // pure black for max scanner compatibility
+          light: "#FFFFFF",
+        },
+        errorCorrectionLevel: "H",
+      })
+        .then((url) => setQrCodeUrl(url))
+        .catch((err) => console.error("Error generating QR code:", err));
+    }
+  }, []);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -257,6 +291,7 @@ export default function HomePage() {
           pincode: interestPincode,
           tableCount: Number(interestTables),
           quantityNeeded: Number(interestQty),
+          qrColor: interestQrColor,
         }),
       });
       const data = await res.json();
@@ -336,6 +371,130 @@ export default function HomePage() {
                 {item}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── LIVE MENU PREVIEW ─── */}
+      <section className="py-16 sm:py-24 bg-gradient-to-br from-orange-50/50 to-white dark:from-zinc-950/20 dark:to-background border-y border-border/50 relative">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-card border border-border rounded-[2.5rem] p-8 sm:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
+            {/* Background glows */}
+            <div className="absolute -top-12 -left-12 w-48 h-48 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl animate-pulse" />
+
+            {/* Left Copy Column */}
+            <div className="space-y-6 flex-1 text-center md:text-left">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+                <Sparkles className="h-3.5 w-3.5" /> Interactive Experience
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
+                Scan QR. View Menu. <br/>
+                Order Instantly.
+              </h2>
+              <p className="text-muted-foreground text-sm leading-relaxed max-w-md mx-auto md:mx-0">
+                Check out how your restaurant menu will look to your customers. Browse dishes, check categories, search items, and experience the checkout cart!
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start pt-2">
+                <a
+                  href="/menu/demo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:underline bg-primary/10 border border-primary/20 px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Open Menu Preview in Browser
+                </a>
+              </div>
+
+              {/* Bouncing Arrow Down indicator pointing to QR Code section */}
+              <div className="flex items-center justify-center md:justify-start gap-2 text-xs text-muted-foreground font-semibold pt-4 animate-bounce">
+                <span>Scan the QR code below</span>
+                <ChevronDown className="h-4 w-4 text-primary animate-pulse" />
+              </div>
+            </div>
+
+            {/* Right Phone Mockup Column */}
+            <div className="relative flex justify-center items-center max-w-[270px] w-full mx-auto md:mx-0 animate-in slide-in-from-bottom duration-700">
+              {/* Device Outer Frame */}
+              <div className="relative border-[6px] border-zinc-800 dark:border-zinc-700 bg-zinc-900 rounded-[2.5rem] p-2.5 shadow-2xl w-full h-[470px] flex flex-col overflow-hidden">
+                {/* Speaker/Camera notch */}
+                <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-28 h-4.5 bg-zinc-900 rounded-full z-20 flex items-center justify-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-zinc-700" />
+                  <div className="w-8 h-1 bg-zinc-700 rounded-full" />
+                </div>
+                
+                {/* Phone screen content */}
+                <div className="bg-zinc-50 dark:bg-zinc-950 flex-1 rounded-[2rem] overflow-hidden flex flex-col relative text-zinc-900 dark:text-zinc-100 text-left select-none pt-2.5">
+                  {/* Restaurant Banner Header */}
+                  <div className="relative h-20 bg-cover bg-center flex items-end p-3" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80')` }}>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                    <div className="relative z-10 flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-lg bg-orange-500 flex items-center justify-center text-white text-base border border-white/20">
+                        🍕
+                      </div>
+                      <div>
+                        <h4 className="text-[10px] font-black text-white leading-tight">Spicy Pepper Bistro</h4>
+                        <p className="text-[7px] text-white/80">Table 04 • Multi-cuisine</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Categories Tags Bar */}
+                  <div className="flex gap-1.5 px-3 py-2 overflow-x-auto border-b border-border bg-card scrollbar-none">
+                    <span className="text-[7px] font-black uppercase tracking-wider bg-primary text-white px-2 py-0.5 rounded-full whitespace-nowrap">🔥 Best Sellers</span>
+                    <span className="text-[7px] font-black uppercase tracking-wider bg-muted text-muted-foreground px-2 py-0.5 rounded-full whitespace-nowrap">🍔 Burgers</span>
+                    <span className="text-[7px] font-black uppercase tracking-wider bg-muted text-muted-foreground px-2 py-0.5 rounded-full whitespace-nowrap">🍕 Pizza</span>
+                  </div>
+
+                  {/* Menu Items List */}
+                  <div className="flex-1 overflow-y-auto p-2.5 space-y-2 bg-muted/20">
+                    <div className="p-2 bg-card rounded-xl border border-border flex items-center justify-between gap-2 shadow-xs">
+                      <div className="space-y-0.5 flex-1 min-w-0">
+                        <h5 className="text-[9px] font-black truncate">Classic Cheeseburger</h5>
+                        <p className="text-[7px] text-muted-foreground line-clamp-1">Crispy patty, melting cheddar, pickles...</p>
+                        <span className="text-[9px] font-black text-primary">₹149</span>
+                      </div>
+                      <div className="relative h-10 w-10 rounded-lg overflow-hidden flex-shrink-0 bg-cover bg-center" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=150&q=80')` }}>
+                        <div className="absolute inset-0 bg-black/10" />
+                        <button className="absolute bottom-0.5 right-0.5 bg-primary text-white text-[7px] font-black px-1.5 py-0.5 rounded shadow-xs pointer-events-none">+ Add</button>
+                      </div>
+                    </div>
+
+                    <div className="p-2 bg-card rounded-xl border border-border flex items-center justify-between gap-2 shadow-xs">
+                      <div className="space-y-0.5 flex-1 min-w-0">
+                        <h5 className="text-[9px] font-black truncate">Spicy Paneer Pizza</h5>
+                        <p className="text-[7px] text-muted-foreground line-clamp-1">Wood-fired thin crust, spiced paneer...</p>
+                        <span className="text-[9px] font-black text-primary">₹299</span>
+                      </div>
+                      <div className="relative h-10 w-10 rounded-lg overflow-hidden flex-shrink-0 bg-cover bg-center" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=150&q=80')` }}>
+                        <div className="absolute inset-0 bg-black/10" />
+                        <button className="absolute bottom-0.5 right-0.5 bg-primary text-white text-[7px] font-black px-1.5 py-0.5 rounded shadow-xs pointer-events-none">+ Add</button>
+                      </div>
+                    </div>
+
+                    <div className="p-2 bg-card rounded-xl border border-border flex items-center justify-between gap-2 shadow-xs">
+                      <div className="space-y-0.5 flex-1 min-w-0">
+                        <h5 className="text-[9px] font-black truncate">Fresh Mint Mojito</h5>
+                        <p className="text-[7px] text-muted-foreground line-clamp-1">Refreshing lime, mint, sparkling soda...</p>
+                        <span className="text-[9px] font-black text-primary">₹99</span>
+                      </div>
+                      <div className="relative h-10 w-10 rounded-lg overflow-hidden flex-shrink-0 bg-cover bg-center" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=150&q=80')` }}>
+                        <div className="absolute inset-0 bg-black/10" />
+                        <button className="absolute bottom-0.5 right-0.5 bg-primary text-white text-[7px] font-black px-1.5 py-0.5 rounded shadow-xs pointer-events-none">+ Add</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Floating View Cart bar */}
+                  <div className="p-2 bg-primary text-white text-[8px] font-black flex items-center justify-between shadow-lg mx-2 mb-2 rounded-xl border border-white/10">
+                    <span>🛒 1 Item Added</span>
+                    <span>View Cart &rarr;</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -546,25 +705,27 @@ export default function HomePage() {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-square max-w-md mx-auto rounded-3xl gradient-primary p-1">
-                <div className="h-full w-full rounded-[22px] bg-background flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <div className="inline-flex h-24 w-24 items-center justify-center rounded-2xl gradient-primary mb-6 animate-float">
-                      <QrCode className="h-12 w-12 text-white" />
+              <div className="w-full max-w-sm mx-auto rounded-3xl gradient-primary p-1 shadow-2xl">
+                <div className="rounded-[22px] bg-background flex flex-col items-center justify-center p-6 text-center">
+                  <div className="bg-white p-4 rounded-2xl shadow-md border border-border flex items-center justify-center mb-4">
+                    <div className="relative w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center bg-white rounded-xl overflow-hidden">
+                      {qrCodeUrl ? (
+                        <img src={qrCodeUrl} alt="QR Menu" className="w-full h-full object-contain" />
+                      ) : (
+                        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-white p-1 rounded-xl shadow-md border border-zinc-100 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10">
+                          <img src="/logo.svg" alt="Dineo Logo" className="w-full h-full object-contain" />
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-2xl font-bold gradient-text">Dineo</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Scan to view menu
+                  </div>
+                  <div>
+                    <p className="text-lg font-black text-foreground">Scan Live QR Menu 📸</p>
+                    <p className="text-xs text-muted-foreground mt-1 px-4">
+                      Scan this high-contrast QR code with your phone to open the digital restaurant menu.
                     </p>
-                    <div className="mt-6 grid grid-cols-3 gap-2">
-                      {Array.from({ length: 9 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="h-8 w-8 rounded bg-muted animate-pulse"
-                          style={{ animationDelay: `${i * 0.1}s` }}
-                        />
-                      ))}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -888,6 +1049,32 @@ export default function HomePage() {
                     onChange={(e) => setInterestQty(Number(e.target.value))}
                     className="w-full text-xs font-semibold px-3 py-2 bg-card border border-border rounded-xl focus:ring-2 focus:ring-primary"
                   />
+                </div>
+              </div>
+              {/* Color Selector */}
+              <div className="space-y-2 mt-2 pt-2 border-t border-border/50">
+                <label className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <Star className="h-3 w-3 text-primary" /> Preferred Sticker Color
+                </label>
+                <div className="flex flex-wrap items-center gap-3">
+                  {(Object.keys(colorOptions) as Array<keyof typeof colorOptions>).map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setInterestQrColor(color)}
+                      className={`relative flex items-center justify-center w-8 h-8 rounded-full border-2 shadow-sm transition-all ${
+                        interestQrColor === color ? "border-primary scale-110 ring-4 ring-primary/10" : "border-transparent hover:scale-105"
+                      } bg-gradient-to-br ${colorOptions[color].gradient}`}
+                      title={color.charAt(0).toUpperCase() + color.slice(1)}
+                    >
+                      {interestQrColor === color && (
+                        <div className="w-2.5 h-2.5 bg-white rounded-full shadow-md" />
+                      )}
+                    </button>
+                  ))}
+                  <span className="text-[10px] text-muted-foreground ml-1 capitalize font-medium">
+                    {interestQrColor}
+                  </span>
                 </div>
               </div>
 

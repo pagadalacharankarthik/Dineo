@@ -53,7 +53,7 @@ export default function RestaurantPage() {
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
-  const [planName, setPlanName] = useState("STARTER");
+  const [planName, setPlanName] = useState("FREE_TRIAL");
   const [showTrialBanner, setShowTrialBanner] = useState(false);
   const [showOfferBanner, setShowOfferBanner] = useState(false);
   const [offerBannerText, setOfferBannerText] = useState("");
@@ -77,7 +77,7 @@ export default function RestaurantPage() {
         const res = await fetch("/api/restaurant");
         const data = await res.json();
         if (data.success && data.data) {
-          setPlanName(data.data.planName || "STARTER");
+          setPlanName(data.data.planName || "FREE_TRIAL");
           setShowTrialBanner(data.data.showTrialBanner ?? false);
           setShowOfferBanner(data.data.showOfferBanner ?? false);
           setOfferBannerText(data.data.offerBannerText || "");
@@ -348,7 +348,7 @@ export default function RestaurantPage() {
             <FormField id="res-google-review" label={
               <span className="flex items-center gap-2">
                 Google Reviews Link
-                {planName === "STARTER" && (
+                {planName === "FREE_TRIAL" && (
                   <span className="text-[9px] lowercase font-bold tracking-normal px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-500">
                     Pro tier
                   </span>
@@ -357,8 +357,8 @@ export default function RestaurantPage() {
             } error={errors.googleReviewUrl?.message}>
               <Input 
                 id="res-google-review" 
-                placeholder={planName === "STARTER" ? "Upgrade to Pro to link Google reviews" : "https://g.page/r/.../review"} 
-                disabled={planName === "STARTER"}
+                placeholder={planName === "FREE_TRIAL" ? "Upgrade to Pro to link Google reviews" : "https://g.page/r/.../review"} 
+                disabled={planName === "FREE_TRIAL"}
                 {...register("googleReviewUrl")} 
               />
             </FormField>

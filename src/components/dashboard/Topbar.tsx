@@ -21,17 +21,39 @@ export function Topbar({ user, onMobileMenuOpen }: TopbarProps) {
 
   // Notifications State
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: "sub", text: "Trial Tier Active: Your free trial tier is active. Upgrade to Pro for custom subdomains." },
-    { id: "profile", text: "Setup checklist: Complete your Restaurant Profile details to activate your custom QR posters." },
-    { id: "stands", text: "Custom Stands: Order premium acrylic QR stands from the Starter Kit page." },
-  ]);
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   const handleDismiss = (id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    fetch("/api/restaurant")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          const plan = data.data.planName || "FREE_TRIAL";
+          const list = [];
+          
+          if (plan === "FREE_TRIAL") {
+            list.push({ id: "sub", text: "Trial Tier Active: Your free trial tier is active. Upgrade to Pro for custom subdomains and logo branding." });
+          } else if (plan === "PRO") {
+            list.push({ id: "sub", text: "Professional Tier Active: You have successfully unlocked custom logos, infinite categories, and SVG QR downloads!" });
+          } else if (plan === "EARLY_ADOPTER") {
+            list.push({ id: "sub", text: "Early Adopter Tier Active: You have unlocked 50 menu items, infinite promo codes, and SVG QR downloads!" });
+          } else if (plan === "ENTERPRISE") {
+            list.push({ id: "sub", text: "Enterprise Tier Active: Custom settings and dedicated support are enabled for your restaurant." });
+          }
+
+          list.push({ id: "profile", text: "Setup checklist: Complete your Restaurant Profile details to activate your custom QR posters." });
+          list.push({ id: "stands", text: "Custom Stands: Order premium acrylic QR stands from the Starter Kit page." });
+
+          setNotifications(list);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-4 bg-background/95 backdrop-blur border-b border-border px-4 sm:px-6">

@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
+import * as QRCodeLib from "qrcode";
+import * as htmlToImage from "html-to-image";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   Loader2, 
   Mail, 
@@ -12,7 +15,10 @@ import {
   CheckCircle2, 
   Clock, 
   TrendingUp, 
-  XCircle 
+  XCircle,
+  Download,
+  Building2,
+  Sparkles
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,11 +39,73 @@ interface QRKitRequest {
   status: string;
   createdAt: string;
   restaurantSlug: string | null;
+  qrColor: string;
 }
+
+const colorOptions: Record<string, { gradient: string; hex: string }> = {
+  orange: { gradient: "from-orange-500 via-amber-500 to-amber-600", hex: "#ea580c" },
+  black: { gradient: "from-zinc-800 via-neutral-900 to-black", hex: "#000000" },
+  blue: { gradient: "from-blue-500 via-cyan-500 to-blue-600", hex: "#2563eb" },
+  purple: { gradient: "from-purple-500 via-violet-500 to-purple-600", hex: "#7c3aed" },
+  dark: { gradient: "from-slate-800 via-slate-900 to-black", hex: "#0f172a" },
+  emerald: { gradient: "from-emerald-500 via-teal-500 to-emerald-600", hex: "#059669" },
+  rose: { gradient: "from-rose-500 via-pink-500 to-rose-600", hex: "#e11d48" },
+  gold: { gradient: "from-amber-400 via-yellow-500 to-amber-600", hex: "#d97706" },
+  red: { gradient: "from-red-500 via-rose-600 to-red-650", hex: "#dc2626" },
+};
 
 export default function AdminQRKitsPage() {
   const [requests, setRequests] = useState<QRKitRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Poster Generation State
+  const [activeRequest, setActiveRequest] = useState<QRKitRequest | null>(null);
+  const [dataUrl, setDataUrl] = useState<string>("");
+  const printRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (activeRequest?.restaurantSlug) {
+      const requestedColor = activeRequest.qrColor || "orange";
+      const hexColor = colorOptions[requestedColor]?.hex || colorOptions.orange.hex;
+
+      const canvas = document.createElement("canvas");
+      QRCodeLib.toCanvas(canvas, `${window.location.origin}/menu/${activeRequest.restaurantSlug}`, {
+        width: 1024,
+        margin: 1,
+        color: {
+          dark: hexColor,
+          light: "#ffffff",
+        },
+        errorCorrectionLevel: "H",
+      })
+        .then(() => {
+          setDataUrl(canvas.toDataURL("image/png"));
+        })
+        .catch((err) => console.error("QR Error", err));
+    }
+  }, [activeRequest]);
+
+  const handleDownloadPNG = async () => {
+    if (!printRef.current || !activeRequest) return;
+    try {
+      const el = printRef.current;
+      const image = await htmlToImage.toPng(el, {
+        pixelRatio: 3,
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        style: { transform: 'none', margin: '0' },
+        backgroundColor: "#ffffff",
+      });
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = `${activeRequest.restaurantSlug}-poster.png`;
+      link.click();
+      toast.success("Downloaded HD Poster successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate poster");
+    }
+  };
 
   const fetchRequests = () => {
     setIsLoading(true);
@@ -119,7 +187,14 @@ export default function AdminQRKitsPage() {
                         <h2 className="text-lg font-semibold text-zinc-800 dark:text-zinc-100">{req.restaurantName}</h2>
                         <p className="text-xs text-zinc-500 mt-0.5">Contact: {req.contactPerson}</p>
                       </div>
-                      <div>{getStatusBadge(req.status)}</div>
+                      <div className="flex flex-col items-end gap-2">
+                        {getStatusBadge(req.status)}
+                        {req.qrColor && (
+                          <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded text-white bg-gradient-to-br ${colorOptions[req.qrColor]?.gradient || colorOptions.orange.gradient}`}>
+                            {req.qrColor} Theme
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="grid gap-3 text-sm text-zinc-600 dark:text-zinc-400 md:grid-cols-2 lg:grid-cols-3">
@@ -172,14 +247,12 @@ export default function AdminQRKitsPage() {
                           >
                             Copy Link
                           </Button>
-                          <a
-                            href={`https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=${encodeURIComponent(`${window.location.origin}/menu/${req.restaurantSlug}`)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            onClick={() => setActiveRequest(req)}
                             className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold text-xs px-3 rounded-lg flex-1 cursor-pointer transition-colors"
                           >
-                            Download QR
-                          </a>
+                            Generate HD Poster
+                          </button>
                         </div>
                       </div>
                     ) : (
@@ -242,6 +315,52 @@ export default function AdminQRKitsPage() {
           ))}
         </div>
       )}
+      {/* Admin QR Poster Generator Modal */}
+      <Dialog open={!!activeRequest} onOpenChange={(open) => !open && setActiveRequest(null)}>
+        <DialogContent className="max-w-md bg-white border-none shadow-2xl p-6">
+          <DialogHeader>
+            <DialogTitle>Restaurant HD Poster</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 mt-4">
+            <div
+              id="printable-qr-poster"
+              ref={printRef}
+              className={`bg-gradient-to-br ${activeRequest?.qrColor && colorOptions[activeRequest.qrColor] ? colorOptions[activeRequest.qrColor].gradient : colorOptions.orange.gradient} p-8 rounded-3xl text-white shadow-xl max-w-[320px] w-full flex flex-col items-center justify-center`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Building2 className="h-6 w-6" />
+                <h2 className="text-2xl font-extrabold tracking-tight">
+                  {activeRequest?.restaurantName}
+                </h2>
+              </div>
+              <p className="text-xs text-white/90 font-medium mb-6">
+                Scan with any phone camera to view menu
+              </p>
+
+              <div className="bg-white p-4 rounded-2xl shadow-2xl mb-4">
+                {dataUrl ? (
+                  <img src={dataUrl} alt="QR Code" className="w-48 h-48 object-contain" />
+                ) : (
+                  <div className="w-48 h-48 flex items-center justify-center text-muted-foreground">
+                    Generating...
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase border border-white/30">
+                ⚡ Powered by Dineo
+              </div>
+            </div>
+
+            <Button
+              onClick={handleDownloadPNG}
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold h-12 rounded-xl mt-4"
+            >
+              <Download className="w-4 h-4 mr-2" /> Download High-Res PNG
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

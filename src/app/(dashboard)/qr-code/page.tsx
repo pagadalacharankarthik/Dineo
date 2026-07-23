@@ -12,9 +12,11 @@ import {
   Building2,
   Sparkles,
   Loader2,
+  Lock,
 } from "lucide-react";
 import { toast } from "sonner";
 import * as QRCodeLib from "qrcode";
+import * as htmlToImage from "html-to-image";
 
 interface QRDetails {
   id: string;
@@ -33,6 +35,22 @@ export default function QRCodePage() {
   const [copied, setCopied] = useState(false);
   const [dataUrl, setDataUrl] = useState<string>("");
   const [svgUrl, setSvgUrl] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<"orange" | "black" | "blue" | "purple" | "dark" | "emerald" | "rose" | "gold" | "red">("orange");
+  const [isShaking, setIsShaking] = useState(false);
+
+  const colorOptions = {
+    orange: { gradient: "from-orange-500 via-amber-500 to-amber-600", qr: "#ea580c" },
+    black: { gradient: "from-zinc-800 via-neutral-900 to-black", qr: "#000000" },
+    blue: { gradient: "from-blue-500 via-cyan-500 to-blue-600", qr: "#2563eb" },
+    purple: { gradient: "from-purple-500 via-violet-500 to-purple-600", qr: "#7c3aed" },
+    dark: { gradient: "from-slate-800 via-slate-900 to-black", qr: "#0f172a" },
+    emerald: { gradient: "from-emerald-500 via-teal-500 to-emerald-600", qr: "#059669" },
+    rose: { gradient: "from-rose-500 via-pink-500 to-rose-600", qr: "#e11d48" },
+    gold: { gradient: "from-amber-400 via-yellow-500 to-amber-600", qr: "#d97706" },
+    red: { gradient: "from-red-500 via-rose-600 to-red-650", qr: "#dc2626" },
+  };
+
+  const freeTierColors = ["orange", "black"];
 
   const printRef = useRef<HTMLDivElement>(null);
 
@@ -51,118 +69,120 @@ export default function QRCodePage() {
     }
   };
 
-  const generateQRCodes = async (details: QRDetails) => {
+  const generateQRCodes = async (details: QRDetails, activeColor: string = "orange") => {
     try {
       const { targetUrl, restaurantLogo, planName } = details;
       const isPro = planName === "PRO";
       const hasLogo = restaurantLogo && restaurantLogo.trim() !== "";
 
-      // Embed logo for PRO plan users on Canvas
-      if (isPro && hasLogo) {
-        const canvas = document.createElement("canvas");
-        const canvasSize = 1024;
-        canvas.width = canvasSize;
-        canvas.height = canvasSize;
+      // Ensure free tier can only use allowed colors
+      const colorKey = (isPro || freeTierColors.includes(activeColor)) ? activeColor : "orange";
+      const qrColor = colorOptions[colorKey as keyof typeof colorOptions].qr;
+      
+      // Pro gets their own logo if uploaded, otherwise everyone gets Dineo logo
+      const rawLogoUrl = (isPro && hasLogo) ? restaurantLogo! : "/logo.svg";
+      // Ensure the URL is absolute so it works when the SVG is downloaded to a local computer
+      const logoUrlToUse = new URL(rawLogoUrl, window.location.origin).href;
 
-        // Use High Error Correction Level 'H' to ensure QR is readable with central logo overlay
-        await QRCodeLib.toCanvas(canvas, targetUrl, {
-          width: canvasSize,
-          margin: 2,
-          errorCorrectionLevel: "H",
-          color: {
-            dark: "#000000",
-            light: "#FFFFFF",
-          },
+      const canvas = document.createElement("canvas");
+      const canvasSize = 1024;
+      canvas.width = canvasSize;
+      canvas.height = canvasSize;
+
+      // Use High Error Correction Level 'H' to ensure QR is readable with central logo overlay
+      await QRCodeLib.toCanvas(canvas, targetUrl, {
+        width: canvasSize,
+        margin: 2,
+        errorCorrectionLevel: "H",
+        color: {
+          dark: qrColor,
+          light: "#FFFFFF",
+        },
+      });
+
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        const logoImg = new Image();
+        logoImg.crossOrigin = "anonymous";
+        logoImg.src = logoUrlToUse;
+
+        await new Promise<void>((resolve) => {
+          logoImg.onload = () => {
+            // Logo size is 22% of QR size for safety
+            const logoSize = canvasSize * 0.22;
+            const x = (canvasSize - logoSize) / 2;
+            const y = (canvasSize - logoSize) / 2;
+
+            // Draw white border box
+            ctx.fillStyle = "#FFFFFF";
+            const radius = logoSize * 0.2;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + logoSize - radius, y);
+            ctx.quadraticCurveTo(x + logoSize, y, x + logoSize, y + radius);
+            ctx.lineTo(x + logoSize, y + logoSize - radius);
+            ctx.quadraticCurveTo(x + logoSize, y + logoSize, x + logoSize - radius, y + logoSize);
+            ctx.lineTo(x + radius, y + logoSize);
+            ctx.quadraticCurveTo(x, y + logoSize, x, y + logoSize - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fill();
+
+            // Border stroke
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = "#F1F5F9";
+            ctx.stroke();
+
+            // Draw logo inside
+            const margin = logoSize * 0.12;
+            const size = logoSize - (margin * 2);
+            ctx.drawImage(logoImg, x + margin, y + margin, size, size);
+            resolve();
+          };
+
+          logoImg.onerror = () => {
+            console.warn("Failed to load logo, using plain QR");
+            resolve();
+          };
         });
-
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          const logoImg = new Image();
-          logoImg.crossOrigin = "anonymous";
-          logoImg.src = restaurantLogo!;
-
-          await new Promise<void>((resolve) => {
-            logoImg.onload = () => {
-              // Logo size is 22% of QR size for safety
-              const logoSize = canvasSize * 0.22;
-              const x = (canvasSize - logoSize) / 2;
-              const y = (canvasSize - logoSize) / 2;
-
-              // Draw white border box
-              ctx.fillStyle = "#FFFFFF";
-              const radius = logoSize * 0.2;
-              ctx.beginPath();
-              ctx.moveTo(x + radius, y);
-              ctx.lineTo(x + logoSize - radius, y);
-              ctx.quadraticCurveTo(x + logoSize, y, x + logoSize, y + radius);
-              ctx.lineTo(x + logoSize, y + logoSize - radius);
-              ctx.quadraticCurveTo(x + logoSize, y + logoSize, x + logoSize - radius, y + logoSize);
-              ctx.lineTo(x + radius, y + logoSize);
-              ctx.quadraticCurveTo(x, y + logoSize, x, y + logoSize - radius);
-              ctx.lineTo(x, y + radius);
-              ctx.quadraticCurveTo(x, y, x + radius, y);
-              ctx.closePath();
-              ctx.fill();
-
-              // Border stroke
-              ctx.lineWidth = 6;
-              ctx.strokeStyle = "#F1F5F9";
-              ctx.stroke();
-
-              // Draw logo inside
-              const margin = logoSize * 0.12;
-              const size = logoSize - (margin * 2);
-              ctx.drawImage(logoImg, x + margin, y + margin, size, size);
-              resolve();
-            };
-
-            logoImg.onerror = () => {
-              console.warn("Failed to load restaurant logo, generating fallback plain QR code");
-              resolve();
-            };
-          });
-        }
-
-        const png = canvas.toDataURL("image/png");
-        setDataUrl(png);
-
-        // SVG fallback
-        const svg = await QRCodeLib.toString(targetUrl, {
-          type: "svg",
-          margin: 2,
-          errorCorrectionLevel: "H",
-          color: {
-            dark: "#000000",
-            light: "#FFFFFF",
-          },
-        });
-        const blob = new Blob([svg], { type: "image/svg+xml" });
-        setSvgUrl(URL.createObjectURL(blob));
-      } else {
-        // Standard code generation
-        const png = await QRCodeLib.toDataURL(targetUrl, {
-          width: 1024,
-          margin: 2,
-          errorCorrectionLevel: "M",
-          color: {
-            dark: "#000000",
-            light: "#FFFFFF",
-          },
-        });
-        setDataUrl(png);
-
-        const svg = await QRCodeLib.toString(targetUrl, {
-          type: "svg",
-          margin: 2,
-          errorCorrectionLevel: "M",
-          color: {
-            dark: "#000000",
-            light: "#FFFFFF",
-          },
-        });
-        const blob = new Blob([svg], { type: "image/svg+xml" });
-        setSvgUrl(URL.createObjectURL(blob));
       }
+
+      const png = canvas.toDataURL("image/png");
+      setDataUrl(png);
+
+      // SVG fallback with logo injection
+      let svg = await QRCodeLib.toString(targetUrl, {
+        type: "svg",
+        margin: 2,
+        errorCorrectionLevel: "H",
+        color: {
+          dark: qrColor,
+          light: "#FFFFFF",
+        },
+      });
+
+      // Inject logo into the center of the SVG
+      if (logoUrlToUse) {
+        const svgMatch = svg.match(/viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/);
+        if (svgMatch) {
+          const size = parseFloat(svgMatch[1]);
+          const logoSize = size * 0.25;
+          const x = (size - logoSize) / 2;
+          const y = (size - logoSize) / 2;
+          
+          // White background block
+          const injection = `
+            <rect x="${x - 1}" y="${y - 1}" width="${logoSize + 2}" height="${logoSize + 2}" fill="#FFFFFF" rx="1" ry="1" />
+            <image href="${logoUrlToUse}" x="${x}" y="${y}" width="${logoSize}" height="${logoSize}" preserveAspectRatio="xMidYMid slice" />
+          `;
+          svg = svg.replace('</svg>', injection + '</svg>');
+        }
+      }
+
+      const blob = new Blob([svg], { type: "image/svg+xml" });
+      setSvgUrl(URL.createObjectURL(blob));
+
     } catch (err) {
       console.error("QR generation error:", err);
     }
@@ -172,6 +192,12 @@ export default function QRCodePage() {
     fetchQR();
   }, []);
 
+  useEffect(() => {
+    if (qrData) {
+      generateQRCodes(qrData, selectedColor);
+    }
+  }, [selectedColor]);
+
   const handleCopyLink = () => {
     if (!qrData?.targetUrl) return;
     navigator.clipboard.writeText(qrData.targetUrl);
@@ -180,17 +206,56 @@ export default function QRCodePage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDownloadPNG = () => {
-    if (!dataUrl || !qrData) return;
-    const link = document.createElement("a");
-    link.href = dataUrl;
-    link.download = `${qrData.restaurantSlug}-menu-qr.png`;
-    link.click();
-    toast.success("Downloaded High-Res PNG QR Code!");
+  const handleDownloadPNG = async () => {
+    if (!printRef.current || !qrData) return;
+    
+    // Show a loading toast
+    const toastId = toast.loading("Generating High-Res Poster...");
+    
+    try {
+      // Small delay to ensure any dynamic rendering is settled
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const el = printRef.current;
+      const image = await htmlToImage.toPng(el, {
+        pixelRatio: 3, // Higher resolution
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        style: {
+          transform: 'none',
+          margin: '0',
+        },
+        backgroundColor: "#ffffff", // Solid background to prevent transparency bugs
+      });
+      
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = `${qrData.restaurantSlug}-poster.png`;
+      link.click();
+      toast.success("Downloaded High-Res Poster!", { id: toastId });
+    } catch (error: any) {
+      console.error("Poster generation failed:", error);
+      toast.error(`Failed to generate poster: ${error.message || "Unknown error"}`, { id: toastId });
+    }
   };
 
   const handleDownloadSVG = () => {
     if (!svgUrl || !qrData) return;
+    
+    if (qrData.planName === "FREE_TRIAL") {
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 400);
+      toast.error("SVG Vector download is a Pro feature.", {
+        action: {
+          label: "Upgrade Now",
+          onClick: () => {
+            window.location.href = "/subscription";
+          }
+        }
+      });
+      return;
+    }
+    
     const link = document.createElement("a");
     link.href = svgUrl;
     link.download = `${qrData.restaurantSlug}-menu-qr.svg`;
@@ -206,6 +271,14 @@ export default function QRCodePage() {
     <div className="space-y-8">
       {/* Printable Area styling */}
       <style jsx global>{`
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          75% { transform: translateX(5px); }
+        }
+        .shake-btn {
+          animation: shake 0.15s ease-in-out 0s 2;
+        }
         @media print {
           body * {
             visibility: hidden;
@@ -215,19 +288,21 @@ export default function QRCodePage() {
             visibility: visible;
           }
           #printable-qr-poster {
-            position: absolute;
+            position: fixed;
             left: 0;
             top: 0;
-            width: 100%;
+            width: 100vw;
             height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 40px;
+            padding: 20px;
+            margin: 0;
             background: #ffffff !important;
             color: #000000 !important;
+            z-index: 99999;
           }
         }
       `}</style>
@@ -258,7 +333,7 @@ export default function QRCodePage() {
             <div
               id="printable-qr-poster"
               ref={printRef}
-              className="bg-gradient-to-br from-orange-500 via-amber-500 to-amber-600 p-8 rounded-3xl text-white shadow-xl max-w-sm mx-auto flex flex-col items-center justify-center"
+              className={`bg-gradient-to-br ${colorOptions[(qrData?.planName === "PRO" ? selectedColor : "orange") as keyof typeof colorOptions].gradient} p-8 rounded-3xl text-white shadow-xl max-w-sm mx-auto flex flex-col items-center justify-center`}
             >
               <div className="flex items-center gap-2 mb-2">
                 <Building2 className="h-6 w-6" />
@@ -306,11 +381,38 @@ export default function QRCodePage() {
               </button>
               <button
                 onClick={handleDownloadSVG}
-                className="inline-flex items-center gap-2 bg-card border border-border hover:bg-muted font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors"
+                className={`inline-flex items-center gap-2 bg-card border border-border hover:bg-muted font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors ${isShaking ? 'shake-btn border-red-500 text-red-500' : ''}`}
               >
-                <Download className="h-4 w-4" /> Download SVG
+                {qrData?.planName === "FREE_TRIAL" ? (
+                  <><Lock className="h-4 w-4" /> SVG (Pro)</>
+                ) : (
+                  <><Download className="h-4 w-4" /> Download SVG</>
+                )}
               </button>
             </div>
+
+            {qrData && (
+              <div className="mt-6 space-y-3">
+                <h3 className="font-bold text-sm flex items-center justify-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" /> Poster Color Customization
+                </h3>
+                <div className="flex items-center justify-center gap-3">
+                  {(qrData?.planName === "PRO"
+                    ? (Object.keys(colorOptions) as Array<keyof typeof colorOptions>)
+                    : (freeTierColors as Array<keyof typeof colorOptions>)
+                  ).map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setSelectedColor(color as "orange" | "black" | "blue" | "purple" | "dark")}
+                      className={`w-8 h-8 rounded-full border-2 shadow-sm transition-all ${
+                        selectedColor === color ? "border-primary scale-110 ring-2 ring-primary/20" : "border-transparent hover:scale-105"
+                      } bg-gradient-to-br ${colorOptions[color].gradient}`}
+                      title={color.charAt(0).toUpperCase() + color.slice(1)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {qrData?.planName === "FREE_TRIAL" && (
               <div className="mt-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-left space-y-2">

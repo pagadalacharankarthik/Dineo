@@ -27,21 +27,30 @@ export async function POST(req: Request) {
     if (email && email.trim() !== admin!.email) {
       const newEmail = email.trim();
 
-      if (!otpCode) {
-        return NextResponse.json(
-          { success: false, error: "OTP code is required to verify the new email address" },
-          { status: 400 }
-        );
-      }
+      if (currentPassword && !newPassword) {
+        // Verify via Password (used when bypassing OTP)
+        const isValidPassword = await verifyPassword(currentPassword, admin!.passwordHash);
+        if (!isValidPassword) {
+          return NextResponse.json(
+            { success: false, error: "Incorrect current password" },
+            { status: 400 }
+          );
+        }
+      } else if (otpCode) {
+        // Verify via OTP
+        const otpRecord = await db.adminOTP.findUnique({
+          where: { email: newEmail },
+        });
 
-      // Fetch OTP from database
-      const otpRecord = await db.adminOTP.findUnique({
-        where: { email: newEmail },
-      });
-
-      if (!otpRecord || otpRecord.code !== otpCode.trim() || otpRecord.expiresAt < new Date()) {
+        if (!otpRecord || otpRecord.code !== otpCode.trim() || otpRecord.expiresAt < new Date()) {
+          return NextResponse.json(
+            { success: false, error: "Invalid or expired OTP code" },
+            { status: 400 }
+          );
+        }
+      } else {
         return NextResponse.json(
-          { success: false, error: "Invalid or expired OTP code" },
+          { success: false, error: "OTP code or current password is required to verify the new email address" },
           { status: 400 }
         );
       }

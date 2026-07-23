@@ -58,8 +58,21 @@ export default function SettingsPage() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState<string>("FREE_TRIAL");
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    if (session) {
+      fetch("/api/restaurant")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.data?.planName) {
+            setCurrentPlan(data.data.planName);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [session]);
 
   // Profile form
   const profileForm = useForm<ProfileInput>({
@@ -150,7 +163,16 @@ export default function SettingsPage() {
           </div>
         )}
         <div>
-          <p className="font-bold text-lg">{session?.user.name}</p>
+          <div className="flex items-center gap-3">
+            <p className="font-bold text-lg">{session?.user.name}</p>
+            {currentPlan && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+                {currentPlan === "FREE_TRIAL" ? "Starter Plan" : 
+                 currentPlan === "EARLY_ADOPTER" ? "Early Adopter" : 
+                 currentPlan === "PRO" ? "Professional Plan" : "Enterprise"}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">{session?.user.email}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
             Restaurant Owner

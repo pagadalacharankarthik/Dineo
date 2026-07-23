@@ -30,18 +30,18 @@ export function Footer() {
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Image
-                src="/logo-light.png"
+                src="/logo.svg"
                 alt="Dineo Logo"
-                width={120}
-                height={40}
-                className="h-10 w-auto dark:hidden"
+                width={180}
+                height={60}
+                className="h-16 w-auto dark:hidden object-contain"
               />
               <Image
-                src="/logo-dark.png"
+                src="/logo.svg"
                 alt="Dineo Logo"
-                width={120}
-                height={40}
-                className="h-10 w-auto hidden dark:block"
+                width={180}
+                height={60}
+                className="h-16 w-auto hidden dark:block object-contain invert hue-rotate-180 brightness-110"
               />
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">

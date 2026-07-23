@@ -10,9 +10,7 @@ export default function AdminSettingsPage() {
 
   // Email form states
   const [newEmail, setNewEmail] = useState("");
-  const [otpCode, setOtpCode] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [sendingOtp, setSendingOtp] = useState(false);
+  const [emailConfirmPassword, setEmailConfirmPassword] = useState("");
   const [updatingEmail, setUpdatingEmail] = useState(false);
 
   // Password form states
@@ -87,42 +85,11 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleSendOtp = async () => {
-    if (!newEmail || !/^\S+@\S+\.\S+$/.test(newEmail)) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
-
-    setSendingOtp(true);
-    try {
-      const res = await fetch("/api/admin/profile/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newEmail }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setOtpSent(true);
-        if (data.mockOtp) {
-          toast.warning(`⚠️ SMTP is not configured. OTP code is: ${data.mockOtp} (please enter it manually)`);
-        } else {
-          toast.success("Verification OTP code sent to " + newEmail);
-        }
-      } else {
-        toast.error(data.error || "Failed to send OTP code");
-      }
-    } catch {
-      toast.error("Failed to request verification code");
-    } finally {
-      setSendingOtp(false);
-    }
-  };
-
   const handleUpdateEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEmail) return;
-    if (!otpCode) {
-      toast.error("Please enter the 6-digit OTP code");
+    if (!emailConfirmPassword) {
+      toast.error("Please enter your current password to confirm");
       return;
     }
 
@@ -131,19 +98,21 @@ export default function AdminSettingsPage() {
       const res = await fetch("/api/admin/profile/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: newEmail, otpCode }),
+        body: JSON.stringify({
+          email: newEmail,
+          currentPassword: emailConfirmPassword,
+        }),
       });
       const data = await res.json();
       if (data.success) {
         toast.success("Email address updated successfully!");
         setAdminUser((prev) => prev ? { ...prev, email: newEmail } : null);
-        setOtpSent(false);
-        setOtpCode("");
+        setEmailConfirmPassword("");
       } else {
-        toast.error(data.error || "Failed to verify and update email");
+        toast.error(data.error || "Failed to update email");
       }
     } catch {
-      toast.error("Verification failed");
+      toast.error("Profile update failed");
     } finally {
       setUpdatingEmail(false);
     }
@@ -229,41 +198,29 @@ export default function AdminSettingsPage() {
               <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">
                 New Email Address
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  required
-                  placeholder="admin@newemail.com"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
-                />
-                <button
-                  type="button"
-                  onClick={handleSendOtp}
-                  disabled={sendingOtp || newEmail === adminUser?.email}
-                  className="px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-xs font-bold rounded-xl border border-zinc-200 dark:border-zinc-700 disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer"
-                >
-                  {sendingOtp && <Loader2 className="w-3 h-3 animate-spin" />}
-                  {otpSent ? "Resend" : "Send OTP"}
-                </button>
-              </div>
+              <input
+                type="email"
+                required
+                placeholder="admin@newemail.com"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
+              />
             </div>
 
-            {otpSent && (
+            {newEmail && newEmail !== adminUser?.email && (
               <div className="space-y-4 pt-2 border-t border-zinc-100 dark:border-zinc-800 animate-fadeIn">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">
-                    Enter 6-Digit OTP Code <span className="text-red-500">*</span>
+                    Confirm Current Password <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="password"
                     required
-                    maxLength={6}
-                    placeholder="e.g. 123456"
-                    value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ""))}
-                    className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm font-mono text-center tracking-widest text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-red-500"
+                    placeholder="Enter your current admin password"
+                    value={emailConfirmPassword}
+                    onChange={(e) => setEmailConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
                   />
                 </div>
                 <button
@@ -272,7 +229,7 @@ export default function AdminSettingsPage() {
                   className="w-full inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer"
                 >
                   {updatingEmail && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Verify & Save Email
+                  Update Email Address
                 </button>
               </div>
             )}

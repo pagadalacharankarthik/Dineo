@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Routes that require authentication
-const protectedRoutes = ["/dashboard", "/restaurant", "/settings", "/qr-codes"];
+const protectedRoutes = [
+  "/dashboard",
+  "/restaurant",
+  "/settings",
+  "/qr-codes",
+  "/qr-code",
+  "/categories",
+  "/qr-kit",
+  "/coupons",
+  "/analytics",
+  "/subscription",
+];
 
 // Routes that authenticated users should be redirected away from
 const authRoutes = ["/sign-in", "/sign-up", "/login", "/register", "/forgot-password", "/reset-password"];
@@ -32,9 +43,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  // The dashboard menu editor is at /menu (exact), but public customer menus are at /menu/[slug]
+  // So we protect /menu exactly, but leave /menu/anything accessible publicly
+  const isDashboardMenu = pathname === "/menu";
+
+  const isProtectedRoute =
+    isDashboardMenu ||
+    protectedRoutes.some((route) => pathname.startsWith(route));
+
   const isAuthRoute = authRoutes.some((route) =>
     pathname.startsWith(route)
   );
@@ -53,7 +69,7 @@ export function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users away from protected pages
   if (isProtectedRoute && !isLoggedIn) {
-    const loginUrl = new URL("/sign-in", request.url);
+    const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }

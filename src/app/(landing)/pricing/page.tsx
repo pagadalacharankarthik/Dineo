@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
 import { Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Pricing",
   description: "Simple, transparent pricing for Dineo. Free plan available.",
 };
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const reqHeaders = await headers();
+  const session = await auth.api.getSession({
+    headers: reqHeaders,
+  });
+  
+  const isAuthenticated = !!session?.user;
   return (
     <div className="py-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -32,24 +40,24 @@ export default function PricingPage() {
             {
               name: "Starter",
               price: "₹0/mo",
-              description: "Perfect for small restaurants getting started",
-              features: ["1 QR Code", "Up to 50 menu items", "Basic analytics", "Email support"],
+              description: "Perfect for small restaurants getting a taste of Dineo",
+              features: ["1 Permanent QR Code", "Up to 5 Categories", "Up to 25 Menu Items", "1 Promo Code limit", "Basic PNG Poster"],
               cta: "Get Started",
               highlighted: false,
             },
             {
               name: "Professional",
-              price: "₹999/mo",
-              description: "For growing restaurants with advanced needs",
-              features: ["Unlimited QR Codes", "Unlimited menu items", "Advanced analytics", "Priority support", "Custom branding", "Custom menu styles"],
+              price: "₹499/mo",
+              description: "For growing restaurants that want a premium brand",
+              features: ["Unlimited Categories", "Unlimited Menu Items", "Unlimited Promo Codes", "SVG Vector QR Code", "Custom Logo in QR", "All Poster Colors"],
               cta: "Get Pro Access",
               highlighted: true,
             },
             {
-              name: "Enterprise",
-              price: "₹2,999/mo",
-              description: "For restaurant chains and large operations",
-              features: ["Everything in Pro", "Multiple locations", "Staff management", "Dedicated support", "Custom integrations"],
+              name: "Early Adopter",
+              price: "Invite Only",
+              description: "Exclusive plan for our first 10 foundational members",
+              features: ["Up to 10 Categories", "Up to 50 Menu Items", "Unlimited Promo Codes", "SVG Vector QR Code", "Custom Logo in QR", "All Poster Colors"],
               cta: "Contact Us",
               highlighted: false,
             },
@@ -85,14 +93,20 @@ export default function PricingPage() {
                 ))}
               </ul>
               <Link
-                href={plan.name === "Enterprise" ? "/contact" : "/register"}
+                href={
+                  isAuthenticated
+                    ? "/contact"
+                    : plan.name === "Enterprise"
+                    ? "/contact"
+                    : "/register"
+                }
                 className={`block text-center py-2.5 rounded-xl font-semibold text-sm transition-all ${
                   plan.highlighted
                     ? "gradient-primary text-white hover:opacity-90"
                     : "border border-border hover:bg-muted"
                 }`}
               >
-                {plan.cta}
+                {isAuthenticated ? "Upgrade via Support" : plan.cta}
               </Link>
             </div>
           ))}

@@ -15,6 +15,7 @@ import {
   BarChart3,
   ShoppingBag,
   Ticket,
+  Sparkles,
 } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -62,6 +63,11 @@ const navItems = [
     href: "/restaurant",
     label: "Restaurant Profile",
     icon: UtensilsCrossed,
+  },
+  {
+    href: "/subscription",
+    label: "Subscription",
+    icon: Sparkles,
   },
   {
     href: "/settings",
@@ -116,18 +122,18 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
           ) : (
             <>
               <Image
-                src="/logo-light.png"
+                src="/logo.svg"
                 alt="Dineo Logo"
-                width={100}
-                height={32}
-                className="h-8 w-auto dark:hidden"
+                width={180}
+                height={60}
+                className="h-16 w-auto dark:hidden object-contain"
               />
               <Image
-                src="/logo-dark.png"
+                src="/logo.svg"
                 alt="Dineo Logo"
-                width={100}
-                height={32}
-                className="h-8 w-auto hidden dark:block"
+                width={180}
+                height={60}
+                className="h-16 w-auto hidden dark:block object-contain invert hue-rotate-180 brightness-110"
               />
             </>
           )}
