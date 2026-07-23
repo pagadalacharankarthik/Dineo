@@ -286,7 +286,7 @@ export default function AdminRestaurantsPage() {
             onClick={() => exportToPDF(filtered)}
             variant="outline"
             size="sm"
-            className="border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-855 hover:text-zinc-955 dark:hover:text-zinc-100 text-zinc-600 dark:text-zinc-300 text-xs font-semibold h-9 rounded-xl"
+            className="border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-850 hover:text-zinc-950 dark:hover:text-zinc-100 text-zinc-600 dark:text-zinc-300 text-xs font-semibold h-9 rounded-xl"
           >
             PDF
           </Button>
@@ -312,8 +312,8 @@ export default function AdminRestaurantsPage() {
                 key={rest.id} 
                 className={`
                   bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/80 backdrop-blur-sm shadow-sm dark:shadow-xl transition-all duration-200
-                  ${isSusp ? "border-amber-900/30 bg-amber-50 dark:bg-amber-955/5" : ""}
-                  ${isDel ? "border-red-900/30 bg-red-50 dark:bg-red-955/5 opacity-70" : ""}
+                  ${isSusp ? "border-amber-900/30 bg-amber-50 dark:bg-amber-950/5" : ""}
+                  ${isDel ? "border-red-900/30 bg-red-50 dark:bg-red-950/5 opacity-70" : ""}
                 `}
               >
                 <CardContent className="p-6">
@@ -362,7 +362,7 @@ export default function AdminRestaurantsPage() {
                       </div>
 
                       {/* Subscription Info */}
-                      <div className="mt-4 p-3 bg-zinc-50 dark:bg-zinc-955/60 rounded-lg border border-zinc-150 dark:border-zinc-850 flex flex-wrap items-center justify-between gap-4 text-xs">
+                      <div className="mt-4 p-3 bg-zinc-50 dark:bg-zinc-900/60 rounded-lg border border-zinc-150 dark:border-zinc-850 flex flex-wrap items-center justify-between gap-4 text-xs">
                         <div className="space-y-1">
                           <div className="text-zinc-500 dark:text-zinc-450">Plan Meta</div>
                           <div className="text-zinc-700 dark:text-zinc-300 font-medium">Status: {rest.planStatus}</div>
@@ -409,7 +409,7 @@ export default function AdminRestaurantsPage() {
                               onClick={() => handleAction(rest.id, "activate")}
                               variant="outline"
                               size="sm"
-                              className="w-full flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-955/10 text-xs font-semibold"
+                              className="w-full flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-xs font-semibold"
                             >
                               <CheckCircle className="w-3.5 h-3.5" />
                               Unsuspend Menu
@@ -419,7 +419,7 @@ export default function AdminRestaurantsPage() {
                               onClick={() => handleAction(rest.id, "suspend")}
                               variant="outline"
                               size="sm"
-                              className="w-full flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-955/20 hover:bg-amber-50 dark:hover:bg-amber-955/10 text-xs font-semibold"
+                              className="w-full flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-905/10 text-xs font-semibold"
                             >
                               <ShieldAlert className="w-3.5 h-3.5" />
                               Suspend Menu
@@ -429,7 +429,7 @@ export default function AdminRestaurantsPage() {
                             onClick={() => handleAction(rest.id, "delete")}
                             variant="destructive"
                             size="sm"
-                            className="w-full flex items-center justify-center gap-2 bg-red-50 dark:bg-red-955/40 border border-red-200 dark:border-red-800/30 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-650 dark:text-red-400 text-xs"
+                            className="w-full flex items-center justify-center gap-2 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/30 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-650 dark:text-red-400 text-xs"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                             Soft Delete
@@ -480,22 +480,22 @@ export default function AdminRestaurantsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-550 dark:text-zinc-400">Trial End Date (Optional)</label>
+                <label className="text-xs font-semibold text-zinc-555 dark:text-zinc-400">Trial End Date (Optional)</label>
                 <Input
                   type="date"
                   value={trialEndDate}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTrialEndDate(e.target.value)}
-                  className="bg-zinc-50 dark:bg-zinc-955 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:ring-offset-0 focus:border-red-500/50"
+                  className="bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:ring-offset-0 focus:border-red-500/50"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-550 dark:text-zinc-400">Plan Expiry Date (Optional)</label>
+                <label className="text-xs font-semibold text-zinc-555 dark:text-zinc-400">Plan Expiry Date (Optional)</label>
                 <Input
                   type="date"
                   value={planExpiresAt}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPlanExpiresAt(e.target.value)}
-                  className="bg-zinc-50 dark:bg-zinc-955 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:ring-offset-0 focus:border-red-500/50"
+                  className="bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 focus:ring-0 focus:ring-offset-0 focus:border-red-500/50"
                 />
               </div>
 

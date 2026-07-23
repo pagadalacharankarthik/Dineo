@@ -146,17 +146,17 @@ export default function AdminQRKitsPage() {
                     </div>
 
                     {req.notes && (
-                      <div className="p-3 bg-zinc-50 dark:bg-zinc-955/60 rounded border border-zinc-150 dark:border-zinc-850 text-xs text-zinc-650 dark:text-zinc-400">
+                      <div className="p-3 bg-zinc-50 dark:bg-zinc-900/60 rounded border border-zinc-150 dark:border-zinc-850 text-xs text-zinc-650 dark:text-zinc-400">
                         <span className="font-semibold text-zinc-800 dark:text-zinc-300 block mb-1">Owner Notes:</span>
                         {req.notes}
                       </div>
                     )}
 
                     {req.restaurantSlug ? (
-                      <div className="p-4 bg-zinc-50 dark:bg-zinc-955/40 rounded-xl border border-zinc-150 dark:border-zinc-850 text-xs space-y-3.5">
+                      <div className="p-4 bg-zinc-50 dark:bg-zinc-900/40 rounded-xl border border-zinc-150 dark:border-zinc-850 text-xs space-y-3.5">
                         <div className="space-y-1">
                           <span className="font-bold text-zinc-700 dark:text-zinc-300 block">Print QR Target URL:</span>
-                          <span className="text-zinc-600 dark:text-zinc-500 font-mono select-all bg-zinc-100/70 dark:bg-zinc-955/50 p-2 rounded-lg border border-zinc-200 dark:border-zinc-900 block truncate">
+                          <span className="text-zinc-600 dark:text-zinc-500 font-mono select-all bg-zinc-100/70 dark:bg-zinc-900/50 p-2 rounded-lg border border-zinc-200 dark:border-zinc-900 block truncate">
                             {window.location.origin}/menu/{req.restaurantSlug}
                           </span>
                         </div>
@@ -183,7 +183,7 @@ export default function AdminQRKitsPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="p-3 bg-zinc-50 dark:bg-zinc-955/20 rounded border border-zinc-200 dark:border-zinc-850 border-dashed text-xs text-zinc-500 italic">
+                      <div className="p-3 bg-zinc-50 dark:bg-zinc-900/20 rounded border border-zinc-200 dark:border-zinc-850 border-dashed text-xs text-zinc-500 italic">
                         ⚠️ No registered restaurant matches this request name or email.
                       </div>
                     )}
@@ -229,7 +229,7 @@ export default function AdminQRKitsPage() {
                         variant="outline"
                         size="sm"
                         disabled={req.status === "CANCELLED"}
-                        className="w-full text-xs h-8 border-zinc-200 dark:border-zinc-850 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-955/20 hover:border-red-200 dark:hover:border-red-900/30 font-semibold"
+                        className="w-full text-xs h-8 border-zinc-200 dark:border-zinc-850 text-red-650 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-900/30 font-semibold"
                       >
                         <XCircle className="w-3.5 h-3.5 mr-1 text-red-500" />
                         Cancel

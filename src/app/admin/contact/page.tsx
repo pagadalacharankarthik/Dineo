@@ -164,7 +164,7 @@ export default function AdminContactPage() {
                     </div>
 
                     {/* Message Box */}
-                    <div className="p-4 bg-zinc-50 dark:bg-zinc-955/60 rounded border border-zinc-150 dark:border-zinc-850 flex items-start gap-3">
+                    <div className="p-4 bg-zinc-50 dark:bg-zinc-900/60 rounded border border-zinc-150 dark:border-zinc-850 flex items-start gap-3">
                       <MessageSquare className="w-4 h-4 text-zinc-400 dark:text-zinc-650 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-zinc-750 dark:text-zinc-300 whitespace-pre-wrap leading-relaxed">
                         {enq.message}
