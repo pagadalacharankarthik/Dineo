@@ -496,6 +496,22 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
 
   return (
     <div className={getPlanBackgroundClass()}>
+      {/* Free Plan branding top bar */}
+      {restaurant.planName === "FREE_TRIAL" && (
+        <div className="bg-orange-600 text-white py-2.5 px-4 text-center text-[10px] sm:text-xs font-black flex items-center justify-center gap-1.5 shadow-sm">
+          <span>Create your own smart digital menu with</span>
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:opacity-90 font-black"
+          >
+            Dineo
+          </a>
+          <span>for free! 🚀</span>
+        </div>
+      )}
+
       {/* Closed Warning Banner */}
       {isClosed && (
         <div className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-b border-amber-500/20 py-3 px-4 text-center text-xs font-bold flex items-center justify-center gap-2 shadow-xs">
@@ -821,8 +837,17 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
       </div>
 
       {/* Footer Branding */}
-      <div className="mt-16 text-center text-xs text-muted-foreground">
-        {t("poweredBy")} <span className="font-bold gradient-text">Dineo</span> · Smart Digital Menu
+      <div className="mt-16 text-center text-xs text-muted-foreground pb-8">
+        {t("poweredBy")}{" "}
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-bold gradient-text hover:underline cursor-pointer"
+        >
+          Dineo
+        </a>{" "}
+        · Smart Digital Menu
       </div>
 
       {restaurant.googleReviewUrl && (
