@@ -344,6 +344,11 @@ export default function MenuPage() {
       return;
     }
 
+    if (!formData.imageUrl || !formData.imageUrl.trim()) {
+      toast.error("Please upload or provide an image for the menu item");
+      return;
+    }
+
     const discountPriceNum = formData.discountPrice ? parseFloat(formData.discountPrice) : null;
     if (discountPriceNum !== null && (isNaN(discountPriceNum) || discountPriceNum < 0)) {
       toast.error("Please enter a valid discount price");
