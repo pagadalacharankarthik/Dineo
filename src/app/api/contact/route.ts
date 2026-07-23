@@ -2,9 +2,20 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { contactEnquirySchema } from "@/lib/validations/forms";
 import { sendTelegramMessage } from "@/lib/telegram";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
+    // Rate limit: max 5 contact submissions per IP per 15 minutes
+    const ip = getClientIp(req);
+    const { allowed, resetInSeconds } = rateLimit(ip, "contact", 5, 15 * 60);
+    if (!allowed) {
+      return NextResponse.json(
+        { success: false, error: `Too many submissions. Please wait ${Math.ceil(resetInSeconds / 60)} minutes before trying again.` },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const parsed = contactEnquirySchema.safeParse(body);
     if (!parsed.success) {
