@@ -42,6 +42,9 @@ export const auth = betterAuth({
         html,
       });
     },
+  },
+  emailVerification: {
+    sendOnSignUp: true,
     sendVerificationEmail: async ({ user }: { user: any }) => {
       // Generate a 6-digit numeric OTP code
       const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
