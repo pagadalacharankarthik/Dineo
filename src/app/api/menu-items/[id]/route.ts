@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedRestaurant } from "@/lib/auth-helpers";
 import { db } from "@/lib/db";
-import { menuItemSchema } from "@/lib/validations/menu";
+import { menuItemBaseSchema } from "@/lib/validations/menu";
 
 export async function PUT(
   req: Request,
@@ -12,9 +12,7 @@ export async function PUT(
     if (errorResponse) return errorResponse;
 
     const { id } = await params;
-    const body = await req.json();
-    const validated = menuItemSchema.partial().parse(body);
-
+    
     const existing = await db.menuItem.findFirst({
       where: { id, restaurantId: restaurant!.id },
     });
@@ -24,6 +22,22 @@ export async function PUT(
         { success: false, error: "Menu item not found" },
         { status: 404 }
       );
+    }
+
+    const body = await req.json();
+    const validated = menuItemBaseSchema.partial().parse(body);
+
+    // Validate discount price vs original price manually
+    const finalPrice = validated.price !== undefined ? validated.price : existing.price;
+    const finalDiscountPrice = validated.discountPrice !== undefined ? validated.discountPrice : existing.discountPrice;
+
+    if (finalDiscountPrice !== null && finalDiscountPrice !== undefined) {
+      if (finalDiscountPrice > finalPrice) {
+        return NextResponse.json(
+          { success: false, error: "Discount price cannot exceed the original price" },
+          { status: 400 }
+        );
+      }
     }
 
     if (validated.categoryId) {

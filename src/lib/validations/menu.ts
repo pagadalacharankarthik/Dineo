@@ -34,10 +34,7 @@ export const categorySchema = z.object({
 
 export type CategoryInput = z.infer<typeof categorySchema>;
 
-// ─────────────────────────────────────────────
-// MENU ITEM VALIDATION
-// ─────────────────────────────────────────────
-export const menuItemSchema = z.object({
+export const menuItemBaseSchema = z.object({
   name: z.string().min(2, "Item name must be at least 2 characters").max(100),
   categoryId: z.string().min(1, "Category is required"),
   description: z.string().max(500).optional().nullable(),
@@ -57,7 +54,9 @@ export const menuItemSchema = z.object({
   isAvailable: z.boolean().default(true),
   isHidden: z.boolean().default(false),
   displayOrder: z.number().int().min(0).default(0),
-}).refine(
+});
+
+export const menuItemSchema = menuItemBaseSchema.refine(
   (data) => {
     if (data.discountPrice !== undefined && data.discountPrice !== null) {
       return data.discountPrice <= data.price;
@@ -71,3 +70,4 @@ export const menuItemSchema = z.object({
 );
 
 export type MenuItemInput = z.infer<typeof menuItemSchema>;
+
