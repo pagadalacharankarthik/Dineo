@@ -23,11 +23,24 @@ export function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [bannerActive, setBannerActive] = useState(false);
+  const [bannerText, setBannerText] = useState("");
 
   useEffect(() => {
     setMounted(true);
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
+
+    fetch("/api/public/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setBannerActive(data.data.guestBannerActive);
+          setBannerText(data.data.guestBannerText);
+        }
+      })
+      .catch((err) => console.error("Error loading header banner:", err));
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -35,11 +48,16 @@ export function Navbar() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
+        scrolled || bannerActive
           ? "bg-background/90 backdrop-blur-md shadow-sm border-b border-border"
           : "bg-transparent"
       )}
     >
+      {bannerActive && bannerText && (
+        <div className="bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[10px] sm:text-xs font-semibold py-1.5 px-4 text-center select-none shadow-sm flex items-center justify-center gap-1.5 animate-fade-in relative z-55">
+          <span>{bannerText}</span>
+        </div>
+      )}
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

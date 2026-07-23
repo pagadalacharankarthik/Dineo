@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Shield, Mail, Key, Loader2, ArrowRight } from "lucide-react";
+import { Shield, Mail, Key, Loader2, ArrowRight, Globe } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminSettingsPage() {
@@ -21,25 +21,62 @@ export default function AdminSettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [updatingPassword, setUpdatingPassword] = useState(false);
 
+  // Global settings state
+  const [guestBannerActive, setGuestBannerActive] = useState(true);
+  const [guestBannerText, setGuestBannerText] = useState("");
+  const [savingSettings, setSavingSettings] = useState(false);
+
   useEffect(() => {
-    async function fetchAdminProfile() {
+    async function fetchAdminProfileAndSettings() {
       try {
-        const res = await fetch("/api/admin/auth/me");
-        const data = await res.json();
-        if (data.success) {
-          setAdminUser(data.data);
-          setNewEmail(data.data.email);
+        const [profileRes, settingsRes] = await Promise.all([
+          fetch("/api/admin/auth/me"),
+          fetch("/api/public/settings")
+        ]);
+        const profileData = await profileRes.json();
+        const settingsData = await settingsRes.json();
+        
+        if (profileData.success) {
+          setAdminUser(profileData.data);
+          setNewEmail(profileData.data.email);
         } else {
           toast.error("Failed to load profile details");
         }
+
+        if (settingsData.success && settingsData.data) {
+          setGuestBannerActive(settingsData.data.guestBannerActive);
+          setGuestBannerText(settingsData.data.guestBannerText);
+        }
       } catch {
-        toast.error("An error occurred while fetching profile");
+        toast.error("An error occurred while fetching details");
       } finally {
         setLoading(false);
       }
     }
-    fetchAdminProfile();
+    fetchAdminProfileAndSettings();
   }, []);
+
+  const handleUpdateGlobalSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guestBannerActive, guestBannerText }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Global landing page banner settings updated!");
+      } else {
+        toast.error(data.error || "Failed to update global settings");
+      }
+    } catch {
+      toast.error("Failed to save global settings");
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   const handleSendOtp = async () => {
     if (!newEmail || !/^\S+@\S+\.\S+$/.test(newEmail)) {
@@ -289,6 +326,51 @@ export default function AdminSettingsPage() {
             </button>
           </form>
         </div>
+      </div>
+
+      {/* Global Landing Page Banner Configuration */}
+      <div className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-md space-y-4">
+        <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+          <Globe className="h-5 w-5 text-red-500" />
+          <h2 className="font-bold text-zinc-200">Global Website Announcement Banner</h2>
+        </div>
+
+        <form onSubmit={handleUpdateGlobalSettings} className="space-y-4">
+          <div className="flex items-center gap-2.5 p-3 rounded-xl border border-zinc-800 bg-zinc-950/40 text-xs font-semibold cursor-pointer max-w-md">
+            <input
+              type="checkbox"
+              id="guest-banner-active"
+              checked={guestBannerActive}
+              onChange={(e) => setGuestBannerActive(e.target.checked)}
+              className="rounded text-red-500 bg-zinc-900 border-zinc-800 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+            />
+            <label htmlFor="guest-banner-active" className="cursor-pointer text-zinc-350">
+              Enable Announcement Banner on Website Landing Page
+            </label>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-zinc-400 uppercase">Banner Text Content</label>
+            <input
+              type="text"
+              required
+              disabled={!guestBannerActive}
+              value={guestBannerText}
+              onChange={(e) => setGuestBannerText(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-200 disabled:opacity-50"
+              placeholder="e.g. 🎉 Special Launch Offer: Get 20% off physical NFC standee kits!"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={savingSettings}
+            className="inline-flex items-center justify-center gap-2 bg-red-650 hover:bg-red-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer disabled:opacity-50"
+          >
+            {savingSettings && <Loader2 className="w-4 h-4 animate-spin" />}
+            Save Banner Settings
+          </button>
+        </form>
       </div>
     </div>
   );

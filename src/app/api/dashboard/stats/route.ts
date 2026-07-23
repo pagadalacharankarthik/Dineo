@@ -36,8 +36,8 @@ export async function GET() {
         totalQrScans: qrCode?.scansCount ?? 0,
         qrDownloads: qrCode?.downloadsCount ?? 0,
         isActive: restaurant!.isActive,
-        showTrialBanner: restaurant!.showTrialBanner,
-        showOfferBanner: restaurant!.showOfferBanner,
+        showTrialBanner: restaurant!.planName === "FREE_TRIAL" ? restaurant!.showTrialBanner : false,
+        showOfferBanner: restaurant!.planName === "FREE_TRIAL" ? restaurant!.showOfferBanner : false,
       },
     });
   } catch (error) {
