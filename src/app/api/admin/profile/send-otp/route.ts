@@ -51,13 +51,25 @@ export async function POST(req: Request) {
 
     // Send email with OTP
     const html = `
-      <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; text-align: center; border: 1px solid #e2e8f0; border-radius: 16px;">
-        <h2 style="color: #ea580c; margin-bottom: 6px;">Dineo Admin Security</h2>
-        <p style="color: #64748b; font-size: 14px; margin-top: 0;">Super Admin Email Change Verification</p>
-        <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 12px; margin: 20px 0;">
-          <span style="font-size: 32px; font-weight: 800; letter-spacing: 4px; color: #0f172a;">${otpCode}</span>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
+        <div style="text-align: center; margin-bottom: 25px;">
+          <span style="font-size: 24px; font-weight: 800; color: #ea580c; display: inline-flex; align-items: center; gap: 4px;">
+            ⚡ Dineo
+          </span>
         </div>
-        <p style="font-size: 13px; color: #64748b;">This OTP code will expire in 10 minutes. If you did not request this update, please secure your credentials immediately.</p>
+        <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; font-weight: 700; text-align: center;">Super Admin: Verification Code</h2>
+        <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-top: 15px; text-align: center;">Use the security code below to complete your profile email address update:</p>
+        
+        <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; padding: 18px; border-radius: 12px; margin: 25px 0; text-align: center;">
+          <span style="font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #0f172a; font-family: monospace;">${otpCode}</span>
+        </div>
+        
+        <p style="font-size: 12px; color: #64748b; text-align: center; line-height: 1.5;">This security code will expire in 10 minutes. If you did not initiate this change, please ignore this email and secure your administrator login credentials.</p>
+        
+        <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; line-height: 1.5;">
+          © ${new Date().getFullYear()} Dineo. All rights reserved.<br/>
+          Support: <a href="mailto:charanlabssupport@gmail.com" style="color: #ea580c; text-decoration: none;">charanlabssupport@gmail.com</a>
+        </div>
       </div>
     `;
 

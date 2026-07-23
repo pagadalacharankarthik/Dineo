@@ -98,17 +98,28 @@ export async function POST(req: Request) {
     // Send security alert email if password was changed
     if (updateData.passwordHash) {
       const html = `
-        <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); text-align: center;">
-          <h2 style="color: #ea580c; margin-top: 0; margin-bottom: 8px;">Dineo Admin Alert</h2>
-          <p style="color: #64748b; font-size: 14px; margin-top: 0;">Super Admin Password Changed Successfully</p>
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
+          <div style="text-align: center; margin-bottom: 25px;">
+            <span style="font-size: 24px; font-weight: 800; color: #ea580c; display: inline-flex; align-items: center; gap: 4px;">
+              ⚡ Dineo
+            </span>
+          </div>
+          <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; font-weight: 700; text-align: center;">Security Alert: Admin Password Changed</h2>
           
-          <p style="color: #475569; font-size: 14px; line-height: 1.6; text-align: left; margin-top: 20px;">
-            Hi ${updatedAdmin.name},<br/><br/>
-            This is a confirmation that the password for your Dineo Super Admin account (<strong>${updatedAdmin.email}</strong>) has been changed successfully.<br/><br/>
-            If you made this change, you don't need to do anything. If you did not make this change, please contact support immediately to secure your admin account.
+          <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-top: 20px;">
+            Hi ${updatedAdmin.name},
+          </p>
+          <p style="color: #475569; font-size: 14px; line-height: 1.6;">
+            This email confirms that the password for your Dineo Super Admin account (<strong>${updatedAdmin.email}</strong>) has been changed successfully.
+          </p>
+          <p style="color: #475569; font-size: 14px; line-height: 1.6;">
+            If you made this change, you don't need to take any action. If you did not make this change, please contact support immediately to secure your administrator credentials.
           </p>
           
-          <p style="font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 15px; margin-top: 25px;">This is an automated security notification. Please do not reply directly to this email.</p>
+          <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; line-height: 1.5;">
+            © ${new Date().getFullYear()} Dineo. All rights reserved.<br/>
+            Support: <a href="mailto:charanlabssupport@gmail.com" style="color: #ea580c; text-decoration: none;">charanlabssupport@gmail.com</a>
+          </div>
         </div>
       `;
       await sendMail({
