@@ -25,6 +25,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [badgeCounts, setBadgeCounts] = useState({ unreadContacts: 0, pendingKits: 0 });
 
   useEffect(() => {

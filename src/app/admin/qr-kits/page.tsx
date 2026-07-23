@@ -242,17 +242,15 @@ export default function AdminQRKitsPage() {
                           </span>
                         </div>
                         <div className="flex gap-2">
-                          <Button
+                          <button
                             onClick={() => {
                               navigator.clipboard.writeText(`${window.location.origin}/menu/${req.restaurantSlug}`);
                               toast.success("Copied to clipboard!");
                             }}
-                            variant="outline"
-                            size="sm"
-                            className="bg-zinc-100 dark:bg-zinc-850 text-zinc-700 dark:text-zinc-200 border-zinc-200 dark:border-zinc-800 text-xs hover:bg-zinc-200 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 flex-1 cursor-pointer font-semibold"
+                            className="inline-flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 font-semibold text-xs py-2 px-3 rounded-lg flex-1 cursor-pointer transition-colors"
                           >
                             Copy Link
-                          </Button>
+                          </button>
                           <button
                             onClick={() => setActiveRequest(req)}
                             className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold text-xs px-3 rounded-lg flex-1 cursor-pointer transition-colors"

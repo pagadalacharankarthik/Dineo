@@ -330,6 +330,7 @@ export default function AdminSettingsPage() {
                 {showConfirmPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
               </button>
             </div>
+          </div>
 
             <button
               type="submit"
