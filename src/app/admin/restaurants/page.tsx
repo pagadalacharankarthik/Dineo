@@ -341,9 +341,14 @@ export default function AdminRestaurantsPage() {
                             Suspended
                           </span>
                         )}
-                        {!isSusp && !isDel && (
+                        {!isSusp && !isDel && rest.isActive && (
                           <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
                             Active
+                          </span>
+                        )}
+                        {!isSusp && !isDel && !rest.isActive && (
+                          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-orange-500/10 border border-orange-500/30 text-orange-650 dark:text-orange-400 animate-pulse">
+                            Pending Review
                           </span>
                         )}
                         <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
@@ -413,7 +418,17 @@ export default function AdminRestaurantsPage() {
                         </Button>
                       ) : (
                         <>
-                          {isSusp ? (
+                          {!rest.isActive ? (
+                            <Button
+                              onClick={() => handleAction(rest.id, "activate")}
+                              variant="outline"
+                              size="sm"
+                              className="w-full flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-xs font-semibold animate-pulse"
+                            >
+                              <CheckCircle className="w-3.5 h-3.5" />
+                              Approve & Activate
+                            </Button>
+                          ) : isSusp ? (
                             <Button
                               onClick={() => handleAction(rest.id, "activate")}
                               variant="outline"
