@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Shield, Mail, Key, Loader2, ArrowRight, Globe } from "lucide-react";
+import { Shield, Mail, Key, Loader2, ArrowRight, Globe, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminSettingsPage() {
@@ -18,6 +18,12 @@ export default function AdminSettingsPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [updatingPassword, setUpdatingPassword] = useState(false);
+
+  // Password visibility states
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showEmailConfirmPassword, setShowEmailConfirmPassword] = useState(false);
 
   // Global settings state
   const [guestBannerActive, setGuestBannerActive] = useState(true);
@@ -214,14 +220,24 @@ export default function AdminSettingsPage() {
                   <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">
                     Confirm Current Password <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="Enter your current admin password"
-                    value={emailConfirmPassword}
-                    onChange={(e) => setEmailConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showEmailConfirmPassword ? "text" : "password"}
+                      required
+                      placeholder="Enter your current admin password"
+                      value={emailConfirmPassword}
+                      onChange={(e) => setEmailConfirmPassword(e.target.value)}
+                      className="w-full pl-4 pr-11 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEmailConfirmPassword(!showEmailConfirmPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors"
+                      title={showEmailConfirmPassword ? "Hide password" : "Show password"}
+                    >
+                      {showEmailConfirmPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                    </button>
+                  </div>
                 </div>
                 <button
                   type="submit"
@@ -248,42 +264,71 @@ export default function AdminSettingsPage() {
               <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">
                 Current Password <span className="text-red-500">*</span>
               </label>
+            <div className="relative">
               <input
-                type="password"
+                type={showCurrentPassword ? "text" : "password"}
                 required
                 placeholder="••••••••"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
+                className="w-full pl-4 pr-11 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
               />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors"
+                title={showCurrentPassword ? "Hide password" : "Show password"}
+              >
+                {showCurrentPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+              </button>
             </div>
+          </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">
-                New Password <span className="text-red-500">*</span>
-              </label>
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">
+              New Password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
               <input
-                type="password"
+                type={showNewPassword ? "text" : "password"}
                 required
                 placeholder="Min 8 characters"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
+                className="w-full pl-4 pr-11 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
               />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors"
+                title={showNewPassword ? "Hide password" : "Show password"}
+              >
+                {showNewPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+              </button>
             </div>
+          </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">
-                Confirm New Password <span className="text-red-500">*</span>
-              </label>
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase">
+              Confirm New Password <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 required
                 placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
+                className="w-full pl-4 pr-11 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-sm focus:outline-none focus:border-red-500 text-zinc-800 dark:text-zinc-200"
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors"
+                title={showConfirmPassword ? "Hide password" : "Show password"}
+              >
+                {showConfirmPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+              </button>
             </div>
 
             <button
