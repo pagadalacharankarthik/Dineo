@@ -41,15 +41,15 @@ export default function RegisterPage() {
         return;
       }
 
-      // Create restaurant record
-      await fetch("/api/restaurant", {
+      // Create restaurant record using the public registration endpoint
+      await fetch("/api/public/register-restaurant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: data.restaurantName }),
+        body: JSON.stringify({ email: data.email, restaurantName: data.restaurantName }),
       });
 
-      toast.success("Account created! Welcome to Dineo 🎉");
-      router.push("/dashboard");
+      toast.success("Account created! Check your inbox to verify your email.");
+      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
       router.refresh();
     } catch {
       toast.error("Something went wrong. Please try again.");
