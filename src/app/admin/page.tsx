@@ -89,10 +89,10 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in text-zinc-800 dark:text-zinc-100">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-100">Overview Dashboard</h1>
-        <p className="text-zinc-400 text-sm mt-1">Platform analytics & management metrics.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100">Overview Dashboard</h1>
+        <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Platform analytics & management metrics.</p>
       </div>
 
       {/* Stats Grid */}
@@ -100,9 +100,9 @@ export default function AdminDashboard() {
         {statCards.map((card, index) => {
           const Icon = card.icon;
           return (
-            <Card key={index} className="bg-zinc-900/40 border-zinc-800/80 backdrop-blur-sm shadow-xl">
+            <Card key={index} className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/80 backdrop-blur-sm shadow-xl transition-all duration-200">
               <CardHeader className="flex flex-row items-center justify-between pb-3">
-                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                   {card.title}
                 </CardTitle>
                 <div className={`p-2 rounded-lg border ${card.color}`}>
@@ -110,8 +110,8 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-zinc-100">{card.value}</div>
-                <p className="text-xs text-zinc-500 mt-1">{card.description}</p>
+                <div className="text-3xl font-bold text-zinc-800 dark:text-zinc-100">{card.value}</div>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{card.description}</p>
               </CardContent>
             </Card>
           );
@@ -119,27 +119,27 @@ export default function AdminDashboard() {
       </div>
 
       {/* Promotion Banners Overview */}
-      <Card className="bg-zinc-900/40 border-zinc-800/80 backdrop-blur-sm shadow-xl">
+      <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/80 backdrop-blur-sm shadow-xl transition-all duration-200">
         <CardHeader>
-          <CardTitle className="text-sm font-semibold tracking-wider uppercase text-zinc-300">
+          <CardTitle className="text-sm font-semibold tracking-wider uppercase text-zinc-700 dark:text-zinc-300">
             Active Promotion Banners Overview
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
-          <div className="flex justify-between items-center pb-2 border-b border-zinc-850">
+          <div className="flex justify-between items-center pb-2 border-b border-zinc-150 dark:border-zinc-850">
             <div className="space-y-0.5">
-              <span className="text-zinc-400 text-sm font-medium">Free Trial Expiry Banner</span>
-              <p className="text-[10px] text-zinc-550">Active on merchant dashboards</p>
+              <span className="text-zinc-650 dark:text-zinc-400 text-sm font-medium">Free Trial Expiry Banner</span>
+              <p className="text-[10px] text-zinc-500 dark:text-zinc-550">Active on merchant dashboards</p>
             </div>
             <span className="font-bold text-amber-500 text-lg">
               {stats?.plans.FREE_TRIAL || 0}
             </span>
           </div>
 
-          <div className="flex justify-between items-center pb-2 border-b border-zinc-850">
+          <div className="flex justify-between items-center pb-2 border-b border-zinc-150 dark:border-zinc-850">
             <div className="space-y-0.5">
-              <span className="text-zinc-400 text-sm font-medium">Special Offer Banner</span>
-              <p className="text-[10px] text-zinc-550">Active on merchant dashboards</p>
+              <span className="text-zinc-650 dark:text-zinc-400 text-sm font-medium">Special Offer Banner</span>
+              <p className="text-[10px] text-zinc-500 dark:text-zinc-550">Active on merchant dashboards</p>
             </div>
             <span className="font-bold text-emerald-500 text-lg">
               {stats?.activeOffersCount || 0}
@@ -151,20 +151,20 @@ export default function AdminDashboard() {
       {/* Extra Details */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Subscriptions Overview */}
-        <Card className="bg-zinc-900/40 border-zinc-800/80 backdrop-blur-sm shadow-xl">
+        <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/80 backdrop-blur-sm shadow-xl transition-all duration-200">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold tracking-wider uppercase text-zinc-300">
+            <CardTitle className="text-sm font-semibold tracking-wider uppercase text-zinc-700 dark:text-zinc-300">
               Subscription Tiers Distribution
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-zinc-850">
-              <span className="text-zinc-400 text-sm">Free Trial</span>
-              <span className="font-bold text-zinc-200">{stats?.plans.FREE_TRIAL || 0}</span>
+            <div className="flex justify-between items-center pb-2 border-b border-zinc-150 dark:border-zinc-850">
+              <span className="text-zinc-600 dark:text-zinc-400 text-sm">Free Trial</span>
+              <span className="font-bold text-zinc-700 dark:text-zinc-200">{stats?.plans.FREE_TRIAL || 0}</span>
             </div>
-            <div className="flex justify-between items-center pb-2 border-b border-zinc-850">
-              <span className="text-zinc-400 text-sm">Pro tier</span>
-              <span className="font-bold text-red-400">{stats?.plans.PRO || 0}</span>
+            <div className="flex justify-between items-center pb-2 border-b border-zinc-150 dark:border-zinc-850">
+              <span className="text-zinc-600 dark:text-zinc-400 text-sm">Pro tier</span>
+              <span className="font-bold text-red-650 dark:text-red-400">{stats?.plans.PRO || 0}</span>
             </div>
             <div className="flex justify-between items-center text-xs text-zinc-500 pt-1">
               <span>Ready for billing engine gateway migration</span>
@@ -174,24 +174,24 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Platform Status */}
-        <Card className="bg-zinc-900/40 border-zinc-800/80 backdrop-blur-sm shadow-xl">
+        <Card className="bg-white dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800/80 backdrop-blur-sm shadow-xl transition-all duration-200">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold tracking-wider uppercase text-zinc-300">
+            <CardTitle className="text-sm font-semibold tracking-wider uppercase text-zinc-700 dark:text-zinc-300">
               System Diagnostics
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-zinc-850">
-              <span className="text-zinc-400 text-sm">Database Sync</span>
-              <span className="text-emerald-400 font-medium text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Operational</span>
+            <div className="flex justify-between items-center pb-2 border-b border-zinc-150 dark:border-zinc-850">
+              <span className="text-zinc-600 dark:text-zinc-400 text-sm">Database Sync</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Operational</span>
             </div>
-            <div className="flex justify-between items-center pb-2 border-b border-zinc-850">
-              <span className="text-zinc-400 text-sm">Auth Gateway</span>
-              <span className="text-emerald-400 font-medium text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Operational</span>
+            <div className="flex justify-between items-center pb-2 border-b border-zinc-150 dark:border-zinc-850">
+              <span className="text-zinc-600 dark:text-zinc-400 text-sm">Auth Gateway</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Operational</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-zinc-400 text-sm">API Services</span>
-              <span className="text-emerald-400 font-medium text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Operational</span>
+              <span className="text-zinc-600 dark:text-zinc-400 text-sm">API Services</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Operational</span>
             </div>
           </CardContent>
         </Card>

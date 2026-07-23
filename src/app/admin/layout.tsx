@@ -12,15 +12,24 @@ import {
   LogOut, 
   Menu, 
   X,
-  Settings
+  Settings,
+  Sun,
+  Moon
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Skip layout wrapper for the login page
   if (pathname === "/admin/login") {
@@ -49,34 +58,56 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="dark min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col md:flex-row transition-colors duration-200">
       {/* Mobile Header */}
-      <header className="md:hidden flex items-center justify-between p-4 bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50">
+      <header className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 transition-colors duration-200">
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-6 h-6 text-red-500" />
-          <span className="font-bold text-sm tracking-wider uppercase text-zinc-200">Super Admin</span>
+          <span className="font-bold text-sm tracking-wider uppercase text-zinc-800 dark:text-zinc-200">Super Admin</span>
         </div>
-        <button 
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="text-zinc-400 hover:text-zinc-200 focus:outline-none"
-        >
-          {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <div className="flex items-center gap-2">
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/40"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+          )}
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 focus:outline-none"
+          >
+            {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </header>
 
       {/* Sidebar Navigation */}
       <aside className={`
         fixed inset-y-0 left-0 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         md:relative md:translate-x-0 transition-transform duration-200 ease-in-out
-        w-64 bg-zinc-900/60 border-r border-zinc-800/80 backdrop-blur-md flex flex-col z-40
-        md:h-screen sticky top-0
+        w-64 bg-white dark:bg-zinc-900/60 border-r border-zinc-200 dark:border-zinc-800/80 backdrop-blur-md flex flex-col z-40
+        md:h-screen sticky top-0 transition-colors duration-200
       `}>
         {/* Brand / Logo */}
-        <div className="p-6 border-b border-zinc-800/80 hidden md:flex items-center gap-2.5">
-          <div className="bg-red-950/40 border border-red-800/30 p-1.5 rounded-lg">
-            <ShieldCheck className="w-5 h-5 text-red-500" />
+        <div className="p-6 border-b border-zinc-200 dark:border-zinc-800/80 hidden md:flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="bg-red-950/10 dark:bg-red-950/40 border border-red-200 dark:border-red-800/30 p-1.5 rounded-lg">
+              <ShieldCheck className="w-5 h-5 text-red-500" />
+            </div>
+            <span className="font-bold tracking-wider uppercase text-xs text-zinc-800 dark:text-zinc-200">Super Admin</span>
           </div>
-          <span className="font-bold tracking-wider uppercase text-xs text-zinc-200">Super Admin</span>
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/40"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            </button>
+          )}
         </div>
 
         {/* Navigation Links */}
@@ -92,12 +123,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
                   ${isActive 
-                    ? "bg-red-550/10 text-red-400 border-l-2 border-red-500 pl-3.5 shadow-inner" 
-                    : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40"
+                    ? "bg-red-550/10 text-red-650 dark:text-red-400 border-l-2 border-red-500 pl-3.5 shadow-inner" 
+                    : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/40"
                   }
                 `}
               >
-                <Icon className={`w-4 h-4 ${isActive ? "text-red-400" : "text-zinc-500"}`} />
+                <Icon className={`w-4 h-4 ${isActive ? "text-red-500 dark:text-red-400" : "text-zinc-400 dark:text-zinc-500"}`} />
                 {link.label}
               </Link>
             );
@@ -105,11 +136,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         {/* Footer / Logout */}
-        <div className="p-4 border-t border-zinc-800/80">
+        <div className="p-4 border-t border-zinc-200 dark:border-zinc-800/80">
           <Button
             onClick={handleLogout}
             variant="ghost"
-            className="w-full flex items-center justify-start gap-3 px-4 py-3 text-zinc-400 hover:text-red-400 hover:bg-red-950/10 rounded-xl transition-all duration-200"
+            className="w-full flex items-center justify-start gap-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/10 rounded-xl transition-all duration-200"
           >
             <LogOut className="w-4 h-4" />
             Logout Session
