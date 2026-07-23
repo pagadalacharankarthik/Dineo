@@ -74,9 +74,12 @@ export async function POST(req: Request) {
       );
     }
 
+    const isMocked = !process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS;
+
     return NextResponse.json({
       success: true,
       message: "A verification OTP has been sent to the requested email address.",
+      ...(isMocked ? { mockOtp: otpCode } : {}),
     });
   } catch (error) {
     console.error("POST /api/admin/profile/send-otp error:", error);

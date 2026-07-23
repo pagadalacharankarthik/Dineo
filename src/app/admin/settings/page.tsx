@@ -103,7 +103,12 @@ export default function AdminSettingsPage() {
       const data = await res.json();
       if (data.success) {
         setOtpSent(true);
-        toast.success("Verification OTP code sent to " + newEmail);
+        if (data.mockOtp) {
+          toast.success(`[DEV MODE] OTP code is: ${data.mockOtp} (Auto-filled!)`);
+          setOtpCode(data.mockOtp);
+        } else {
+          toast.success("Verification OTP code sent to " + newEmail);
+        }
       } else {
         toast.error(data.error || "Failed to send OTP code");
       }
