@@ -233,6 +233,14 @@ export default function DashboardPage() {
     window.print();
   };
 
+  const stripEmojis = (text: string): string => {
+    if (!text) return "";
+    return text
+      .replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, '')
+      .replace(/[^\x00-\x7F]/g, "")
+      .trim();
+  };
+
   const handleDownloadMenuPDF = async () => {
     if (!stats?.restaurantSlug) return;
     setDownloadingMenuPDF(true);
@@ -311,7 +319,7 @@ export default function DashboardPage() {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(22);
       doc.setTextColor(15, 23, 42); // Slate-900
-      doc.text(restaurant.name, textXOffset, 18);
+      doc.text(stripEmojis(restaurant.name), textXOffset, 18);
 
       // Restaurant Description / Tagline
       doc.setFont("helvetica", "normal");
@@ -320,14 +328,14 @@ export default function DashboardPage() {
       const descText = restaurant.description
         ? restaurant.description.substring(0, 85)
         : (restaurant.address || "Smart Digital QR Menu");
-      doc.text(descText, textXOffset, 24);
+      doc.text(stripEmojis(descText), textXOffset, 24);
 
       // Business Contact Info Line
       const contactText = `${restaurant.mobile || ""} | ${restaurant.email || ""} | /menu/${restaurant.slug}`;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       doc.setTextColor(249, 115, 22); // Orange-500
-      doc.text(contactText, textXOffset, 29);
+      doc.text(stripEmojis(contactText), textXOffset, 29);
 
       // Horizontal separator line
       doc.setDrawColor(226, 232, 240); // Slate-200
@@ -352,7 +360,7 @@ export default function DashboardPage() {
         doc.setFont("helvetica", "bold");
         doc.setFontSize(14);
         doc.setTextColor(249, 115, 22); // Orange-500
-        doc.text(cat.name, 14, y);
+        doc.text(stripEmojis(cat.name), 14, y);
         doc.setDrawColor(254, 215, 170); // Orange-200 (faint line)
         doc.line(14, y + 2, 196, y + 2);
 
@@ -375,7 +383,7 @@ export default function DashboardPage() {
           doc.setFontSize(11);
           doc.setTextColor(30, 41, 59); // Slate-800
           const vegTag = item.isVeg ? "[Veg]" : "[Non-Veg]";
-          doc.text(`${vegTag} ${item.name}`, 14, y);
+          doc.text(`${vegTag} ${stripEmojis(item.name)}`, 14, y);
 
           // Price Align Right
           const activePrice = item.discountPrice !== null && item.discountPrice !== undefined
@@ -391,7 +399,7 @@ export default function DashboardPage() {
             doc.setFont("helvetica", "normal");
             doc.setFontSize(8.5);
             doc.setTextColor(100, 116, 139); // Slate-500
-            doc.text(item.description.substring(0, 95), 14, y + 4.5);
+            doc.text(stripEmojis(item.description.substring(0, 95)), 14, y + 4.5);
             y += 11;
           } else {
             y += 8;
@@ -711,6 +719,9 @@ export default function DashboardPage() {
         <>
           <style jsx global>{`
             @media print {
+              @page {
+                margin: 0;
+              }
               body * {
                 visibility: hidden !important;
               }
@@ -725,15 +736,21 @@ export default function DashboardPage() {
                 width: 100vw !important;
                 height: 100vh !important;
                 display: flex !important;
-                flex-direction: column !important;
                 align-items: center !important;
                 justify-content: center !important;
-                text-align: center !important;
-                padding: 20px !important;
-                margin: 0 !important;
                 background: #ffffff !important;
-                color: #000000 !important;
+                margin: 0 !important;
+                padding: 10% !important;
+                box-sizing: border-box !important;
                 z-index: 99999 !important;
+              }
+              #printable-qr-poster > div {
+                width: 80% !important;
+                height: 80% !important;
+                max-width: 450px !important;
+                max-height: 600px !important;
+                border-radius: 40px !important;
+                padding: 40px !important;
               }
             }
           `}</style>
@@ -742,36 +759,40 @@ export default function DashboardPage() {
             <div
               id="printable-qr-poster"
               ref={printRef}
-              className="bg-gradient-to-br from-orange-500 via-amber-500 to-amber-600 p-8 rounded-3xl text-white shadow-xl max-w-sm mx-auto flex flex-col items-center justify-center"
+              className="bg-white flex items-center justify-center p-12 overflow-hidden"
               style={{ width: "384px", height: "512px" }}
             >
-              <div className="flex items-center gap-2 mb-2">
-                <Building2 className="h-6 w-6" />
-                <h2 className="text-2xl font-extrabold tracking-tight">
-                  {stats.restaurantName}
-                </h2>
-              </div>
-              <p className="text-xs text-white/90 font-medium mb-6">
-                Scan with any phone camera to view menu
-              </p>
+              <div
+                className="bg-gradient-to-br from-orange-500 via-amber-500 to-amber-600 p-8 rounded-3xl text-white shadow-xl flex flex-col items-center justify-center w-full h-full text-center"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Building2 className="h-6 w-6" />
+                  <h2 className="text-2xl font-extrabold tracking-tight">
+                    {stats.restaurantName}
+                  </h2>
+                </div>
+                <p className="text-xs text-white/90 font-medium mb-6">
+                  Scan with any phone camera to view menu
+                </p>
 
-              <div className="bg-white p-4 rounded-2xl shadow-2xl mb-4">
-                {dataUrl ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={dataUrl}
-                    alt="Restaurant QR Code"
-                    className="w-56 h-56 object-contain"
-                  />
-                ) : (
-                  <div className="w-56 h-56 flex items-center justify-center text-muted-foreground">
-                    Generating...
-                  </div>
-                )}
-              </div>
+                <div className="bg-white p-4 rounded-2xl shadow-2xl mb-4">
+                  {dataUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={dataUrl}
+                      alt="Restaurant QR Code"
+                      className="w-48 h-48 object-contain"
+                    />
+                  ) : (
+                    <div className="w-48 h-48 flex items-center justify-center text-muted-foreground">
+                      Generating...
+                    </div>
+                  )}
+                </div>
 
-              <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase border border-white/30">
-                ⚡ Powered by Dineo
+                <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold tracking-wider uppercase border border-white/30">
+                  ⚡ Powered by Dineo
+                </div>
               </div>
             </div>
           </div>

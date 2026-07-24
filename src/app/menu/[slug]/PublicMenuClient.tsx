@@ -603,8 +603,8 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
               <h3 className="text-xs font-bold flex items-center gap-1.5 text-foreground">
                 <Ticket className="h-4 w-4 text-primary" /> {t("applyPromoCode")}
               </h3>
-              <span className="text-[9px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded select-all" title="Restaurant ID for Promo Validation">
-                ID: {restaurant.id}
+              <span className="text-[9px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded select-all" title="Short Restaurant ID for Promo Validation">
+                Short ID: {restaurant.id.replace(/^cm/, "").substring(0, 8).toUpperCase()}
               </span>
             </div>
             {appliedCoupon && (

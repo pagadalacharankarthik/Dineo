@@ -197,9 +197,14 @@ export default function RestaurantPage() {
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-extrabold">Restaurant Profile</h1>
             {restaurantId && (
-              <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-550 dark:text-zinc-400 font-mono px-2.5 py-0.5 rounded-md select-all" title="Unique Restaurant ID">
-                ID: {restaurantId}
-              </span>
+              <>
+                <span className="text-[10px] bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 font-mono px-2 py-0.5 rounded-md select-all font-bold" title="Unique Short ID">
+                  Short ID: {restaurantId.replace(/^cm/, "").substring(0, 8).toUpperCase()}
+                </span>
+                <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-550 dark:text-zinc-400 font-mono px-2 py-0.5 rounded-md select-all" title="Full DB CUID ID">
+                  Full ID: {restaurantId}
+                </span>
+              </>
             )}
           </div>
           <p className="text-sm text-muted-foreground">

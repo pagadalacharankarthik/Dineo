@@ -285,29 +285,38 @@ export default function QRCodePage() {
           animation: shake 0.15s ease-in-out 0s 2;
         }
         @media print {
+          @page {
+            margin: 0;
+          }
           body * {
-            visibility: hidden;
+            visibility: hidden !important;
           }
           #printable-qr-poster,
           #printable-qr-poster * {
-            visibility: visible;
+            visibility: visible !important;
           }
           #printable-qr-poster {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            margin: 0;
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
             background: #ffffff !important;
-            color: #000000 !important;
-            z-index: 99999;
+            margin: 0 !important;
+            padding: 10% !important;
+            box-sizing: border-box !important;
+            z-index: 99999 !important;
+          }
+          #printable-qr-poster > div {
+            width: 80% !important;
+            height: 80% !important;
+            max-width: 450px !important;
+            max-height: 600px !important;
+            border-radius: 40px !important;
+            padding: 40px !important;
           }
         }
       `}</style>
@@ -338,35 +347,40 @@ export default function QRCodePage() {
             <div
               id="printable-qr-poster"
               ref={printRef}
-              className={`bg-gradient-to-br ${colorOptions[(qrData?.planName === "PRO" ? selectedColor : "orange") as keyof typeof colorOptions].gradient} p-8 rounded-3xl text-white shadow-xl max-w-sm mx-auto flex flex-col items-center justify-center`}
+              className="bg-zinc-50 dark:bg-zinc-900 border border-border p-8 rounded-3xl max-w-sm mx-auto flex items-center justify-center overflow-hidden"
+              style={{ aspectRatio: "3/4" }}
             >
-              <div className="flex items-center gap-2 mb-2">
-                <Building2 className="h-6 w-6" />
-                <h2 className="text-2xl font-extrabold tracking-tight">
-                  {qrData?.restaurantName}
-                </h2>
-              </div>
-              <p className="text-xs text-white/90 font-medium mb-6">
-                Scan with any phone camera to view menu
-              </p>
+              <div
+                className={`bg-gradient-to-br ${colorOptions[(qrData?.planName === "PRO" ? selectedColor : "orange") as keyof typeof colorOptions].gradient} p-8 rounded-2xl text-white shadow-xl flex flex-col items-center justify-center w-full h-full text-center`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Building2 className="h-6 w-6" />
+                  <h2 className="text-2xl font-extrabold tracking-tight">
+                    {qrData?.restaurantName}
+                  </h2>
+                </div>
+                <p className="text-xs text-white/90 font-medium mb-6">
+                  Scan with any phone camera to view menu
+                </p>
 
-              <div className="bg-white p-4 rounded-2xl shadow-2xl mb-4">
-                {dataUrl ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={dataUrl}
-                    alt="Restaurant QR Code"
-                    className="w-56 h-56 object-contain"
-                  />
-                ) : (
-                  <div className="w-56 h-56 flex items-center justify-center text-muted-foreground">
-                    Generating...
-                  </div>
-                )}
-              </div>
+                <div className="bg-white p-4 rounded-2xl shadow-2xl mb-4">
+                  {dataUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={dataUrl}
+                      alt="Restaurant QR Code"
+                      className="w-48 h-48 object-contain"
+                    />
+                  ) : (
+                    <div className="w-48 h-48 flex items-center justify-center text-muted-foreground">
+                      Generating...
+                    </div>
+                  )}
+                </div>
 
-              <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase border border-white/30">
-                ⚡ Powered by Dineo
+                <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold tracking-wider uppercase border border-white/30">
+                  ⚡ Powered by Dineo
+                </div>
               </div>
             </div>
 
