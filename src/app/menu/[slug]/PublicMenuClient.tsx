@@ -91,7 +91,7 @@ const translations: Record<Language, Record<string, string>> = {
     recommended: "Recommended",
     bestseller: "Bestseller",
     chefSpecial: "Chef Special",
-    reviewGoogle: "⭐ Loved your meal? Leave us a Google Review",
+    reviewGoogle: "Loved your meal? Leave us a Google Review",
   },
   es: {
     searchPlaceholder: "Buscar platos, entradas, bebidas...",
@@ -528,7 +528,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
       )}
 
       {/* Cover Image & Header */}
-      <div className="relative text-white pb-12 pt-20 px-4 sm:px-6 overflow-hidden shadow-md">
+      <div className="relative text-white pb-12 pt-20 px-4 sm:px-6 overflow-hidden shadow-md isolate">
         {/* Cover Background */}
         {restaurant.coverImage ? (
           <div className="absolute inset-0 -z-10">
@@ -541,8 +541,8 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/65 to-black/85 backdrop-blur-[2.5px]" />
           </div>
         ) : (
-          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-orange-600 via-amber-600 to-amber-700">
-            <div className="absolute inset-0 bg-black/25" />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-orange-600 via-zinc-950/85 to-background">
+            <div className="absolute inset-0 bg-black/15" />
           </div>
         )}
 
