@@ -238,6 +238,25 @@ export default function HomePage() {
         .then((url) => setQrCodeUrl(url))
         .catch((err) => console.error("Error generating QR code:", err));
     }
+
+    // Scroll reveal intersection observer logic
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal-visible");
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+
+    const revealElements = document.querySelectorAll(".reveal-on-scroll");
+    revealElements.forEach((el) => observer.observe(el));
+
+    return () => {
+      revealElements.forEach((el) => observer.unobserve(el));
+    };
   }, []);
 
   const handleContactSubmit = async (e: React.FormEvent) => {
@@ -376,7 +395,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── LIVE MENU PREVIEW ─── */}
-      <section className="py-16 sm:py-24 bg-gradient-to-br from-orange-50/50 to-white dark:from-zinc-950/20 dark:to-background border-y border-border/50 relative">
+      <section className="py-16 sm:py-24 bg-gradient-to-br from-orange-50/50 to-white dark:from-zinc-950/20 dark:to-background border-y border-border/50 relative reveal-on-scroll">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-card border border-border rounded-[2.5rem] p-8 sm:p-12 shadow-xl flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
             {/* Background glows */}
@@ -500,7 +519,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── FEATURES ─── */}
-      <section id="features" className="py-20 sm:py-28">
+      <section id="features" className="py-20 sm:py-28 reveal-on-scroll">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
@@ -537,7 +556,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── PHYSICAL STARTER KITS ─── */}
-      <section className="py-20 sm:py-28 bg-muted/30 relative">
+      <section className="py-20 sm:py-28 bg-muted/30 relative reveal-on-scroll">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full px-4 py-1.5 text-sm font-medium mb-6">
@@ -583,7 +602,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── HOW IT WORKS ─── */}
-      <section id="how-it-works" className="py-20 sm:py-28 relative overflow-hidden">
+      <section id="how-it-works" className="py-20 sm:py-28 relative overflow-hidden reveal-on-scroll">
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-b from-muted/60 via-background to-muted/30" />
           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
@@ -661,7 +680,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── WHY CHOOSE US ─── */}
-      <section className="py-20 sm:py-28">
+      <section className="py-20 sm:py-28 reveal-on-scroll">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -735,7 +754,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── CONTACT FORM SECTION ─── */}
-      <section id="contact" className="py-20 sm:py-28 bg-muted/40 relative">
+      <section id="contact" className="py-20 sm:py-28 bg-muted/40 relative reveal-on-scroll">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
