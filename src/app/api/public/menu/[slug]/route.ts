@@ -98,18 +98,6 @@ export async function GET(
       });
     });
 
-    // Increment scan and view metrics asynchronously in background
-    Promise.all([
-      db.category.updateMany({
-        where: { restaurantId: restaurant.id, isHidden: false, isDisabled: false },
-        data: { viewsCount: { increment: 1 } },
-      }),
-      db.menuItem.updateMany({
-        where: { restaurantId: restaurant.id, isHidden: false },
-        data: { viewsCount: { increment: 1 } },
-      }),
-    ]).catch((err) => console.error("Metrics background update error:", err));
-
     return NextResponse.json({
       success: true,
       data: {

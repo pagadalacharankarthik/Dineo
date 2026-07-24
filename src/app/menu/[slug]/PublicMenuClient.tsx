@@ -213,6 +213,25 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
 
   const selectCategory = (catId: string) => {
     setActiveCategory(catId);
+    
+    // Track views dynamically
+    if (catId !== "all") {
+      fetch("/api/public/view", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categoryId: catId }),
+      }).catch((err) => console.error("Failed to record view analytics:", err));
+    } else {
+      const firstCat = restaurant?.categories?.[0];
+      if (firstCat) {
+        fetch("/api/public/view", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ categoryId: firstCat.id }),
+        }).catch((err) => console.error("Failed to record view analytics:", err));
+      }
+    }
+
     setTimeout(() => {
       document.getElementById("menu-start")?.scrollIntoView({ behavior: "smooth" });
     }, 50);
@@ -406,6 +425,16 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ slug, visitorId, referrer: document.referrer }),
           }).catch((err) => console.error("Failed to record scan analytics:", err));
+        }
+
+        // Record initial category view of the first category shown to the user
+        const firstCategory = data.data.categories?.[0];
+        if (firstCategory) {
+          fetch("/api/public/view", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ categoryId: firstCategory.id }),
+          }).catch((err) => console.error("Failed to record initial view:", err));
         }
 
         // Check if the restaurant is closed
