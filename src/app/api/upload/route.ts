@@ -18,8 +18,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Size limit check: 2.5MB to protect DB storage sizes
+    if (file.size > 2.5 * 1024 * 1024) {
+      return NextResponse.json(
+        { success: false, error: "Image size exceeds the 2.5MB limit. Please upload a smaller file." },
+        { status: 400 }
+      );
+    }
 
     // Validate image mime type
     const validTypes = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
@@ -30,25 +35,41 @@ export async function POST(req: Request) {
       );
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-    const ext = path.extname(file.name) || ".png";
-    const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
-    const filePath = path.join(uploadDir, filename);
+    try {
+      // In local development, save to local filesystem for efficiency
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      await mkdir(uploadDir, { recursive: true });
 
-    await writeFile(filePath, buffer);
+      const ext = path.extname(file.name) || ".png";
+      const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
+      const filePath = path.join(uploadDir, filename);
 
-    const publicUrl = `/uploads/${filename}`;
+      await writeFile(filePath, buffer);
 
-    return NextResponse.json({
-      success: true,
-      url: publicUrl,
-    });
+      const publicUrl = `/uploads/${filename}`;
+      return NextResponse.json({
+        success: true,
+        url: publicUrl,
+      });
+    } catch (fsError: any) {
+      console.warn("⚠️ Local disk write failed (likely read-only serverless environment). Falling back to Base64 data URL...");
+      
+      // On Vercel (read-only filesystem), automatically convert to inline base64 string
+      const base64Data = buffer.toString("base64");
+      const base64Url = `data:${file.type};base64,${base64Data}`;
+      
+      return NextResponse.json({
+        success: true,
+        url: base64Url,
+      });
+    }
   } catch (error) {
     console.error("POST /api/upload error:", error);
     return NextResponse.json(
-      { success: false, error: "Failed to upload image" },
+      { success: false, error: "Failed to upload image. Please try again." },
       { status: 500 }
     );
   }

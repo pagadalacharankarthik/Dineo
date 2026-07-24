@@ -57,7 +57,7 @@ export async function POST(req: Request) {
           <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; margin: 20px 0;">
             <h4 style="color: #0f172a; margin-top: 0; margin-bottom: 8px; font-size: 14px;">Onboarding Status:</h4>
             <p style="margin: 4px 0; font-size: 13px; color: #475569;"><strong>Restaurant Name:</strong> ${user.restaurant.name}</p>
-            <p style="margin: 4px 0; font-size: 13px; color: #475569;"><strong>Status:</strong> Under Review</p>
+            <p style="margin: 4px 0; font-size: 13px; color: #475569;"><strong>Status:</strong> Under Review ⏳</p>
           </div>
 
           <p style="color: #475569; font-size: 14px; line-height: 1.6;">While your account is under review, you can prepare your menu files or reach out to our team at <a href="mailto:charanlabssupport@gmail.com" style="color: #ea580c; text-decoration: none;">charanlabssupport@gmail.com</a> if you have any questions.</p>

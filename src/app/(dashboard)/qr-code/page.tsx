@@ -142,8 +142,13 @@ export default function QRCodePage() {
           };
 
           logoImg.onerror = () => {
-            console.warn("Failed to load logo, using plain QR");
-            resolve();
+            console.warn("Failed to load custom logo, falling back to default Dineo logo");
+            const defaultLogo = new URL("/logo.svg", window.location.origin).href;
+            if (logoImg.src !== defaultLogo) {
+              logoImg.src = defaultLogo;
+            } else {
+              resolve();
+            }
           };
         });
       }

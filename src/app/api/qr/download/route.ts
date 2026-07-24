@@ -2,8 +2,46 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import * as QRCodeLib from "qrcode";
 import { jsPDF } from "jspdf";
+import fs from "fs";
+import path from "path";
 
 export const dynamic = "force-dynamic";
+
+async function fetchLogoBase64(logoUrl: string | null | undefined): Promise<{ data: string; format: "PNG" | "JPEG" }> {
+  const fallbackPath = path.join(process.cwd(), "public", "logo-light.png");
+  let format: "PNG" | "JPEG" = "PNG";
+  
+  if (logoUrl && logoUrl.trim() !== "") {
+    try {
+      const url = logoUrl.startsWith("http")
+        ? logoUrl
+        : `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}${logoUrl}`;
+      
+      const res = await fetch(url);
+      if (res.ok) {
+        const buffer = await res.arrayBuffer();
+        const base64 = Buffer.from(buffer).toString("base64");
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("jpeg") || contentType.includes("jpg")) {
+          format = "JPEG";
+        }
+        return { data: `data:${contentType};base64,${base64}`, format };
+      }
+    } catch (e) {
+      console.warn("Failed to fetch custom logo, using local fallback:", e);
+    }
+  }
+
+  // Read local fallback file
+  try {
+    const fileBuffer = fs.readFileSync(fallbackPath);
+    const base64 = fileBuffer.toString("base64");
+    return { data: `data:image/png;base64,${base64}`, format: "PNG" };
+  } catch (e) {
+    console.error("Failed to read fallback logo:", e);
+    return { data: "", format: "PNG" };
+  }
+}
 
 export async function GET(req: Request) {
   try {
@@ -53,6 +91,7 @@ export async function GET(req: Request) {
       const pngDataUrl = await QRCodeLib.toDataURL(targetUrl, {
         margin: 2,
         width: 1024,
+        errorCorrectionLevel: "H", // Use high error correction to support logo overlay
       });
 
       const doc = new jsPDF({
@@ -75,8 +114,21 @@ export async function GET(req: Request) {
       doc.setFontSize(14);
       doc.text("Scan QR Code to View our Digital Menu", 105, 55, { align: "center" });
 
-      // Embed QR image
-      doc.addImage(pngDataUrl, "PNG", 45, 75, 120, 120);
+      // Embed QR image centered vertically (X=45, Y=90, W=120, H=120)
+      doc.addImage(pngDataUrl, "PNG", 45, 90, 120, 120);
+
+      // Embed Logo overlay in the middle of QR Code
+      const logoData = await fetchLogoBase64(qrCode.restaurant.logo);
+      if (logoData.data) {
+        // Draw white container box
+        doc.setFillColor(255, 255, 255);
+        doc.setDrawColor(241, 245, 249);
+        doc.setLineWidth(1);
+        doc.roundedRect(91, 136, 28, 28, 5, 5, "FD");
+
+        // Draw logo image
+        doc.addImage(logoData.data, logoData.format, 92, 137, 26, 26);
+      }
 
       // Bottom banner info
       doc.setFillColor(30, 41, 59); // Slate-800

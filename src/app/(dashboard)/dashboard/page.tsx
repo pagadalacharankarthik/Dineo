@@ -251,17 +251,15 @@ export default function DashboardPage() {
         <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {/* Action 1: Download QR */}
-          <a
-            href={stats?.qrCodeId ? `/api/qr/download?qrId=${stats.qrCodeId}&format=png` : "#"}
-            className={`p-4 rounded-2xl border border-border bg-card/65 backdrop-blur-md transition-all duration-300 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 flex flex-col items-center text-center cursor-pointer ${
-              !stats?.qrCodeId ? "pointer-events-none opacity-50" : ""
-            }`}
+          <Link
+            href="/qr-code"
+            className={`p-4 rounded-2xl border border-border bg-card/65 backdrop-blur-md transition-all duration-300 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 flex flex-col items-center text-center cursor-pointer`}
           >
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 mb-3">
               <Download className="h-5 w-5" />
             </div>
             <p className="font-semibold text-xs">Download QR</p>
-          </a>
+          </Link>
 
           {/* Action 2: Print QR */}
           <button
