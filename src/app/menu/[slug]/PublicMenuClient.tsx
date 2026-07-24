@@ -209,7 +209,6 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
   } | null>(null);
 
   const [downloadingPDF, setDownloadingPDF] = useState(false);
-  const isDarkPlan = restaurant?.planName === "PRO" || restaurant?.planName === "ENTERPRISE";
 
   const handleDownloadMenuPDF = async () => {
     if (!restaurant) return;
@@ -605,11 +604,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             placeholder={t("searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full pl-11 pr-4 py-3 border text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-primary shadow-xs rounded-2xl ${
-              isDarkPlan
-                ? "bg-slate-900/80 border-orange-500/15 text-white placeholder:text-white/40"
-                : "bg-card border-border text-foreground placeholder:text-muted-foreground/60"
-            }`}
+            className="w-full pl-11 pr-4 py-3 bg-card border border-border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary shadow-xs rounded-2xl text-foreground placeholder:text-muted-foreground/60"
           />
         </div>
 
@@ -619,12 +614,8 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             onClick={() => setDietFilter("all")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
               dietFilter === "all"
-                ? isDarkPlan
-                  ? "bg-white text-slate-950 border-white shadow-xs"
-                  : "bg-foreground text-background border-foreground shadow-xs"
-                : isDarkPlan
-                ? "bg-slate-900 text-slate-400 border-slate-800 hover:text-white"
-                : "bg-card text-muted-foreground border-border hover:text-foreground"
+                ? "bg-foreground text-background dark:bg-white dark:text-black border-foreground shadow-xs"
+                : "bg-card text-muted-foreground border-border/50 hover:text-foreground"
             }`}
           >
             All Dishes
@@ -634,9 +625,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
               dietFilter === "veg"
                 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500 shadow-xs"
-                : isDarkPlan
-                ? "bg-slate-900 text-slate-400 border-slate-800 hover:text-emerald-400"
-                : "bg-card text-muted-foreground border-border hover:text-foreground"
+                : "bg-card text-muted-foreground border-border/50 hover:text-emerald-600 dark:hover:text-emerald-400"
             }`}
           >
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -647,9 +636,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
               dietFilter === "non-veg"
                 ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500 shadow-xs"
-                : isDarkPlan
-                ? "bg-slate-900 text-slate-400 border-slate-800 hover:text-rose-400"
-                : "bg-card text-muted-foreground border-border hover:text-foreground"
+                : "bg-card text-muted-foreground border-border/50 hover:text-rose-600 dark:hover:text-rose-400"
             }`}
           >
             <span className="h-2 w-2 rounded-full bg-rose-500" />
@@ -658,15 +645,13 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
         </div>
 
         {/* Coupon Widget */}
-        <div className={`rounded-2xl p-4 mb-4 shadow-sm space-y-3 ${getCardStyle()}`}>
+        <div className="bg-card border border-border rounded-2xl p-4 mb-4 shadow-sm space-y-3">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <h3 className="text-xs font-bold flex items-center gap-1.5 text-foreground">
                 <Ticket className="h-4 w-4 text-primary" /> {t("applyPromoCode")}
               </h3>
-              <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded select-all ${
-                isDarkPlan ? "text-slate-400 bg-slate-800" : "text-muted-foreground bg-muted"
-              }`} title="Short Restaurant ID for Promo Validation">
+              <span className="text-[9px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded select-all" title="Short Restaurant ID for Promo Validation">
                 Short ID: {restaurant.id.replace(/^cm/, "").substring(0, 8).toUpperCase()}
               </span>
             </div>
@@ -690,11 +675,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                     setCouponCode(e.target.value.toUpperCase());
                     setCouponError(null);
                   }}
-                  className={`flex-1 px-3 py-2 text-xs font-semibold rounded-xl uppercase outline-hidden focus:ring-2 focus:ring-primary ${
-                    isDarkPlan
-                      ? "bg-black/30 border border-slate-800 text-white placeholder-white/30"
-                      : "bg-background border border-border text-foreground placeholder:text-muted-foreground/60"
-                  }`}
+                  className="flex-1 px-3 py-2 bg-background border border-border text-xs font-semibold rounded-xl uppercase outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground/60"
                 />
                 <button
                   onClick={handleApplyCoupon}
@@ -720,19 +701,13 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
         </div>
 
         {/* Sticky Category Scrollbar */}
-        <div className={`sticky top-2 z-30 backdrop-blur-md p-2 rounded-2xl border shadow-md mb-6 overflow-x-auto flex items-center gap-2 no-scrollbar ${
-          isDarkPlan
-            ? "bg-slate-950/80 border-slate-850"
-            : "bg-background/80 border-border"
-        }`}>
+        <div className="sticky top-2 z-30 bg-background/80 backdrop-blur-md p-2 rounded-2xl border border-border shadow-md mb-6 overflow-x-auto flex items-center gap-2 no-scrollbar">
           <button
             onClick={() => setActiveCategory("all")}
             className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
               activeCategory === "all"
                 ? "gradient-primary text-white shadow-sm"
-                : isDarkPlan
-                ? "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
-                : "bg-card text-muted-foreground hover:text-foreground border border-border/10"
+                : "bg-card text-muted-foreground hover:text-foreground"
             }`}
           >
             {t("allItems")}
@@ -744,9 +719,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                 activeCategory === cat.id
                   ? "gradient-primary text-white shadow-sm"
-                  : isDarkPlan
-                  ? "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
-                  : "bg-card text-muted-foreground hover:text-foreground border border-border/10"
+                  : "bg-card text-muted-foreground hover:text-foreground"
               }`}
             >
               {cat.name} ({cat.menuItems.length})
@@ -910,11 +883,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
           href={restaurant.googleReviewUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className={`fixed bottom-4 right-4 z-40 shadow-2xl rounded-full px-4 py-2.5 flex items-center gap-2 hover:-translate-y-0.5 transition-all text-xs font-bold hover:shadow-lg cursor-pointer ${
-            isDarkPlan
-              ? "bg-slate-900 border border-slate-800 text-white"
-              : "bg-card border border-border text-foreground"
-          }`}
+          className="fixed bottom-4 right-4 z-40 bg-card border border-border shadow-2xl rounded-full px-4 py-2.5 flex items-center gap-2 hover:-translate-y-0.5 transition-all text-xs font-bold text-foreground hover:shadow-lg cursor-pointer"
         >
           <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
           <span>{t("reviewGoogle")}</span>
