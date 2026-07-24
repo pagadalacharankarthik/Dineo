@@ -14,16 +14,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { name: true, description: true, logo: true, address: true, mobile: true },
   });
 
-  const title = restaurant ? `${restaurant.name} — Digital Menu | Dineo` : `${slug.toUpperCase()} — Digital Menu | Dineo`;
-  const description = restaurant?.description || `Scan and view the official digital menu for ${restaurant?.name || slug} powered by Dineo. Replace printed menu cards with smart QR menus.`;
+  const title = restaurant ? `${restaurant.name} — Digital Menu by Dineo` : `${slug.toUpperCase()} — Digital Menu by Dineo`;
+  const description = `Digital Menu by Dineo. Scan, view, and enjoy prices, categories, and items from ${restaurant?.name || slug}.`;
   
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  let imageUrl = "";
-  if (restaurant?.logo) {
+  let imageUrl = `${baseUrl}/logo-light.png`; // Fallback to Dineo logo if no logo is uploaded
+  if (restaurant?.logo && restaurant.logo.trim() !== "") {
     imageUrl = restaurant.logo.startsWith("http") ? restaurant.logo : `${baseUrl}${restaurant.logo}`;
   }
 
-  const images = imageUrl ? [{ url: imageUrl }] : [];
+  const images = [{ url: imageUrl }];
 
   return {
     title,
@@ -34,12 +34,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images,
       type: "website",
       url: `${baseUrl}/menu/${slug}`,
+      siteName: "Dineo",
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: imageUrl ? [imageUrl] : [],
+      images: [imageUrl],
     },
   };
 }

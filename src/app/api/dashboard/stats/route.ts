@@ -40,6 +40,8 @@ export async function GET() {
         showTrialBanner: restaurant!.planName === "FREE_TRIAL" ? restaurant!.showTrialBanner : false,
         showOfferBanner: restaurant!.planName === "FREE_TRIAL" ? (settings?.merchantBannerActive ?? true) : false,
         offerBannerText: settings?.merchantBannerText ?? "🎉 Exclusive Offer: Get 20% Off your first order of physical NFC Table Standees! Request your kit today.",
+        restaurantLogo: restaurant!.logo,
+        planName: restaurant!.planName,
       },
     });
   } catch (error) {

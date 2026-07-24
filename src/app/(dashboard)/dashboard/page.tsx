@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import * as QRCodeLib from "qrcode";
+import * as htmlToImage from "html-to-image";
 import {
   UtensilsCrossed,
   Tag,
@@ -42,6 +44,8 @@ interface DashboardStats {
   showTrialBanner: boolean;
   showOfferBanner: boolean;
   offerBannerText?: string;
+  restaurantLogo?: string | null;
+  planName?: string;
 }
 
 export default function DashboardPage() {
@@ -49,13 +53,20 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadingMenuPDF, setDownloadingMenuPDF] = useState(false);
+  const [dataUrl, setDataUrl] = useState<string>("");
+  const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchStats() {
       try {
         const res = await fetch("/api/dashboard/stats");
         const data = await res.json();
-        if (data.success) setStats(data.data);
+        if (data.success && data.data) {
+          setStats(data.data);
+          if (data.data.qrCodeId) {
+            generateQRCodes(data.data);
+          }
+        }
       } catch (err) {
         console.error("Dashboard error:", err);
       } finally {
@@ -100,18 +111,126 @@ export default function DashboardPage() {
     }
   };
 
+  const generateQRCodes = async (details: any) => {
+    try {
+      const { publicUrl, restaurantLogo, planName } = details;
+      const isPro = planName === "PRO";
+      const hasLogo = restaurantLogo && restaurantLogo.trim() !== "";
+      
+      const qrColor = "#ea580c"; // Default Orange
+      
+      // Pro gets their own logo if uploaded, otherwise everyone gets Dineo logo
+      const rawLogoUrl = (isPro && hasLogo) ? restaurantLogo! : "/logo.svg";
+      const logoUrlToUse = new URL(rawLogoUrl, window.location.origin).href;
+
+      const canvas = document.createElement("canvas");
+      const canvasSize = 1024;
+      canvas.width = canvasSize;
+      canvas.height = canvasSize;
+
+      await QRCodeLib.toCanvas(canvas, publicUrl, {
+        width: canvasSize,
+        margin: 2,
+        errorCorrectionLevel: "H",
+        color: {
+          dark: qrColor,
+          light: "#FFFFFF",
+        },
+      });
+
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        const logoImg = new Image();
+        logoImg.crossOrigin = "anonymous";
+        logoImg.src = logoUrlToUse;
+
+        await new Promise<void>((resolve) => {
+          logoImg.onload = () => {
+            const logoSize = canvasSize * 0.22;
+            const x = (canvasSize - logoSize) / 2;
+            const y = (canvasSize - logoSize) / 2;
+
+            // Draw white border box
+            ctx.fillStyle = "#FFFFFF";
+            const radius = logoSize * 0.2;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + logoSize - radius, y);
+            ctx.quadraticCurveTo(x + logoSize, y, x + logoSize, y + radius);
+            ctx.lineTo(x + logoSize, y + logoSize - radius);
+            ctx.quadraticCurveTo(x + logoSize, y + logoSize, x + logoSize - radius, y + logoSize);
+            ctx.lineTo(x + radius, y + logoSize);
+            ctx.quadraticCurveTo(x, y + logoSize, x, y + logoSize - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fill();
+
+            // Border stroke
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = "#F1F5F9";
+            ctx.stroke();
+
+            // Draw logo inside
+            const margin = logoSize * 0.12;
+            const size = logoSize - (margin * 2);
+            ctx.drawImage(logoImg, x + margin, y + margin, size, size);
+            resolve();
+          };
+
+          logoImg.onerror = () => {
+            console.warn("Failed to load custom logo, falling back to default Dineo logo");
+            const defaultLogo = new URL("/logo.svg", window.location.origin).href;
+            if (logoImg.src !== defaultLogo) {
+              logoImg.src = defaultLogo;
+            } else {
+              resolve();
+            }
+          };
+        });
+      }
+
+      const png = canvas.toDataURL("image/png");
+      setDataUrl(png);
+    } catch (err) {
+      console.error("QR generation error:", err);
+    }
+  };
+
+  const handleDownloadQR = async () => {
+    if (!printRef.current || !stats) return;
+    const toastId = toast.loading("Generating your high-res QR Poster...");
+    try {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const el = printRef.current;
+      const image = await htmlToImage.toPng(el, {
+        pixelRatio: 3,
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        style: {
+          transform: 'none',
+          margin: '0',
+        },
+        backgroundColor: "#ffffff",
+      });
+      
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = `${stats.restaurantSlug}-poster.png`;
+      link.click();
+      toast.success("Downloaded High-Res Poster!", { id: toastId });
+    } catch (error: any) {
+      console.error("Poster generation failed:", error);
+      toast.error(`Failed to generate poster: ${error.message || "Unknown error"}`, { id: toastId });
+    }
+  };
+
   const handlePrintQR = () => {
     if (!stats?.qrCodeId) {
       toast.error("QR Code not ready yet. Please setup your restaurant details.");
       return;
     }
-    // Open the QR print dialog or format download
-    const printWindow = window.open(`/api/qr/download?qrId=${stats.qrCodeId}&format=pdf`, "_blank");
-    if (printWindow) {
-      printWindow.focus();
-    } else {
-      toast.error("Popup blocked! Please allow popups to open PDF.");
-    }
+    window.print();
   };
 
   const handleDownloadMenuPDF = async () => {
@@ -443,15 +562,16 @@ export default function DashboardPage() {
         <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {/* Action 1: Download QR */}
-          <Link
-            href="/qr-code"
-            className={`p-4 rounded-2xl border border-border bg-card/65 backdrop-blur-md transition-all duration-300 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 flex flex-col items-center text-center cursor-pointer`}
+          <button
+            onClick={handleDownloadQR}
+            disabled={!stats?.qrCodeId || !dataUrl}
+            className="p-4 rounded-2xl border border-border bg-card/65 backdrop-blur-md transition-all duration-300 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 flex flex-col items-center text-center cursor-pointer disabled:opacity-50"
           >
             <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 mb-3">
               <Download className="h-5 w-5" />
             </div>
             <p className="font-semibold text-xs">Download QR</p>
-          </Link>
+          </button>
 
           {/* Action 2: Print QR */}
           <button
@@ -584,6 +704,78 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Hidden Print/Download Poster Component */}
+      {stats?.restaurantName && (
+        <>
+          <style jsx global>{`
+            @media print {
+              body * {
+                visibility: hidden !important;
+              }
+              #printable-qr-poster,
+              #printable-qr-poster * {
+                visibility: visible !important;
+              }
+              #printable-qr-poster {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                padding: 20px !important;
+                margin: 0 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                z-index: 99999 !important;
+              }
+            }
+          `}</style>
+          
+          <div className="absolute -left-[9999px] -top-[9999px]">
+            <div
+              id="printable-qr-poster"
+              ref={printRef}
+              className="bg-gradient-to-br from-orange-500 via-amber-500 to-amber-600 p-8 rounded-3xl text-white shadow-xl max-w-sm mx-auto flex flex-col items-center justify-center"
+              style={{ width: "384px", height: "512px" }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Building2 className="h-6 w-6" />
+                <h2 className="text-2xl font-extrabold tracking-tight">
+                  {stats.restaurantName}
+                </h2>
+              </div>
+              <p className="text-xs text-white/90 font-medium mb-6">
+                Scan with any phone camera to view menu
+              </p>
+
+              <div className="bg-white p-4 rounded-2xl shadow-2xl mb-4">
+                {dataUrl ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={dataUrl}
+                    alt="Restaurant QR Code"
+                    className="w-56 h-56 object-contain"
+                  />
+                ) : (
+                  <div className="w-56 h-56 flex items-center justify-center text-muted-foreground">
+                    Generating...
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase border border-white/30">
+                ⚡ Powered by Dineo
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

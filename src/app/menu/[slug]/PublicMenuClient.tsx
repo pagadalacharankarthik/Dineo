@@ -598,10 +598,15 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
 
         {/* Coupon Widget */}
         <div className="bg-card border border-border rounded-2xl p-4 mb-4 shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold flex items-center gap-1.5 text-foreground">
-              <Ticket className="h-4 w-4 text-primary" /> {t("applyPromoCode")}
-            </h3>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <h3 className="text-xs font-bold flex items-center gap-1.5 text-foreground">
+                <Ticket className="h-4 w-4 text-primary" /> {t("applyPromoCode")}
+              </h3>
+              <span className="text-[9px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded select-all" title="Restaurant ID for Promo Validation">
+                ID: {restaurant.id}
+              </span>
+            </div>
             {appliedCoupon && (
               <button
                 onClick={handleRemoveCoupon}
