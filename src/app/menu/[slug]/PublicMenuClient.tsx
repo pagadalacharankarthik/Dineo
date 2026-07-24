@@ -32,6 +32,7 @@ interface MenuItem {
   isBestSeller: boolean;
   isChefSpecial: boolean;
   isAvailable: boolean;
+  createdAt?: string;
 }
 
 interface Category {
@@ -93,6 +94,8 @@ const translations: Record<Language, Record<string, string>> = {
     bestseller: "Bestseller",
     chefSpecial: "Chef Special",
     reviewGoogle: "Loved your meal? Leave us a Google Review",
+    new: "New",
+    popular: "Popular",
   },
   es: {
     searchPlaceholder: "Buscar platos, entradas, bebidas...",
@@ -199,6 +202,21 @@ const translations: Record<Language, Record<string, string>> = {
 export default function PublicMenuClient({ slug }: { slug: string }) {
   const [lang, setLang] = useState<Language>("en");
   const t = (key: string) => translations[lang]?.[key] || translations["en"]?.[key] || key;
+
+  const isNewItem = (createdAt?: string) => {
+    if (!createdAt) return false;
+    const createdDate = new Date(createdAt);
+    const diffTime = Math.abs(new Date().getTime() - createdDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 7;
+  };
+
+  const selectCategory = (catId: string) => {
+    setActiveCategory(catId);
+    setTimeout(() => {
+      document.getElementById("menu-start")?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+  };
 
   const [restaurant, setRestaurant] = useState<RestaurantData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -445,13 +463,45 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 text-center">
-        <div className="h-12 w-12 rounded-2xl gradient-primary flex items-center justify-center animate-pulse mb-4">
-          <QrCode className="h-6 w-6 text-white" />
+      <div className="min-h-screen bg-background pb-20 animate-pulse">
+        {/* Cover Skeleton */}
+        <div className="w-full h-64 bg-zinc-200 dark:bg-zinc-800/60 flex flex-col items-center justify-center relative">
+          <div className="h-20 w-20 rounded-2xl bg-zinc-300 dark:bg-zinc-700/80 shadow-md mb-4 animate-pulse" />
+          <div className="h-6 w-48 rounded bg-zinc-300 dark:bg-zinc-700/80 mb-2 animate-pulse" />
+          <div className="h-4 w-64 rounded bg-zinc-300 dark:bg-zinc-700/80 animate-pulse" />
         </div>
-        <p className="font-semibold text-muted-foreground animate-pulse text-sm">
-          Loading restaurant menu...
-        </p>
+
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 -mt-4 space-y-6">
+          {/* Search bar skeleton */}
+          <div className="h-12 w-full rounded-2xl bg-zinc-200 dark:bg-zinc-800/60" />
+
+          {/* Filters skeleton */}
+          <div className="flex justify-center gap-2">
+            <div className="h-8 w-24 rounded-xl bg-zinc-200 dark:bg-zinc-800/60" />
+            <div className="h-8 w-24 rounded-xl bg-zinc-200 dark:bg-zinc-800/60" />
+            <div className="h-8 w-24 rounded-xl bg-zinc-200 dark:bg-zinc-800/60" />
+          </div>
+
+          {/* Category tabs skeleton */}
+          <div className="h-12 w-full rounded-2xl bg-zinc-200 dark:bg-zinc-800/60" />
+
+          {/* Cards skeleton */}
+          <div className="space-y-4">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="p-4 rounded-2xl border border-border bg-card flex gap-4">
+                <div className="h-24 w-24 rounded-xl bg-zinc-200 dark:bg-zinc-800/60 flex-shrink-0" />
+                <div className="flex-1 space-y-3 py-1">
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800/60 rounded w-3/4" />
+                  <div className="space-y-2">
+                    <div className="h-3 bg-zinc-200 dark:bg-zinc-800/60 rounded" />
+                    <div className="h-3 bg-zinc-200 dark:bg-zinc-800/60 rounded w-5/6" />
+                  </div>
+                  <div className="h-4 bg-zinc-200 dark:bg-zinc-800/60 rounded w-1/4 mt-2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -542,20 +592,20 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/65 to-black/85 backdrop-blur-[2.5px]" />
           </div>
         ) : (
-          <div className={`absolute inset-0 -z-10 bg-gradient-to-b ${
+          <div className={`absolute inset-0 -z-10 bg-gradient-to-br ${
             restaurant.themeColor === "red"
-              ? "from-red-600 via-zinc-950/85 to-background"
+              ? "from-red-600 to-red-800"
               : restaurant.themeColor === "blue"
-              ? "from-blue-600 via-zinc-950/85 to-background"
+              ? "from-blue-600 to-blue-800"
               : restaurant.themeColor === "green"
-              ? "from-emerald-600 via-zinc-950/85 to-background"
+              ? "from-emerald-600 to-teal-800"
               : restaurant.themeColor === "purple"
-              ? "from-purple-600 via-zinc-950/85 to-background"
+              ? "from-purple-600 to-indigo-900"
               : restaurant.themeColor === "black"
-              ? "from-zinc-800 via-zinc-950/95 to-background"
-              : "from-orange-600 via-zinc-950/85 to-background"
+              ? "from-zinc-800 to-zinc-950"
+              : "from-orange-500 to-orange-700"
           }`}>
-            <div className="absolute inset-0 bg-black/15" />
+            <div className="absolute inset-0 bg-black/10" />
           </div>
         )}
 
@@ -633,7 +683,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 -mt-4">
+      <div id="menu-start" className="max-w-3xl mx-auto px-4 sm:px-6 -mt-4 scroll-mt-24">
         {/* Search Bar */}
         <div className="relative mb-4 shadow-lg rounded-2xl overflow-hidden">
           <Search className="absolute left-4 top-3.5 h-4 w-4 text-muted-foreground" />
@@ -743,7 +793,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
         {/* Sticky Category Scrollbar */}
         <div className="sticky top-2.5 z-30 bg-background/85 backdrop-blur-md py-3 px-2.5 rounded-2xl border border-border shadow-lg mb-8 overflow-x-auto flex items-center gap-3 no-scrollbar transition-all duration-300">
           <button
-            onClick={() => setActiveCategory("all")}
+            onClick={() => selectCategory("all")}
             className={`px-4.5 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all duration-300 transform ease-out border cursor-pointer ${
               activeCategory === "all"
                 ? "gradient-primary text-white scale-105 shadow-[0_0_14px_rgba(249,115,22,0.45)] border-amber-400/30"
@@ -755,7 +805,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
           {restaurant.categories.map((cat) => (
             <button
               key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
+              onClick={() => selectCategory(cat.id)}
               className={`px-4.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-300 transform ease-out border cursor-pointer ${
                 activeCategory === cat.id
                   ? "gradient-primary text-white scale-105 shadow-[0_0_14px_rgba(249,115,22,0.45)] border-amber-400/30"
@@ -827,12 +877,14 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                       <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
                           <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-center gap-1.5 min-w-0">
-                              <span
-                                className={`h-2.5 w-2.5 rounded-full flex-shrink-0 ${
-                                  item.isVeg ? "bg-green-600" : "bg-red-600"
-                                }`}
-                              />
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className={`w-3.5 h-3.5 border flex items-center justify-center rounded-sm p-[1px] flex-shrink-0 ${
+                                item.isVeg ? "border-green-600 dark:border-green-500" : "border-red-600 dark:border-red-500"
+                              }`}>
+                                <div className={`w-1.5 h-1.5 rounded-full ${
+                                  item.isVeg ? "bg-green-600 dark:bg-green-500" : "bg-red-600 dark:bg-red-500"
+                                }`} />
+                              </div>
                               <h3 className="font-bold text-sm sm:text-base leading-snug truncate">
                                 {item.name}
                               </h3>
@@ -878,12 +930,17 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                             )}
                             {item.isBestSeller && (
                               <span className="bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
-                                <Flame className="h-2.5 w-2.5" /> {t("bestseller")}
+                                <Flame className="h-2.5 w-2.5" /> {t("popular")}
                               </span>
                             )}
                             {item.isChefSpecial && (
                               <span className="bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
                                 <ChefHat className="h-2.5 w-2.5" /> {t("chefSpecial")}
+                              </span>
+                            )}
+                            {isNewItem(item.createdAt) && (
+                              <span className="bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                                <Sparkles className="h-2.5 w-2.5" /> {t("new")}
                               </span>
                             )}
                           </div>

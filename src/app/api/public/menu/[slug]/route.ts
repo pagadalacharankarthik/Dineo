@@ -65,6 +65,7 @@ export async function GET(
                 isAvailable: true,
                 displayOrder: true,
                 updatedAt: true,
+                createdAt: true,
               },
             },
           },

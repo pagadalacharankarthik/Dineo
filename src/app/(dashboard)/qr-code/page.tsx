@@ -13,6 +13,7 @@ import {
   Sparkles,
   Loader2,
   Lock,
+  Layers,
 } from "lucide-react";
 import { toast } from "sonner";
 import * as QRCodeLib from "qrcode";
@@ -37,6 +38,7 @@ export default function QRCodePage() {
   const [svgUrl, setSvgUrl] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<"orange" | "black" | "blue" | "purple" | "dark" | "emerald" | "rose" | "gold" | "red">("orange");
   const [isShaking, setIsShaking] = useState(false);
+  const [posterFormat, setPosterFormat] = useState<"a4" | "a5" | "square">("a4");
 
   const colorOptions = {
     orange: { gradient: "from-orange-500 via-amber-500 to-amber-600", qr: "#ea580c" },
@@ -294,6 +296,37 @@ export default function QRCodePage() {
     toast.success("Downloaded SVG Vector QR Code!");
   };
 
+  const handleDownloadPDF = async () => {
+    if (!printRef.current || !qrData) return;
+    const toastId = toast.loading("Generating High-Res PDF Poster...");
+    try {
+      const { jsPDF } = await import("jspdf");
+      const el = printRef.current;
+      
+      const canvasImage = await htmlToImage.toPng(el, {
+        pixelRatio: 3,
+        backgroundColor: "#ffffff",
+      });
+      
+      const isSquare = posterFormat === "square";
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: isSquare ? [210, 210] : (posterFormat === "a5" ? "a5" : "a4"),
+      });
+      
+      const width = doc.internal.pageSize.getWidth();
+      const height = doc.internal.pageSize.getHeight();
+      
+      doc.addImage(canvasImage, "PNG", 0, 0, width, height);
+      doc.save(`${qrData.restaurantSlug}-qr-poster-${posterFormat}.pdf`);
+      toast.success("Downloaded PDF Poster successfully!", { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(`Failed to generate PDF: ${err.message || "Unknown error"}`, { id: toastId });
+    }
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -374,7 +407,7 @@ export default function QRCodePage() {
               id="printable-qr-poster"
               ref={printRef}
               className="bg-zinc-50 dark:bg-zinc-900 border border-border p-8 rounded-3xl max-w-sm mx-auto flex items-center justify-center overflow-hidden"
-              style={{ aspectRatio: "3/4" }}
+              style={{ aspectRatio: posterFormat === "square" ? "1/1" : "1/1.414" }}
             >
               <div
                 className={`bg-gradient-to-br ${colorOptions[(qrData?.planName === "PRO" ? selectedColor : "orange") as keyof typeof colorOptions].gradient} p-8 rounded-2xl text-white shadow-xl flex flex-col items-center justify-center w-full h-full text-center`}
@@ -414,19 +447,25 @@ export default function QRCodePage() {
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               <button
                 onClick={handlePrint}
-                className="inline-flex items-center gap-2 gradient-primary text-white font-semibold px-5 py-2.5 rounded-xl text-sm shadow-md hover:opacity-90 transition-opacity"
+                className="inline-flex items-center gap-2 gradient-primary text-white font-semibold px-5 py-2.5 rounded-xl text-sm shadow-md hover:opacity-90 transition-opacity cursor-pointer"
               >
                 <Printer className="h-4 w-4" /> Print QR Poster
               </button>
               <button
                 onClick={handleDownloadPNG}
-                className="inline-flex items-center gap-2 bg-card border border-border hover:bg-muted font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors"
+                className="inline-flex items-center gap-2 bg-card border border-border hover:bg-muted font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer"
               >
                 <Download className="h-4 w-4" /> Download PNG
               </button>
               <button
+                onClick={handleDownloadPDF}
+                className="inline-flex items-center gap-2 bg-card border border-border hover:bg-muted font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer"
+              >
+                <Download className="h-4 w-4 text-rose-500" /> Download PDF
+              </button>
+              <button
                 onClick={handleDownloadSVG}
-                className={`inline-flex items-center gap-2 bg-card border border-border hover:bg-muted font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors ${isShaking ? 'shake-btn border-red-500 text-red-500' : ''}`}
+                className={`inline-flex items-center gap-2 bg-card border border-border hover:bg-muted font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer ${isShaking ? 'shake-btn border-red-500 text-red-500' : ''}`}
               >
                 {qrData?.planName === "FREE_TRIAL" ? (
                   <><Lock className="h-4 w-4" /> SVG (Pro)</>
@@ -434,6 +473,34 @@ export default function QRCodePage() {
                   <><Download className="h-4 w-4" /> Download SVG</>
                 )}
               </button>
+            </div>
+
+            {/* Poster Format Selector */}
+            <div className="space-y-3 pt-4 border-t border-border/55 max-w-sm mx-auto text-left">
+              <h3 className="font-bold text-sm flex items-center gap-2 text-foreground justify-center sm:justify-start">
+                <Layers className="h-4 w-4 text-primary" /> Poster Format Sizing
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { value: "a4", label: "A4 Poster", desc: "210x297 mm" },
+                  { value: "a5", label: "A5 Stand", desc: "148x210 mm" },
+                  { value: "square", label: "Square Block", desc: "1:1 Aspect" }
+                ].map((f) => (
+                  <button
+                    key={f.value}
+                    type="button"
+                    onClick={() => setPosterFormat(f.value as any)}
+                    className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer ${
+                      posterFormat === f.value
+                        ? "border-primary bg-primary/5 text-primary"
+                        : "border-border bg-card text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <p className="text-xs font-bold">{f.label}</p>
+                    <p className="text-[9px] mt-0.5 opacity-80">{f.desc}</p>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {qrData && (

@@ -30,6 +30,7 @@ export async function GET() {
       mostViewedCategories,
       mostViewedItems,
       qrDetails,
+      scansLast7Days,
     ] = await Promise.all([
       // Total Scans (Restricted to last 30 days for db optimization)
       db.qRScan.count({ where: { restaurantId, scannedAt: { gte: thirtyDaysAgo } } }),
@@ -106,7 +107,32 @@ export async function GET() {
         where: { restaurantId, qrType: "RESTAURANT_MAIN" },
         select: { downloadsCount: true },
       }),
+      // Scans of last 7 days for trend graph
+      db.qRScan.findMany({
+        where: { restaurantId, scannedAt: { gte: sevenDaysAgo } },
+        select: { scannedAt: true },
+      }),
     ]);
+
+    // Group last 7 days scans by date string
+    const dailyScansMap: Record<string, number> = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+      const dateString = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      dailyScansMap[dateString] = 0;
+    }
+
+    scansLast7Days.forEach((scan) => {
+      const dateString = new Date(scan.scannedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      if (dateString in dailyScansMap) {
+        dailyScansMap[dateString]++;
+      }
+    });
+
+    const scanTrend = Object.entries(dailyScansMap).map(([date, count]) => ({
+      date,
+      count,
+    }));
 
     return NextResponse.json({
       success: true,
@@ -117,6 +143,7 @@ export async function GET() {
           weekly: weeklyScans,
           monthly: monthlyScans,
         },
+        scanTrend,
         devices: deviceBreakdown.map((d) => ({
           name: d.deviceType || "Unknown",
           value: d._count.id,

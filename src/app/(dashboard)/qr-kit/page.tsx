@@ -200,6 +200,23 @@ export default function QRKitPage() {
     }
   };
 
+  const getStatusStep = (status: string) => {
+    switch (status) {
+      case "DELIVERED":
+      case "COMPLETED":
+        return 4;
+      case "SHIPPED":
+        return 3;
+      case "PROCESSING":
+      case "IN_PROGRESS":
+      case "CONTACTED":
+        return 2;
+      case "PENDING":
+      default:
+        return 1;
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -604,6 +621,48 @@ export default function QRKitPage() {
                         {req.status}
                       </span>
                     </div>
+
+                    {/* Progress tracking status timeline */}
+                    {req.status !== "CANCELLED" && (
+                      <div className="py-4 border-b border-border/40">
+                        <div className="relative flex items-center justify-between w-full max-w-xl mx-auto px-4">
+                          {/* Progress Line Bar Background */}
+                          <div className="absolute left-4 right-4 h-1 bg-muted dark:bg-zinc-800 -translate-y-1/2 top-1/2 -z-10 rounded-full" />
+                          {/* Active Line Bar */}
+                          <div 
+                            className="absolute left-4 h-1 bg-primary -translate-y-1/2 top-1/2 -z-10 transition-all duration-500 rounded-full" 
+                            style={{ width: `${((getStatusStep(req.status) - 1) / 3) * 88}%` }}
+                          />
+                          
+                          {/* Steps */}
+                          {[
+                            { step: 1, label: "Requested" },
+                            { step: 2, label: "Processing" },
+                            { step: 3, label: "Shipped" },
+                            { step: 4, label: "Delivered" }
+                          ].map((s) => {
+                            const isCompleted = getStatusStep(req.status) >= s.step;
+                            const isActive = getStatusStep(req.status) === s.step;
+                            return (
+                              <div key={s.step} className="flex flex-col items-center z-10">
+                                <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold shadow-sm transition-all duration-300 ${
+                                  isCompleted 
+                                    ? "bg-primary border-primary text-white" 
+                                    : "bg-card border-border text-muted-foreground"
+                                } ${isActive ? "ring-4 ring-primary/25 scale-110" : ""}`}>
+                                  {isCompleted ? "✓" : s.step}
+                                </div>
+                                <span className={`text-[9px] font-extrabold mt-1.5 ${
+                                  isCompleted ? "text-primary" : "text-muted-foreground"
+                                }`}>
+                                  {s.label}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
                       <div>

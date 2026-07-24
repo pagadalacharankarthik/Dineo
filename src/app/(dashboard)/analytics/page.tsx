@@ -22,6 +22,7 @@ interface AnalyticsData {
     weekly: number;
     monthly: number;
   };
+  scanTrend: { date: string; count: number }[];
   devices: { name: string; value: number }[];
   browsers: { name: string; value: number }[];
   operatingSystems: { name: string; value: number }[];
@@ -75,6 +76,33 @@ export default function AnalyticsPage() {
   };
 
   const totalScans = data.scans.total;
+
+  const trend = data.scanTrend || [];
+  const maxCount = Math.max(...trend.map((t) => t.count), 5);
+
+  const width = 500;
+  const height = 180;
+  const paddingLeft = 30;
+  const paddingRight = 15;
+  const paddingTop = 20;
+  const paddingBottom = 30;
+
+  const chartWidth = width - paddingLeft - paddingRight;
+  const chartHeight = height - paddingTop - paddingBottom;
+
+  const points = trend.map((val, idx) => {
+    const x = paddingLeft + (idx / (Math.max(trend.length - 1, 1))) * chartWidth;
+    const y = paddingTop + chartHeight - (val.count / maxCount) * chartHeight;
+    return { x, y, date: val.date, count: val.count };
+  });
+
+  const pathD = points.reduce((acc, p, idx) => {
+    return acc + `${idx === 0 ? "M" : " L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+  }, "");
+
+  const areaD = points.length > 0
+    ? `${pathD} L ${points[points.length - 1].x.toFixed(1)} ${(paddingTop + chartHeight).toFixed(1)} L ${points[0].x.toFixed(1)} ${(paddingTop + chartHeight).toFixed(1)} Z`
+    : "";
 
   return (
     <div className="space-y-8">
@@ -132,6 +160,136 @@ export default function AnalyticsPage() {
           <div className="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
             <ScanLine className="h-6 w-6 animate-ping-slow" />
           </div>
+        </div>
+      </div>
+
+      {/* Scan Trend Chart */}
+      <div className="p-6 rounded-2xl border border-border bg-card shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary animate-pulse" /> Scan Frequency Trend
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Scans tracked daily for the past 7 days</p>
+          </div>
+          <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Last 7 Days
+          </span>
+        </div>
+
+        <div className="w-full h-48 relative pt-2">
+          {trend.length === 0 ? (
+            <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
+              No trend data available.
+            </div>
+          ) : (
+            <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
+              <defs>
+                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f97316" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#f97316" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+              
+              {/* Horizontal Grid Lines */}
+              {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+                const y = paddingTop + ratio * chartHeight;
+                const value = Math.round(maxCount * (1 - ratio));
+                return (
+                  <g key={ratio} className="opacity-40">
+                    <line
+                      x1={paddingLeft}
+                      y1={y}
+                      x2={width - paddingRight}
+                      y2={y}
+                      stroke="currentColor"
+                      strokeWidth="0.5"
+                      className="text-border"
+                      strokeDasharray="4 4"
+                    />
+                    <text
+                      x={paddingLeft - 8}
+                      y={y + 3}
+                      textAnchor="end"
+                      fontSize="9"
+                      className="fill-muted-foreground font-semibold"
+                    >
+                      {value}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Area Fill */}
+              {areaD && (
+                <path d={areaD} fill="url(#chartGradient)" />
+              )}
+
+              {/* Line Stroke */}
+              {pathD && (
+                <path
+                  d={pathD}
+                  fill="none"
+                  stroke="#f97316"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+
+              {/* Interaction points / labels */}
+              {points.map((p, idx) => (
+                <g key={idx} className="group/point">
+                  {/* Point Marker */}
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="4"
+                    fill="#f97316"
+                    className="stroke-card stroke-2 transition-all group-hover/point:r-5"
+                  />
+                  {/* Invisible larger hover circle */}
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="12"
+                    fill="transparent"
+                    className="cursor-pointer"
+                  />
+                  {/* Date labels at bottom */}
+                  <text
+                    x={p.x}
+                    y={height - 8}
+                    textAnchor="middle"
+                    fontSize="9"
+                    className="fill-muted-foreground font-semibold"
+                  >
+                    {p.date}
+                  </text>
+                  {/* Tooltip / Value on top of dot on hover */}
+                  <g className="opacity-0 group-hover/point:opacity-100 transition-opacity duration-150 pointer-events-none">
+                    <rect
+                      x={p.x - 18}
+                      y={p.y - 22}
+                      width="36"
+                      height="16"
+                      rx="4"
+                      className="fill-zinc-900 dark:fill-zinc-100"
+                    />
+                    <text
+                      x={p.x}
+                      y={p.y - 11}
+                      textAnchor="middle"
+                      fontSize="8"
+                      className="fill-zinc-100 dark:fill-zinc-900 font-extrabold"
+                    >
+                      {p.count}
+                    </text>
+                  </g>
+                </g>
+              ))}
+            </svg>
+          )}
         </div>
       </div>
 
