@@ -320,20 +320,41 @@ export default function RestaurantPage() {
               </div>
             </FormField>
 
-            <FormField id="res-color" label="Default Banner Theme Color" error={errors.themeColor?.message}>
-              <select
-                id="res-color"
-                {...register("themeColor")}
-                className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-colors cursor-pointer"
-              >
-                <option value="orange">🍊 Orange (Default)</option>
-                <option value="red">🍒 Red</option>
-                <option value="blue">🫐 Blue</option>
-                <option value="green">🥝 Green</option>
-                <option value="purple">🍇 Purple</option>
-                <option value="black">🖤 Dark Slate / Black</option>
-              </select>
-            </FormField>
+            {planName === "PRO" || planName === "ENTERPRISE" ? (
+              <FormField id="res-color" label="Default Banner Theme Color" error={errors.themeColor?.message}>
+                <select
+                  id="res-color"
+                  {...register("themeColor")}
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-colors cursor-pointer"
+                >
+                  <option value="orange">🍊 Orange (Default)</option>
+                  <option value="red">🍒 Red</option>
+                  <option value="blue">🫐 Blue</option>
+                  <option value="green">🥝 Green</option>
+                  <option value="purple">🍇 Purple</option>
+                  <option value="black">🖤 Dark Slate / Black</option>
+                </select>
+              </FormField>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                <label className="block text-sm font-medium">Default Banner Theme Color</label>
+                <div className="w-full rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xl">🍊</span>
+                    <div>
+                      <p className="text-xs font-bold text-foreground">Orange (Default)</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Custom colors available on PRO plan</p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/subscription"
+                    className="shrink-0 text-[10px] font-extrabold gradient-primary text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity whitespace-nowrap"
+                  >
+                    ✦ Upgrade to PRO
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
