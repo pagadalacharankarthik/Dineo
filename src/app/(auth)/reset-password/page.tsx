@@ -30,6 +30,18 @@ function ResetPasswordForm() {
 
   const onSubmit = async (data: ResetPasswordInput) => {
     try {
+      // Verify that the user is not reusing their old password
+      const checkRes = await fetch("/api/auth/check-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: data.token, password: data.password }),
+      });
+      const checkData = await checkRes.json();
+      if (checkData.success && checkData.isSame) {
+        toast.error("Please enter a new password. You cannot reuse your current password.");
+        return;
+      }
+
       const result = await resetPassword({
         newPassword: data.password,
         token: data.token,

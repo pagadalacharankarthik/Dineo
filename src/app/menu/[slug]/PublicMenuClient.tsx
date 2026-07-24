@@ -195,6 +195,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [dietFilter, setDietFilter] = useState<"all" | "veg" | "non-veg">("all");
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [isClosed, setIsClosed] = useState(false);
 
@@ -469,12 +470,23 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
   // Filter Categories & Items
   const filteredCategories = restaurant.categories
     .map((cat) => {
-      const items = cat.menuItems.filter(
-        (item) =>
+      const items = cat.menuItems.filter((item) => {
+        // Search filter match
+        const matchesSearch =
           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           (item.description &&
-            item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+            item.description.toLowerCase().includes(searchQuery.toLowerCase()));
+
+        // Diet (Veg/Non-veg) filter match
+        let matchesDiet = true;
+        if (dietFilter === "veg") {
+          matchesDiet = item.isVeg;
+        } else if (dietFilter === "non-veg") {
+          matchesDiet = !item.isVeg;
+        }
+
+        return matchesSearch && matchesDiet;
+      });
       return { ...cat, menuItems: items };
     })
     .filter((cat) =>
@@ -594,6 +606,42 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-11 pr-4 py-3 bg-card border border-border text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-primary shadow-xs"
           />
+        </div>
+
+        {/* Diet/Veg Filter Switcher Pills */}
+        <div className="flex justify-center items-center gap-2 mb-6">
+          <button
+            onClick={() => setDietFilter("all")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+              dietFilter === "all"
+                ? "bg-foreground text-background dark:bg-white dark:text-black border-foreground shadow-xs"
+                : "bg-card text-muted-foreground border-border hover:text-foreground"
+            }`}
+          >
+            All Dishes
+          </button>
+          <button
+            onClick={() => setDietFilter("veg")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
+              dietFilter === "veg"
+                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-550 shadow-xs"
+                : "bg-card text-muted-foreground border-border hover:text-foreground"
+            }`}
+          >
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            Veg Only
+          </button>
+          <button
+            onClick={() => setDietFilter("non-veg")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 cursor-pointer ${
+              dietFilter === "non-veg"
+                ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-550 shadow-xs"
+                : "bg-card text-muted-foreground border-border hover:text-foreground"
+            }`}
+          >
+            <span className="h-2 w-2 rounded-full bg-rose-500" />
+            Non-Veg Only
+          </button>
         </div>
 
         {/* Coupon Widget */}

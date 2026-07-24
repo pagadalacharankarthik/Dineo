@@ -81,8 +81,39 @@ export default function QRCodePage() {
       
       // Pro gets their own logo if uploaded, otherwise everyone gets Dineo logo
       const rawLogoUrl = (isPro && hasLogo) ? restaurantLogo! : "/logo.svg";
-      // Ensure the URL is absolute so it works when the SVG is downloaded to a local computer
       const logoUrlToUse = new URL(rawLogoUrl, window.location.origin).href;
+
+      // Fetch the logo and convert it to Base64 to ensure it embeds offline inside SVG downloads
+      let base64LogoUrl = "";
+      try {
+        const logoRes = await fetch(logoUrlToUse);
+        if (logoRes.ok) {
+          const blob = await logoRes.blob();
+          base64LogoUrl = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(blob);
+          });
+        }
+      } catch (e) {
+        console.warn("Failed to fetch custom logo, trying fallback:", e);
+      }
+
+      if (!base64LogoUrl) {
+        try {
+          const fallbackRes = await fetch(new URL("/logo.svg", window.location.origin).href);
+          if (fallbackRes.ok) {
+            const blob = await fallbackRes.blob();
+            base64LogoUrl = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.readAsDataURL(blob);
+            });
+          }
+        } catch (e) {
+          console.error("Failed to load fallback Dineo logo as base64:", e);
+        }
+      }
 
       const canvas = document.createElement("canvas");
       const canvasSize = 1024;
@@ -101,10 +132,10 @@ export default function QRCodePage() {
       });
 
       const ctx = canvas.getContext("2d");
-      if (ctx) {
+      if (ctx && base64LogoUrl) {
         const logoImg = new Image();
         logoImg.crossOrigin = "anonymous";
-        logoImg.src = logoUrlToUse;
+        logoImg.src = base64LogoUrl;
 
         await new Promise<void>((resolve) => {
           logoImg.onload = () => {
@@ -142,13 +173,8 @@ export default function QRCodePage() {
           };
 
           logoImg.onerror = () => {
-            console.warn("Failed to load custom logo, falling back to default Dineo logo");
-            const defaultLogo = new URL("/logo.svg", window.location.origin).href;
-            if (logoImg.src !== defaultLogo) {
-              logoImg.src = defaultLogo;
-            } else {
-              resolve();
-            }
+            console.warn("Failed to load logo on canvas image loader");
+            resolve();
           };
         });
       }
@@ -168,7 +194,7 @@ export default function QRCodePage() {
       });
 
       // Inject logo into the center of the SVG
-      if (logoUrlToUse) {
+      if (base64LogoUrl) {
         const svgMatch = svg.match(/viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/);
         if (svgMatch) {
           const size = parseFloat(svgMatch[1]);
@@ -179,7 +205,7 @@ export default function QRCodePage() {
           // White background block
           const injection = `
             <rect x="${x - 1}" y="${y - 1}" width="${logoSize + 2}" height="${logoSize + 2}" fill="#FFFFFF" rx="1" ry="1" />
-            <image href="${logoUrlToUse}" x="${x}" y="${y}" width="${logoSize}" height="${logoSize}" preserveAspectRatio="xMidYMid slice" />
+            <image href="${base64LogoUrl}" x="${x}" y="${y}" width="${logoSize}" height="${logoSize}" preserveAspectRatio="xMidYMid slice" />
           `;
           svg = svg.replace('</svg>', injection + '</svg>');
         }
