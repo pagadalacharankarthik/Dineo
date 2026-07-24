@@ -28,6 +28,16 @@ export async function GET(
         isSuspended: true,
         isDeleted: true,
         updatedAt: true,
+        coupons: {
+          where: { isActive: true },
+          select: {
+            id: true,
+            code: true,
+            discountType: true,
+            discountValue: true,
+            expiresAt: true,
+          },
+        },
         categories: {
           where: { isHidden: false, isDisabled: false },
           orderBy: { displayOrder: "asc" },

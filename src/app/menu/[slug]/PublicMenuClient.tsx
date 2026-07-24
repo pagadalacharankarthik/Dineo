@@ -15,6 +15,7 @@ import {
   QrCode,
   Ticket,
   Download,
+  Star,
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -55,6 +56,13 @@ interface RestaurantData {
   lastUpdated?: string;
   googleReviewUrl?: string | null;
   planName?: string;
+  coupons?: {
+    id: string;
+    code: string;
+    discountType: string;
+    discountValue: number;
+    expiresAt?: string | null;
+  }[];
 }
 
 type Language = "en" | "es" | "hi" | "fr" | "tel";
@@ -83,7 +91,7 @@ const translations: Record<Language, Record<string, string>> = {
     recommended: "Recommended",
     bestseller: "Bestseller",
     chefSpecial: "Chef Special",
-    reviewGoogle: "Review us on Google",
+    reviewGoogle: "⭐ Loved your meal? Leave us a Google Review",
   },
   es: {
     searchPlaceholder: "Buscar platos, entradas, bebidas...",
@@ -520,13 +528,30 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
       )}
 
       {/* Cover Image & Header */}
-      <div className="relative bg-gradient-to-b from-orange-500 to-amber-600 text-white pb-8 pt-12 px-4 sm:px-6">
+      <div className="relative text-white pb-12 pt-20 px-4 sm:px-6 overflow-hidden shadow-md">
+        {/* Cover Background */}
+        {restaurant.coverImage ? (
+          <div className="absolute inset-0 -z-10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={restaurant.coverImage}
+              alt="Restaurant Cover"
+              className="w-full h-full object-cover scale-105 select-none"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/65 to-black/85 backdrop-blur-[2.5px]" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-orange-600 via-amber-600 to-amber-700">
+            <div className="absolute inset-0 bg-black/25" />
+          </div>
+        )}
+
         {/* Language Selector */}
         <div className="absolute top-4 right-4 z-10">
           <select
             value={lang}
             onChange={(e) => setLang(e.target.value as Language)}
-            className="bg-black/20 hover:bg-black/35 backdrop-blur-md text-white border border-white/20 text-xs font-bold py-1.5 px-2.5 rounded-xl outline-none cursor-pointer shadow-sm transition-all"
+            className="bg-black/40 hover:bg-black/55 backdrop-blur-md text-white border border-white/20 text-xs font-bold py-1.5 px-2.5 rounded-xl outline-none cursor-pointer shadow-sm transition-all"
           >
             <option value="en" className="text-slate-900 bg-white">🇺🇸 EN</option>
             <option value="es" className="text-slate-900 bg-white">🇪🇸 ES</option>
@@ -645,69 +670,71 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
         </div>
 
         {/* Coupon Widget */}
-        <div className="bg-card border border-border rounded-2xl p-4 mb-4 shadow-sm space-y-3">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <h3 className="text-xs font-bold flex items-center gap-1.5 text-foreground">
-                <Ticket className="h-4 w-4 text-primary" /> {t("applyPromoCode")}
-              </h3>
-              <span className="text-[9px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded select-all" title="Short Restaurant ID for Promo Validation">
-                Short ID: {restaurant.id.replace(/^cm/, "").substring(0, 8).toUpperCase()}
-              </span>
-            </div>
-            {appliedCoupon && (
-              <button
-                onClick={handleRemoveCoupon}
-                className="text-[10px] text-red-500 font-bold hover:underline"
-              >
-                {t("remove")}
-              </button>
-            )}
-          </div>
-          {!appliedCoupon ? (
-            <div className="space-y-2">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder={t("enterPromoCode")}
-                  value={couponCode}
-                  onChange={(e) => {
-                    setCouponCode(e.target.value.toUpperCase());
-                    setCouponError(null);
-                  }}
-                  className="flex-1 px-3 py-2 bg-background border border-border text-xs font-semibold rounded-xl uppercase outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground/60"
-                />
-                <button
-                  onClick={handleApplyCoupon}
-                  disabled={validatingCoupon}
-                  className="gradient-primary text-white font-semibold text-xs px-4 py-2 rounded-xl disabled:opacity-50 flex items-center gap-1.5"
-                >
-                  {validatingCoupon && <Loader2 className="h-3 w-3 animate-spin" />}
-                  {t("apply")}
-                </button>
+        {restaurant.coupons && restaurant.coupons.length > 0 && (
+          <div className="bg-card border border-border rounded-2xl p-4 mb-4 shadow-sm space-y-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold flex items-center gap-1.5 text-foreground">
+                  <Ticket className="h-4 w-4 text-primary" /> {t("applyPromoCode")}
+                </h3>
+                <span className="text-[9px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded select-all" title="Short Restaurant ID for Promo Validation">
+                  Short ID: {restaurant.id.replace(/^cm/, "").substring(0, 8).toUpperCase()}
+                </span>
               </div>
-              {couponError && (
-                <p className="text-[10px] text-red-500 font-semibold px-1">
-                  ⚠ {couponError}
-                </p>
+              {appliedCoupon && (
+                <button
+                  onClick={handleRemoveCoupon}
+                  className="text-[10px] text-red-500 font-bold hover:underline"
+                >
+                  {t("remove")}
+                </button>
               )}
             </div>
-          ) : (
-            <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-              <span>{t("codeApplied")}: {appliedCoupon.code} ({appliedCoupon.discountType === "PERCENT" ? `${appliedCoupon.discountValue}% Off` : `₹${appliedCoupon.discountValue} Off`})</span>
-              <span className="text-emerald-600 dark:text-emerald-400">✓ {t("applied")}</span>
-            </div>
-          )}
-        </div>
+            {!appliedCoupon ? (
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder={t("enterPromoCode")}
+                    value={couponCode}
+                    onChange={(e) => {
+                      setCouponCode(e.target.value.toUpperCase());
+                      setCouponError(null);
+                    }}
+                    className="flex-1 px-3 py-2 bg-background border border-border text-xs font-semibold rounded-xl uppercase outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground/60"
+                  />
+                  <button
+                    onClick={handleApplyCoupon}
+                    disabled={validatingCoupon}
+                    className="gradient-primary text-white font-semibold text-xs px-4 py-2 rounded-xl disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    {validatingCoupon && <Loader2 className="h-3 w-3 animate-spin" />}
+                    {t("apply")}
+                  </button>
+                </div>
+                {couponError && (
+                  <p className="text-[10px] text-red-500 font-semibold px-1">
+                    ⚠ {couponError}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <span>{t("codeApplied")}: {appliedCoupon.code} ({appliedCoupon.discountType === "PERCENT" ? `${appliedCoupon.discountValue}% Off` : `₹${appliedCoupon.discountValue} Off`})</span>
+                <span className="text-emerald-600 dark:text-emerald-400">✓ {t("applied")}</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Sticky Category Scrollbar */}
-        <div className="sticky top-2 z-30 bg-background/80 backdrop-blur-md p-2 rounded-2xl border border-border shadow-md mb-6 overflow-x-auto flex items-center gap-2 no-scrollbar">
+        <div className="sticky top-2.5 z-30 bg-background/85 backdrop-blur-md py-3 px-2.5 rounded-2xl border border-border shadow-lg mb-8 overflow-x-auto flex items-center gap-3 no-scrollbar transition-all duration-300">
           <button
             onClick={() => setActiveCategory("all")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+            className={`px-4.5 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all duration-300 transform ease-out border cursor-pointer ${
               activeCategory === "all"
-                ? "gradient-primary text-white shadow-sm"
-                : "bg-card text-muted-foreground hover:text-foreground"
+                ? "gradient-primary text-white scale-105 shadow-[0_0_14px_rgba(249,115,22,0.45)] border-amber-400/30"
+                : "bg-card text-muted-foreground hover:text-foreground hover:scale-102 border-border/40"
             }`}
           >
             {t("allItems")}
@@ -716,10 +743,10 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`px-4.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-300 transform ease-out border cursor-pointer ${
                 activeCategory === cat.id
-                  ? "gradient-primary text-white shadow-sm"
-                  : "bg-card text-muted-foreground hover:text-foreground"
+                  ? "gradient-primary text-white scale-105 shadow-[0_0_14px_rgba(249,115,22,0.45)] border-amber-400/30"
+                  : "bg-card text-muted-foreground hover:text-foreground hover:scale-102 border-border/40"
               }`}
             >
               {cat.name} ({cat.menuItems.length})
@@ -885,7 +912,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
           rel="noopener noreferrer"
           className="fixed bottom-4 right-4 z-40 bg-card border border-border shadow-2xl rounded-full px-4 py-2.5 flex items-center gap-2 hover:-translate-y-0.5 transition-all text-xs font-bold text-foreground hover:shadow-lg cursor-pointer"
         >
-          <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
+          <Star className="h-4 w-4 text-amber-400 fill-current" />
           <span>{t("reviewGoogle")}</span>
         </a>
       )}
