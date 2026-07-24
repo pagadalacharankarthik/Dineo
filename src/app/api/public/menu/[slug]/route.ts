@@ -24,6 +24,7 @@ export async function GET(
         closingTime: true,
         googleReviewUrl: true,
         planName: true,
+        themeColor: true,
         isActive: true,
         isSuspended: true,
         isDeleted: true,

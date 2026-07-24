@@ -96,6 +96,10 @@ export const restaurantSchema = z.object({
     .url("Please enter a valid URL")
     .optional()
     .or(z.literal("")),
+  themeColor: z
+    .string()
+    .optional()
+    .or(z.literal("")),
 });
 
 export type RestaurantInput = z.infer<typeof restaurantSchema>;

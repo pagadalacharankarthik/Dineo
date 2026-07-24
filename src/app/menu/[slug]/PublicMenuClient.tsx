@@ -56,6 +56,7 @@ interface RestaurantData {
   lastUpdated?: string;
   googleReviewUrl?: string | null;
   planName?: string;
+  themeColor?: string | null;
   coupons?: {
     id: string;
     code: string;
@@ -541,7 +542,19 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/65 to-black/85 backdrop-blur-[2.5px]" />
           </div>
         ) : (
-          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-orange-600 via-zinc-950/85 to-background">
+          <div className={`absolute inset-0 -z-10 bg-gradient-to-b ${
+            restaurant.themeColor === "red"
+              ? "from-red-650 via-zinc-950/85 to-background"
+              : restaurant.themeColor === "blue"
+              ? "from-blue-600 via-zinc-950/85 to-background"
+              : restaurant.themeColor === "green"
+              ? "from-emerald-600 via-zinc-950/85 to-background"
+              : restaurant.themeColor === "purple"
+              ? "from-purple-650 via-zinc-950/85 to-background"
+              : restaurant.themeColor === "black"
+              ? "from-zinc-800 via-zinc-950/95 to-background"
+              : "from-orange-600 via-zinc-950/85 to-background"
+          }`}>
             <div className="absolute inset-0 bg-black/15" />
           </div>
         )}

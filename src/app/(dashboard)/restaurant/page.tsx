@@ -269,7 +269,7 @@ export default function RestaurantPage() {
         {/* ─── Media & Branding ─── */}
         <div className="p-6 rounded-2xl border border-border bg-card space-y-4">
           <h2 className="text-base font-bold">Media & Branding</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <FormField id="res-logo" label="Logo Image URL" error={errors.logo?.message}>
               <div className="flex items-center gap-2">
                 <Input id="res-logo" placeholder="https://... or /uploads/..." {...register("logo")} />
@@ -318,6 +318,21 @@ export default function RestaurantPage() {
                   Upload
                 </button>
               </div>
+            </FormField>
+
+            <FormField id="res-color" label="Default Banner Theme Color" error={errors.themeColor?.message}>
+              <select
+                id="res-color"
+                {...register("themeColor")}
+                className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition-colors cursor-pointer"
+              >
+                <option value="orange">🍊 Orange (Default)</option>
+                <option value="red">🍒 Red</option>
+                <option value="blue">🫐 Blue</option>
+                <option value="green">🥝 Green</option>
+                <option value="purple">🍇 Purple</option>
+                <option value="black">🖤 Dark Slate / Black</option>
+              </select>
             </FormField>
           </div>
         </div>
