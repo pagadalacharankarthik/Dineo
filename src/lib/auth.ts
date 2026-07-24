@@ -17,7 +17,7 @@ export const auth = betterAuth({
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 25px;">
             <span style="font-size: 24px; font-weight: 800; color: #ea580c; tracking: -0.05em; display: inline-flex; align-items: center; gap: 4px;">
-              ⚡ Dineo
+              Dineo
             </span>
           </div>
           <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; font-weight: 700; text-align: center;">Security: Password Reset Request</h2>
@@ -67,7 +67,7 @@ export const auth = betterAuth({
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 25px;">
             <span style="font-size: 24px; font-weight: 800; color: #ea580c; display: inline-flex; align-items: center; gap: 4px;">
-              ⚡ Dineo
+              Dineo
             </span>
           </div>
           <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; font-weight: 700; text-align: center;">Verify Your Account Email</h2>

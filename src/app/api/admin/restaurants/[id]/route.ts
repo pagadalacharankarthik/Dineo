@@ -47,10 +47,10 @@ export async function PATCH(
         <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 25px;">
             <span style="font-size: 24px; font-weight: 800; color: #ea580c; display: inline-flex; align-items: center; gap: 4px;">
-              ⚡ Dineo
+              Dineo
             </span>
           </div>
-          <h2 style="color: #ea580c; margin-top: 0; margin-bottom: 8px; text-align: center;">Your Restaurant is Approved! 🎉</h2>
+          <h2 style="color: #ea580c; margin-top: 0; margin-bottom: 8px; text-align: center;">Your Restaurant is Approved</h2>
           <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-top: 15px;">Hi ${restaurant.owner.name},</p>
           <p style="color: #475569; font-size: 14px; line-height: 1.6;">Excellent news! Your restaurant <strong>${restaurant.name}</strong> has been reviewed and approved by our administration team. Your menu management dashboard and public menus are now fully active.</p>
           
@@ -72,7 +72,7 @@ export async function PATCH(
 
       await sendMail({
         to: restaurant.owner.email,
-        subject: `Your restaurant workspace "${restaurant.name}" is approved! 🚀`,
+        subject: `Your restaurant workspace "${restaurant.name}" is approved`,
         html: approvalHtml,
       }).catch((err) => console.error("Failed to send approval email:", err));
     }

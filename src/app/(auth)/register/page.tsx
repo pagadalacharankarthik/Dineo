@@ -48,11 +48,6 @@ export default function RegisterPage() {
         body: JSON.stringify({ email: data.email, restaurantName: data.restaurantName }),
       });
 
-      // Explicitly trigger verification email dispatch to guarantee OTP code delivery
-      await authClient.sendVerificationEmail({
-        email: data.email,
-        callbackURL: `${window.location.origin}/dashboard`,
-      });
 
       toast.success("Account created! Check your inbox to verify your email.");
       router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);

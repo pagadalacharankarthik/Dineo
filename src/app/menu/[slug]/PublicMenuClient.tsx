@@ -423,19 +423,6 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
           }
         }
 
-        // Record scan analytics asynchronously
-        fetch("/api/public/scan", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            slug,
-            referrer: document.referrer || null,
-            visitorId,
-          }),
-        }).catch((err) => console.error("Error recording scan:", err));
-
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "Failed to load menu";
         setError(msg);

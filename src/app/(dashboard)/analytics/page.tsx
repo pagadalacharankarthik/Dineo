@@ -283,12 +283,12 @@ export default function AnalyticsPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {data.locations.map((loc) => (
-              <div key={`${loc.country}-${loc.city}`} className="p-4 rounded-xl border border-border bg-muted/35 flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold">{loc.city}</p>
-                  <p className="text-[10px] text-muted-foreground font-semibold uppercase">{loc.country}</p>
+              <div key={`${loc.country}-${loc.city}`} className="p-4 rounded-xl border border-border bg-zinc-50 dark:bg-zinc-900/50 flex items-center justify-between min-w-0">
+                <div className="flex flex-col min-w-0 pr-2">
+                  <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">{loc.city}</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{loc.country}</p>
                 </div>
-                <span className="text-sm font-black text-primary">
+                <span className="text-sm font-extrabold text-orange-500 whitespace-nowrap shrink-0">
                   {loc.value} {loc.value === 1 ? "scan" : "scans"}
                 </span>
               </div>
