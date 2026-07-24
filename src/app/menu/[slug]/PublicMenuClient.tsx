@@ -579,18 +579,6 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                 {restaurant.openingTime || "Open"} - {restaurant.closingTime || "Close"}
               </div>
             )}
-            <button
-              onClick={handleDownloadMenuPDF}
-              disabled={downloadingPDF}
-              className="flex items-center gap-1.5 bg-white/25 hover:bg-white/35 backdrop-blur-xs px-3.5 py-1 rounded-full text-white font-bold transition-all disabled:opacity-50 cursor-pointer shadow-xs"
-            >
-              {downloadingPDF ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
-              ) : (
-                <Download className="h-3 w-3" />
-              )}
-              {t("downloadPdf")}
-            </button>
           </div>
         </div>
       </div>

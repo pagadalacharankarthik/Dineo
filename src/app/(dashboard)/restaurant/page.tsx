@@ -49,6 +49,7 @@ function Input({
 }
 
 export default function RestaurantPage() {
+  const [restaurantId, setRestaurantId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -77,6 +78,7 @@ export default function RestaurantPage() {
         const res = await fetch("/api/restaurant");
         const data = await res.json();
         if (data.success && data.data) {
+          setRestaurantId(data.data.id);
           setPlanName(data.data.planName || "FREE_TRIAL");
           setShowTrialBanner(data.data.showTrialBanner ?? false);
           setShowOfferBanner(data.data.showOfferBanner ?? false);
@@ -192,7 +194,14 @@ export default function RestaurantPage() {
           <Building2 className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-extrabold">Restaurant Profile</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-extrabold">Restaurant Profile</h1>
+            {restaurantId && (
+              <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-550 dark:text-zinc-400 font-mono px-2.5 py-0.5 rounded-md select-all" title="Unique Restaurant ID">
+                ID: {restaurantId}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">
             Manage your restaurant information, custom URL slug, and branding settings.
           </p>

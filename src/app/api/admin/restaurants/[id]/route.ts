@@ -46,9 +46,7 @@ export async function PATCH(
       const approvalHtml = `
         <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 25px;">
-            <span style="font-size: 24px; font-weight: 800; color: #ea580c; display: inline-flex; align-items: center; gap: 4px;">
-              Dineo
-            </span>
+            <img src="${baseUrl}/logo-light.png" alt="Dineo" style="height: 48px; width: auto; display: inline-block;" />
           </div>
           <h2 style="color: #ea580c; margin-top: 0; margin-bottom: 8px; text-align: center;">Your Restaurant is Approved</h2>
           <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-top: 15px;">Hi ${restaurant.owner.name},</p>

@@ -331,6 +331,9 @@ export default function AdminRestaurantsPage() {
                     <div className="space-y-3 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100">{rest.name}</h2>
+                        <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-500 font-mono px-2 py-0.5 rounded select-all" title="Unique Restaurant ID">
+                          ID: {rest.id}
+                        </span>
                         {isDel && (
                           <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400">
                             Soft Deleted

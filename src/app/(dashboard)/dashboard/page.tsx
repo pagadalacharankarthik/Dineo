@@ -17,6 +17,8 @@ import {
   Printer,
   Copy,
   Share2,
+  FileText,
+  Loader2,
 } from "lucide-react";
 import { DashboardCard } from "@/components/dashboard/DashboardCard";
 import { useSession } from "@/lib/auth-client";
@@ -46,6 +48,7 @@ export default function DashboardPage() {
   const { data: session } = useSession();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloadingMenuPDF, setDownloadingMenuPDF] = useState(false);
 
   useEffect(() => {
     async function fetchStats() {
@@ -108,6 +111,195 @@ export default function DashboardPage() {
       printWindow.focus();
     } else {
       toast.error("Popup blocked! Please allow popups to open PDF.");
+    }
+  };
+
+  const handleDownloadMenuPDF = async () => {
+    if (!stats?.restaurantSlug) return;
+    setDownloadingMenuPDF(true);
+    const toastId = toast.loading("Generating your formatted menu PDF...");
+    try {
+      // 1. Fetch live menu data
+      const res = await fetch(`/api/public/menu/${stats.restaurantSlug}`);
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to fetch menu details");
+      }
+      const restaurant = data.data;
+
+      // 2. Import jsPDF dynamically
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // 3. Fetch restaurant logo in base64 format for jsPDF embedding
+      let logoData = null;
+      const logoUrl = restaurant.logo;
+      if (logoUrl && logoUrl.trim() !== "") {
+        try {
+          const absoluteLogoUrl = logoUrl.startsWith("http")
+            ? logoUrl
+            : `${window.location.origin}${logoUrl}`;
+          const logoRes = await fetch(absoluteLogoUrl);
+          if (logoRes.ok) {
+            const buffer = await logoRes.arrayBuffer();
+            const base64 = btoa(
+              new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), "")
+            );
+            const contentType = logoRes.headers.get("content-type") || "image/png";
+            let format: "PNG" | "JPEG" = "PNG";
+            if (contentType.includes("jpeg") || contentType.includes("jpg")) {
+              format = "JPEG";
+            }
+            logoData = { data: `data:${contentType};base64,${base64}`, format };
+          }
+        } catch (e) {
+          console.warn("Failed to retrieve custom logo for PDF menu, using fallback:", e);
+        }
+      }
+
+      // If custom logo failed or doesn't exist, try loading default Dineo logo-light
+      if (!logoData) {
+        try {
+          const fallbackRes = await fetch(`${window.location.origin}/logo-light.png`);
+          if (fallbackRes.ok) {
+            const buffer = await fallbackRes.arrayBuffer();
+            const base64 = btoa(
+              new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), "")
+            );
+            logoData = { data: `data:image/png;base64,${base64}`, format: "PNG" as const };
+          }
+        } catch (e) {
+          console.error("Failed to load default Dineo logo for menu:", e);
+        }
+      }
+
+      // 4. Draw Header Branding (Clean white header with top primary accent line)
+      doc.setFillColor(249, 115, 22); // Orange-500
+      doc.rect(0, 0, 210, 4, "F");
+
+      // Draw Logo
+      let textXOffset = 14;
+      if (logoData && logoData.data) {
+        doc.addImage(logoData.data, logoData.format, 14, 10, 20, 20);
+        textXOffset = 38;
+      }
+
+      // Restaurant Name
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(22);
+      doc.setTextColor(15, 23, 42); // Slate-900
+      doc.text(restaurant.name, textXOffset, 18);
+
+      // Restaurant Description / Tagline
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(100, 116, 139); // Slate-500
+      const descText = restaurant.description
+        ? restaurant.description.substring(0, 85)
+        : (restaurant.address || "Smart Digital QR Menu");
+      doc.text(descText, textXOffset, 24);
+
+      // Business Contact Info Line
+      const contactText = `${restaurant.mobile || ""} | ${restaurant.email || ""} | /menu/${restaurant.slug}`;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(249, 115, 22); // Orange-500
+      doc.text(contactText, textXOffset, 29);
+
+      // Horizontal separator line
+      doc.setDrawColor(226, 232, 240); // Slate-200
+      doc.setLineWidth(0.5);
+      doc.line(14, 35, 196, 35);
+
+      // 5. Draw Categories and Menu Items
+      let y = 46;
+      restaurant.categories.forEach((cat: any) => {
+        if (!cat.menuItems || cat.menuItems.length === 0) return;
+
+        // Check page overflow
+        if (y > 250) {
+          doc.addPage();
+          // Draw top orange accent line on new page
+          doc.setFillColor(249, 115, 22);
+          doc.rect(0, 0, 210, 4, "F");
+          y = 20;
+        }
+
+        // Category Name Header
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.setTextColor(249, 115, 22); // Orange-500
+        doc.text(cat.name, 14, y);
+        doc.setDrawColor(254, 215, 170); // Orange-200 (faint line)
+        doc.line(14, y + 2, 196, y + 2);
+
+        y += 10;
+
+        cat.menuItems.forEach((item: any) => {
+          if (!item.isAvailable) return;
+
+          // Check page overflow (Item Name + Price + Description spacing)
+          const neededSpace = item.description ? 15 : 9;
+          if (y + neededSpace > 275) {
+            doc.addPage();
+            doc.setFillColor(249, 115, 22);
+            doc.rect(0, 0, 210, 4, "F");
+            y = 20;
+          }
+
+          // Item Name
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(11);
+          doc.setTextColor(30, 41, 59); // Slate-800
+          const vegTag = item.isVeg ? "[Veg]" : "[Non-Veg]";
+          doc.text(`${vegTag} ${item.name}`, 14, y);
+
+          // Price Align Right
+          const activePrice = item.discountPrice !== null && item.discountPrice !== undefined
+            ? `Rs. ${item.discountPrice.toFixed(2)}`
+            : `Rs. ${item.price.toFixed(2)}`;
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(11);
+          doc.setTextColor(15, 23, 42); // Slate-900
+          doc.text(activePrice, 196 - doc.getTextWidth(activePrice), y);
+
+          // Description (if present)
+          if (item.description) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8.5);
+            doc.setTextColor(100, 116, 139); // Slate-500
+            doc.text(item.description.substring(0, 95), 14, y + 4.5);
+            y += 11;
+          } else {
+            y += 8;
+          }
+        });
+
+        y += 6; // Extra space after category block
+      });
+
+      // Footer branding on last page
+      doc.setFillColor(248, 250, 252); // Zinc-50
+      doc.rect(0, 282, 210, 15, "F");
+      doc.setDrawColor(241, 245, 249); // Zinc-100
+      doc.line(0, 282, 210, 282);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(148, 163, 184); // Slate-400
+      doc.text("Generated by Dineo - Beautiful Digital Menus & QR Table Standees", 105, 290, { align: "center" });
+
+      // Save PDF document
+      doc.save(`${restaurant.slug}-menu.pdf`);
+      toast.success("Branded Menu PDF downloaded successfully!", { id: toastId });
+    } catch (error: any) {
+      console.error("Failed to generate PDF menu:", error);
+      toast.error(error.message || "Failed to download menu PDF", { id: toastId });
+    } finally {
+      setDownloadingMenuPDF(false);
     }
   };
 
@@ -297,7 +489,23 @@ export default function DashboardPage() {
             <p className="font-semibold text-xs">Copy URL</p>
           </button>
 
-          {/* Action 5: Add Category */}
+          {/* Action 5: Download PDF Menu */}
+          <button
+            onClick={handleDownloadMenuPDF}
+            disabled={downloadingMenuPDF || !stats?.restaurantSlug}
+            className="p-4 rounded-2xl border border-border bg-card/65 backdrop-blur-md transition-all duration-300 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 flex flex-col items-center text-center cursor-pointer disabled:opacity-50"
+          >
+            <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 mb-3">
+              {downloadingMenuPDF ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <FileText className="h-5 w-5" />
+              )}
+            </div>
+            <p className="font-semibold text-xs">Download PDF Menu</p>
+          </button>
+
+          {/* Action 6: Add Category */}
           <Link
             href="/categories"
             className="p-4 rounded-2xl border border-border bg-card/65 backdrop-blur-md transition-all duration-300 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 flex flex-col items-center text-center cursor-pointer"
