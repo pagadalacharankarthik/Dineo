@@ -145,17 +145,23 @@ export default function AdminQRKitsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "PENDING":
-        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">Pending</span>;
+        return <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400">Pending</span>;
+      case "PROCESSING":
+        return <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-455">Processing</span>;
+      case "SHIPPED":
+        return <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400">Shipped</span>;
+      case "DELIVERED":
+        return <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">Delivered</span>;
       case "CONTACTED":
-        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-650 dark:text-blue-400">Contacted</span>;
+        return <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400">Contacted</span>;
       case "IN_PROGRESS":
-        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/20 text-purple-650 dark:text-purple-400">In Progress</span>;
+        return <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-650 dark:text-indigo-400">In Progress</span>;
       case "COMPLETED":
-        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">Completed</span>;
+        return <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">Completed</span>;
       case "CANCELLED":
-        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400">Cancelled</span>;
+        return <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400">Cancelled</span>;
       default:
-        return <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">{status}</span>;
+        return <span className="text-[10px] uppercase font-black tracking-wider px-2.5 py-1 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">{status}</span>;
     }
   };
 
@@ -265,53 +271,24 @@ export default function AdminQRKitsPage() {
                       </div>
                     )}
                   </div>
-
                   {/* Lead Management Control Actions */}
-                  <div className="flex flex-wrap lg:flex-col items-center gap-2 border-t lg:border-t-0 lg:border-l border-zinc-200 dark:border-zinc-855 pt-4 lg:pt-0 lg:pl-6 lg:w-44 justify-end">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 lg:block hidden mb-1 self-start">Update Status</span>
+                  <div className="flex flex-col items-stretch gap-2 border-t lg:border-t-0 lg:border-l border-zinc-200 dark:border-zinc-800 pt-4 lg:pt-0 lg:pl-6 lg:w-44 justify-center">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 mb-1 block self-start">Update Status</span>
                     
-                    <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 w-full">
-                      <Button
-                        onClick={() => handleStatusChange(req.id, "CONTACTED")}
-                        variant="outline"
-                        size="sm"
-                        disabled={req.status === "CONTACTED"}
-                        className="w-full text-xs h-8 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-200 font-semibold"
-                      >
-                        <Clock className="w-3.5 h-3.5 mr-1 text-blue-500" />
-                        Contacted
-                      </Button>
-                      <Button
-                        onClick={() => handleStatusChange(req.id, "IN_PROGRESS")}
-                        variant="outline"
-                        size="sm"
-                        disabled={req.status === "IN_PROGRESS"}
-                        className="w-full text-xs h-8 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-855 text-zinc-700 dark:text-zinc-200 font-semibold"
-                      >
-                        <TrendingUp className="w-3.5 h-3.5 mr-1 text-purple-500" />
-                        In Progress
-                      </Button>
-                      <Button
-                        onClick={() => handleStatusChange(req.id, "COMPLETED")}
-                        variant="outline"
-                        size="sm"
-                        disabled={req.status === "COMPLETED"}
-                        className="w-full text-xs h-8 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-855 text-zinc-700 dark:text-zinc-200 font-semibold"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-500 dark:text-emerald-400" />
-                        Complete
-                      </Button>
-                      <Button
-                        onClick={() => handleStatusChange(req.id, "CANCELLED")}
-                        variant="outline"
-                        size="sm"
-                        disabled={req.status === "CANCELLED"}
-                        className="w-full text-xs h-8 border-zinc-200 dark:border-zinc-850 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-900/30 font-semibold"
-                      >
-                        <XCircle className="w-3.5 h-3.5 mr-1 text-red-500" />
-                        Cancel
-                      </Button>
-                    </div>
+                    <select
+                      value={req.status}
+                      onChange={(e) => handleStatusChange(req.id, e.target.value)}
+                      className="w-full text-xs font-bold px-3 py-2 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-800 dark:text-zinc-200 cursor-pointer focus:ring-2 focus:ring-primary focus:outline-hidden"
+                    >
+                      <option value="PENDING">Pending (Requested)</option>
+                      <option value="PROCESSING">Processing</option>
+                      <option value="SHIPPED">Shipped</option>
+                      <option value="DELIVERED">Delivered</option>
+                      <option value="CONTACTED">Contacted</option>
+                      <option value="IN_PROGRESS">In Progress</option>
+                      <option value="COMPLETED">Completed</option>
+                      <option value="CANCELLED">Cancelled</option>
+                    </select>
                   </div>
                 </div>
               </CardContent>
