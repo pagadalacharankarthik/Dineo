@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_ID,
+    google: "hs0Ddy1hL-2WiqKOaOIOmbzSbCbXpDhfjoFBKTqdoeQ",
   },
 };
 
