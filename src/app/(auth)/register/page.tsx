@@ -18,10 +18,37 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
   });
+
+  const passwordValue = watch("password") || "";
+
+  const getPasswordStrength = (pass: string) => {
+    if (!pass) return { score: 0, label: "", color: "bg-muted" };
+    let score = 0;
+    if (pass.length >= 8) score += 1;
+    if (/[A-Z]/.test(pass)) score += 1;
+    if (/[a-z]/.test(pass)) score += 1;
+    if (/[0-9]/.test(pass)) score += 1;
+    if (/[^A-Za-z0-9]/.test(pass)) score += 1;
+
+    if (pass.length < 6) {
+      return { score: 1, label: "Weak", color: "bg-red-500 text-red-500" };
+    }
+
+    if (score <= 2) {
+      return { score: 1, label: "Weak", color: "bg-red-500 text-red-500" };
+    } else if (score <= 4) {
+      return { score: 2, label: "Medium", color: "bg-amber-500 text-amber-500" };
+    } else {
+      return { score: 3, label: "Strong", color: "bg-emerald-500 text-emerald-500" };
+    }
+  };
+
+  const strength = getPasswordStrength(passwordValue);
 
   const onSubmit = async (data: RegisterInput) => {
     try {
@@ -167,6 +194,21 @@ export default function RegisterPage() {
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
+          {passwordValue && (
+            <div className="mt-2 space-y-1.5">
+              <div className="flex justify-between items-center text-xs font-semibold">
+                <span className="text-muted-foreground">Password strength:</span>
+                <span className={strength.label === "Weak" ? "text-red-500" : strength.label === "Medium" ? "text-amber-500" : "text-emerald-500"}>
+                  {strength.label}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5 h-1">
+                <div className={`h-full rounded-full transition-colors ${strength.score >= 1 ? (strength.label === "Weak" ? "bg-red-500" : strength.label === "Medium" ? "bg-amber-500" : "bg-emerald-500") : "bg-muted"}`} />
+                <div className={`h-full rounded-full transition-colors ${strength.score >= 2 ? (strength.label === "Medium" ? "bg-amber-500" : "bg-emerald-500") : "bg-muted"}`} />
+                <div className={`h-full rounded-full transition-colors ${strength.score >= 3 ? "bg-emerald-500" : "bg-muted"}`} />
+              </div>
+            </div>
+          )}
           {errors.password && (
             <p className="mt-1.5 text-xs text-destructive">{errors.password.message}</p>
           )}

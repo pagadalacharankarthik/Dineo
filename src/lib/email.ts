@@ -90,12 +90,35 @@ export const sendMail = async ({ to, subject, html }: SendMailParams) => {
 
   const from = process.env.SMTP_FROM || `"Dineo Support" <${process.env.SMTP_USER}>`;
 
+  // Simple HTML to text converter to avoid SpamAssassin blank text penalties
+  const htmlToText = (htmlStr: string) => {
+    return htmlStr
+      .replace(/<style([\s\S]*?)<\/style>/gi, "")
+      .replace(/<script([\s\S]*?)<\/script>/gi, "")
+      .replace(/<\/div>/ig, "\n")
+      .replace(/<\/li>/ig, "\n")
+      .replace(/<li>/ig, " * ")
+      .replace(/<\/ul>/ig, "\n")
+      .replace(/<\/p>/ig, "\n\n")
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+  };
+
+  const text = htmlToText(html);
+
   try {
     const info = await transporter.sendMail({
       from,
       to,
       subject,
       html,
+      text,
+      headers: {
+        "X-Auto-Response-Suppress": "OOF, AutoReply",
+        "Precedence": "bulk",
+      },
     });
     console.log("Message sent: %s", info.messageId);
     return true;
