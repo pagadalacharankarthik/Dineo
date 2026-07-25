@@ -43,6 +43,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   manifest: "/manifest.json",
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION_ID,
+  },
 };
 
 import { PWARegister } from "@/components/shared/PWARegister";
