@@ -74,7 +74,7 @@ export default function QRCodePage() {
   const generateQRCodes = async (details: QRDetails, activeColor: string = "orange") => {
     try {
       const { targetUrl, restaurantLogo, planName } = details;
-      const isPro = planName === "PRO";
+      const isPro = planName === "PRO" || planName === "ENTERPRISE";
       const hasLogo = restaurantLogo && restaurantLogo.trim() !== "";
 
       // Ensure free tier can only use allowed colors
@@ -358,7 +358,8 @@ export default function QRCodePage() {
     window.print();
   };
 
-  const selectedTheme = (qrData?.planName === "PRO" ? selectedColor : "orange") as keyof typeof colorOptions;
+  const isProOrEnterprise = qrData?.planName === "PRO" || qrData?.planName === "ENTERPRISE";
+  const selectedTheme = (isProOrEnterprise || freeTierColors.includes(selectedColor)) ? selectedColor : "orange";
 
   return (
     <div className="space-y-8">
@@ -473,7 +474,7 @@ export default function QRCodePage() {
               <div
                 id="printable-qr-card"
                 ref={printRef}
-                className={`bg-gradient-to-br ${colorOptions[(qrData?.planName === "PRO" ? selectedColor : "orange") as keyof typeof colorOptions].gradient} p-8 rounded-2xl text-white shadow-xl flex flex-col items-center justify-center w-full h-full text-center`}
+                className={`bg-gradient-to-br ${colorOptions[selectedTheme].gradient} p-8 rounded-2xl text-white shadow-xl flex flex-col items-center justify-center w-full h-full text-center`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Building2 className="h-6 w-6" />
@@ -572,7 +573,7 @@ export default function QRCodePage() {
                   <Sparkles className="h-4 w-4 text-primary" /> Poster Color Customization
                 </h3>
                 <div className="flex items-center justify-center gap-3">
-                  {(qrData?.planName === "PRO"
+                  {(isProOrEnterprise
                     ? (Object.keys(colorOptions) as Array<keyof typeof colorOptions>)
                     : (freeTierColors as Array<keyof typeof colorOptions>)
                   ).map((color) => (
