@@ -303,9 +303,16 @@ export default function QRCodePage() {
       const { jsPDF } = await import("jspdf");
       const el = printRef.current;
       
+      // Capture the element bounding dimensions exactly
       const canvasImage = await htmlToImage.toPng(el, {
-        pixelRatio: 3,
-        backgroundColor: "#ffffff",
+        pixelRatio: 3.5, // High resolution for print
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        style: {
+          transform: 'none',
+          margin: '0',
+        },
+        backgroundColor: colorOptions[(qrData?.planName === "PRO" ? selectedColor : "orange") as keyof typeof colorOptions].qr,
       });
       
       const isSquare = posterFormat === "square";
@@ -315,10 +322,30 @@ export default function QRCodePage() {
         format: isSquare ? [210, 210] : (posterFormat === "a5" ? "a5" : "a4"),
       });
       
-      const width = doc.internal.pageSize.getWidth();
-      const height = doc.internal.pageSize.getHeight();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
       
-      doc.addImage(canvasImage, "PNG", 0, 0, width, height);
+      // Proportional scale to fit elements centered inside PDF margins
+      const elRatio = el.offsetWidth / el.offsetHeight;
+      
+      // Calculate max layout sizing within A4/A5 or Square dimensions with a clean 10mm padding margin
+      const margin = 10;
+      const targetWidth = pageWidth - (margin * 2);
+      const targetHeight = pageHeight - (margin * 2);
+      
+      let pdfImageWidth = targetWidth;
+      let pdfImageHeight = targetWidth / elRatio;
+      
+      if (pdfImageHeight > targetHeight) {
+        pdfImageHeight = targetHeight;
+        pdfImageWidth = targetHeight * elRatio;
+      }
+      
+      // Center the scaled elements
+      const xOffset = (pageWidth - pdfImageWidth) / 2;
+      const yOffset = (pageHeight - pdfImageHeight) / 2;
+      
+      doc.addImage(canvasImage, "PNG", xOffset, yOffset, pdfImageWidth, pdfImageHeight);
       doc.save(`${qrData.restaurantSlug}-qr-poster-${posterFormat}.pdf`);
       toast.success("Downloaded PDF Poster successfully!", { id: toastId });
     } catch (err: any) {
@@ -330,6 +357,8 @@ export default function QRCodePage() {
   const handlePrint = () => {
     window.print();
   };
+
+  const selectedTheme = (qrData?.planName === "PRO" ? selectedColor : "orange") as keyof typeof colorOptions;
 
   return (
     <div className="space-y-8">
@@ -346,6 +375,11 @@ export default function QRCodePage() {
         @media print {
           @page {
             margin: 0;
+            size: auto;
+          }
+          body {
+            margin: 0;
+            background: #ffffff !important;
           }
           body * {
             visibility: hidden !important;
@@ -353,29 +387,57 @@ export default function QRCodePage() {
           #printable-qr-poster,
           #printable-qr-poster * {
             visibility: visible !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           #printable-qr-poster {
-            position: fixed !important;
+            position: absolute !important;
             left: 0 !important;
             top: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            width: 100% !important;
+            height: 100% !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             background: #ffffff !important;
             margin: 0 !important;
-            padding: 10% !important;
+            padding: 0 !important;
             box-sizing: border-box !important;
             z-index: 99999 !important;
           }
-          #printable-qr-poster > div {
-            width: 80% !important;
-            height: 80% !important;
-            max-width: 450px !important;
-            max-height: 600px !important;
+          #printable-qr-poster > div#printable-qr-card {
+            width: 85% !important;
+            max-width: ${posterFormat === "square" ? "500px" : "450px"} !important;
+            aspect-ratio: ${posterFormat === "square" ? "1/1" : "1/1.414"} !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+            margin: auto !important;
             border-radius: 40px !important;
             padding: 40px !important;
+            background-color: ${colorOptions[selectedTheme].qr} !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          /* Force text and badges to be legible white */
+          #printable-qr-card h2,
+          #printable-qr-card p {
+            color: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          #printable-qr-card div:not(.bg-white):not(.bg-white *) {
+            color: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          /* Keep QR container white background and dark code */
+          #printable-qr-card .bg-white,
+          #printable-qr-card .bg-white * {
+            background-color: #ffffff !important;
+            color: #000000 !important;
           }
         }
       `}</style>
@@ -405,11 +467,12 @@ export default function QRCodePage() {
             {/* Poster Preview */}
             <div
               id="printable-qr-poster"
-              ref={printRef}
               className="bg-zinc-50 dark:bg-zinc-900 border border-border p-8 rounded-3xl max-w-sm mx-auto flex items-center justify-center overflow-hidden"
               style={{ aspectRatio: posterFormat === "square" ? "1/1" : "1/1.414" }}
             >
               <div
+                id="printable-qr-card"
+                ref={printRef}
                 className={`bg-gradient-to-br ${colorOptions[(qrData?.planName === "PRO" ? selectedColor : "orange") as keyof typeof colorOptions].gradient} p-8 rounded-2xl text-white shadow-xl flex flex-col items-center justify-center w-full h-full text-center`}
               >
                 <div className="flex items-center gap-2 mb-2">
