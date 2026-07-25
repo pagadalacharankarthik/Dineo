@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { OnboardingTour } from "@/components/shared/OnboardingTour";
+import { BetaFeedbackModal } from "@/components/dashboard/BetaFeedbackModal";
 
 export default function DashboardLayout({
   children,
@@ -19,8 +20,33 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isSuspended, setIsSuspended] = useState(false);
   const [isPendingApproval, setIsPendingApproval] = useState(false);
+  const [showFeedbackBanner, setShowFeedbackBanner] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { data: session, isPending } = useSession();
   const router = useRouter();
+
+  useEffect(() => {
+    if (session?.user?.createdAt) {
+      const createdTime = new Date(session.user.createdAt).getTime();
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      const isOldEnough = (new Date().getTime() - createdTime) >= sevenDaysMs;
+      
+      const isDismissed = localStorage.getItem("dineo_feedback_dismissed") === "true";
+      if (isOldEnough && !isDismissed) {
+        setShowFeedbackBanner(true);
+      }
+    }
+  }, [session]);
+
+  const dismissFeedbackBanner = () => {
+    localStorage.setItem("dineo_feedback_dismissed", "true");
+    setShowFeedbackBanner(false);
+  };
+
+  const handleFeedbackSuccess = () => {
+    localStorage.setItem("dineo_feedback_dismissed", "true");
+    setShowFeedbackBanner(false);
+  };
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -117,6 +143,32 @@ export default function DashboardLayout({
         </div>
       )}
 
+      {/* Beta Feedback Banner */}
+      {showFeedbackBanner && (
+        <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white px-4 py-3 text-xs sm:text-sm font-semibold flex flex-col sm:flex-row items-center justify-between gap-3 relative z-40 shadow-md">
+          <div className="flex items-center gap-2 text-center sm:text-left">
+            <span className="text-base">✨</span>
+            <span>
+              <strong>Dineo Beta Program:</strong> You&apos;ve been using Dineo for 7 days! We&apos;d love to hear your feedback to help us build a better experience.
+            </span>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => setIsFeedbackOpen(true)}
+              className="bg-white text-orange-600 hover:bg-orange-50 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-sm border-none"
+            >
+              Give Feedback
+            </button>
+            <button
+              onClick={dismissFeedbackBanner}
+              className="bg-black/10 hover:bg-black/20 text-white/90 border border-white/20 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar */}
       <Sidebar 
         collapsed={collapsed} 
@@ -143,6 +195,12 @@ export default function DashboardLayout({
         <Topbar user={user} onMobileMenuOpen={() => setMobileOpen(true)} />
         <main className="p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
+
+      <BetaFeedbackModal 
+        isOpen={isFeedbackOpen} 
+        onClose={() => setIsFeedbackOpen(false)} 
+        onSubmitSuccess={handleFeedbackSuccess} 
+      />
     </div>
   );
 }

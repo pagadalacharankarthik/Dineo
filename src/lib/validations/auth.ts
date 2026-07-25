@@ -1,5 +1,48 @@
 import { z } from "zod";
 
+const isSequentialOrRepeated = (pass: string): boolean => {
+  const lowercase = pass.toLowerCase();
+  
+  // 1. Check for repeated characters (e.g. "aaaa", "1111")
+  const repeatRegex = /(.)\1{3,}/; 
+  if (repeatRegex.test(lowercase)) return true;
+
+  // 2. Check for alphabetical and numerical sequences of length 4 or more (e.g. "abcde", "5678")
+  for (let i = 0; i < lowercase.length - 3; i++) {
+    const char1 = lowercase.charCodeAt(i);
+    const char2 = lowercase.charCodeAt(i + 1);
+    const char3 = lowercase.charCodeAt(i + 2);
+    const char4 = lowercase.charCodeAt(i + 3);
+
+    // Ascending sequence (e.g. 1-2-3-4 or a-b-c-d)
+    if (char2 === char1 + 1 && char3 === char2 + 1 && char4 === char3 + 1) {
+      return true;
+    }
+    // Descending sequence (e.g. 4-3-2-1 or d-c-b-a)
+    if (char2 === char1 - 1 && char3 === char2 - 1 && char4 === char3 - 1) {
+      return true;
+    }
+  }
+
+  // 3. Check for keyboard row sequences (length 4 or more, e.g. "qwer", "asdf")
+  const keyboardRows = [
+    "qwertyuiop",
+    "asdfghjkl",
+    "zxcvbnm"
+  ];
+  for (const row of keyboardRows) {
+    for (let i = 0; i < row.length - 3; i++) {
+      const seq = row.substring(i, i + 4);
+      const revSeq = seq.split("").reverse().join("");
+      if (lowercase.includes(seq) || lowercase.includes(revSeq)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};
+
 export const loginSchema = z.object({
   email: z
     .string()
@@ -47,7 +90,10 @@ export const registerSchema = z
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-      ),
+      )
+      .refine((val) => !isSequentialOrRepeated(val), {
+        message: "Password contains repeated sequences or characters (e.g., '1234' or 'asdf')",
+      }),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -71,7 +117,10 @@ export const resetPasswordSchema = z
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-      ),
+      )
+      .refine((val) => !isSequentialOrRepeated(val), {
+        message: "Password contains repeated sequences or characters (e.g., '1234' or 'asdf')",
+      }),
     confirmPassword: z.string().min(1, "Please confirm your password"),
     token: z.string().min(1, "Reset token is required"),
   })

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Ticket,
   Plus,
@@ -184,7 +185,7 @@ export default function CouponsPage() {
             <Sparkles className="h-4 w-4 text-amber-500 flex-shrink-0" />
             <span>Your Starter (Free Trial) plan is limited to **1 active coupon code**. Upgrade to Professional for unlimited coupons.</span>
           </div>
-          <a href="/settings" className="text-primary hover:underline font-bold whitespace-nowrap">Upgrade Now &rarr;</a>
+          <Link href="/subscription" className="text-primary hover:underline font-bold whitespace-nowrap">Upgrade Now &rarr;</Link>
         </div>
       )}
 
