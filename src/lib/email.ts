@@ -88,7 +88,7 @@ export const sendMail = async ({ to, subject, html }: SendMailParams) => {
     },
   });
 
-  const from = process.env.SMTP_FROM || `"Dineo Support" <${process.env.SMTP_USER}>`;
+  const from = process.env.SMTP_FROM || `"Dineo Menu Support" <${process.env.SMTP_USER}>`;
 
   // Simple HTML to text converter to avoid SpamAssassin blank text penalties
   const htmlToText = (htmlStr: string) => {

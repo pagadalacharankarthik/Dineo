@@ -81,7 +81,7 @@ export default function QRCodePage() {
       const colorKey = (isPro || freeTierColors.includes(activeColor)) ? activeColor : "orange";
       const qrColor = colorOptions[colorKey as keyof typeof colorOptions].qr;
       
-      // Pro gets their own logo if uploaded, otherwise everyone gets Dineo logo
+      // Pro gets their own logo if uploaded, otherwise everyone gets Dineo Menu logo
       const rawLogoUrl = (isPro && hasLogo) ? restaurantLogo! : "/logo.svg";
       const logoUrlToUse = new URL(rawLogoUrl, window.location.origin).href;
 
@@ -113,7 +113,7 @@ export default function QRCodePage() {
             });
           }
         } catch (e) {
-          console.error("Failed to load fallback Dineo logo as base64:", e);
+          console.error("Failed to load fallback Dineo Menu logo as base64:", e);
         }
       }
 
@@ -597,7 +597,7 @@ export default function QRCodePage() {
                 <div className={`bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold tracking-wider uppercase border border-white/30 ${
                   posterFormat === "square" ? "py-1.5 px-3.5" : "py-2 px-4"
                 }`}>
-                  ⚡ Powered by Dineo
+                  ⚡ Powered by Dineo Menu
                 </div>
               </div>
             </div>

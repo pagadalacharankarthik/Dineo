@@ -329,7 +329,7 @@ export default function AdminQRKitsPage() {
               </div>
 
               <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase border border-white/30">
-                ⚡ Powered by Dineo
+                ⚡ Powered by Dineo Menu
               </div>
             </div>
 

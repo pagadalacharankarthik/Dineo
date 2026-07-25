@@ -1,7 +1,7 @@
 # Batch 2 – QR Code Generation, Menu Categories & Menu Management (MVP) Documentation
 
 ## Overview
-Batch 2 completes the **Core QR Menu Management System (MVP)** for **Dineo**. Restaurant administrators can manage menu categories, create & edit dishes, toggle real-time stock availability, and access a permanent high-resolution QR code that opens their public digital menu.
+Batch 2 completes the **Core QR Menu Management System (MVP)** for **Dineo Menu**. Restaurant administrators can manage menu categories, create & edit dishes, toggle real-time stock availability, and access a permanent high-resolution QR code that opens their public digital menu.
 
 ---
 

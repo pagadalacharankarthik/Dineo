@@ -1,6 +1,6 @@
-# Dineo: Zero-Budget B2B Marketing & Organic Growth Strategy
+# Dineo Menu: Zero-Budget B2B Marketing & Organic Growth Strategy
 
-This document outlines a high-impact, zero-investment (or very low-investment) organic growth, content marketing, and cold outreach playbook for **Dineo**. Since Dineo is a B2B SaaS platform targeting restaurant owners, the strategy balances direct outreach (active sales) with social media branding (passive lead generation).
+This document outlines a high-impact, zero-investment (or very low-investment) organic growth, content marketing, and cold outreach playbook for **Dineo Menu**. Since Dineo Menu is a B2B SaaS platform targeting restaurant owners, the strategy balances direct outreach (active sales) with social media branding (passive lead generation).
 
 ---
 
@@ -27,7 +27,7 @@ Absolutely love your recent post showing [mention a food item, e.g., your wood-f
 
 I noticed you guys have an amazing social media page, but when customers want to check out your menu from your bio, they have to load a slow PDF. 
 
-We built Dineo specifically to help local cafes like yours load clean, interactive digital menus in under 1 second. It increases tableside orders by up to 20%.
+We built Dineo Menu specifically to help local cafes like yours load clean, interactive digital menus in under 1 second. It increases tableside orders by up to 20%.
 
 I’d love to generate a free, customized QR code and interactive menu demo for [Restaurant Name] so you can see it in action. No charge at all. 
 
@@ -35,7 +35,7 @@ Would you be open to checking out a quick 10-second link tomorrow?
 
 Cheers,
 [Your Name]
-Founder, Dineo
+Founder, Dineo Menu
 ```
 
 ### 3. WhatsApp Business Outreach (Direct to Owners)
@@ -44,7 +44,7 @@ WhatsApp is a high-open-rate channel (over 90%). Keep it brief and visual.
 ```text
 Hi [Owner Name],
 
-This is [Your Name] from Dineo. I recently visited [Restaurant Name] / saw your cafe online and loved the aesthetic! 
+This is [Your Name] from Dineo Menu. I recently visited [Restaurant Name] / saw your cafe online and loved the aesthetic! 
 
 I noticed customers tableside browse a paper menu or static PDF. We help cafes launch interactive, instant-loading digital menus. 
 
@@ -63,20 +63,20 @@ Reels and short-form videos are the best way to get millions of organic views wi
 
 ### 1. Reel Concept 1: The "Before vs. After" (Relatable Pain Point)
 * **Visual Hook (0–3s)**: Show a customer struggling to read a tiny, zoomed-in PDF menu on their phone at a dimly lit restaurant table. Overlay text: *"POV: You just wanted to order food but the restaurant menu is a 50MB PDF on Google Drive."*
-* **The Turn (3–7s)**: Show the same customer scanning a clean Dineo QR Code Standee. The menu pops up instantly. They swipe smoothly through categories and smile.
-* **The Pitch (7–15s)**: Screen text: *"Stop losing hungry customers to slow PDFs. Set up Dineo’s interactive menu for your cafe in 5 mins. Link in bio."*
+* **The Turn (3–7s)**: Show the same customer scanning a clean Dineo Menu QR Code Standee. The menu pops up instantly. They swipe smoothly through categories and smile.
+* **The Pitch (7–15s)**: Screen text: *"Stop losing hungry customers to slow PDFs. Set up Dineo Menu’s interactive menu for your cafe in 5 mins. Link in bio."*
 * **Audio**: Trending upbeat or sarcastic sound.
 
 ### 2. Reel Concept 2: The "Sold Out" Solution (Feature highlight)
 * **Visual Hook (0–3s)**: A customer orders a dish, and the waiter says: *"Sorry, that's actually sold out today."* Show the customer looking disappointed. Text: *"The worst feeling at a restaurant."*
-* **The Solution (3–8s)**: Show the restaurant owner in their Dineo dashboard on a phone. With one single tap, they toggle the "Is Available" switch to off.
+* **The Solution (3–8s)**: Show the restaurant owner in their Dineo Menu dashboard on a phone. With one single tap, they toggle the "Is Available" switch to off.
 * **The Result (8–15s)**: Show the customer scanning the QR code, and the item instantly shows a "Sold Out" tag. No awkward waiter explanations.
-* **Call to Action**: *"Make tableside updates in real-time. Try Dineo for free."*
+* **Call to Action**: *"Make tableside updates in real-time. Try Dineo Menu for free."*
 
 ### 3. Reel Concept 3: The Review Booster (Social Proof)
-* **Visual Hook (0–3s)**: Show a customer tapping the Dineo menu and clicking "Submit Google Review".
+* **Visual Hook (0–3s)**: Show a customer tapping the Dineo Menu menu and clicking "Submit Google Review".
 * **The Impact (3–10s)**: Show a fast transition of Google reviews pouring in: *"Best pasta in town!"*, *"Fast service!"*. Text: *"How this small cafe doubled their Google Reviews in 14 days using tableside QR codes."*
-* **Call to Action**: *"Get more 5-star reviews on autopilot. Get your Dineo QR kit."*
+* **Call to Action**: *"Get more 5-star reviews on autopilot. Get your Dineo Menu QR kit."*
 
 ---
 
@@ -97,7 +97,7 @@ By the time the PDF loaded, I had lost interest.
 
 If you run a restaurant, customer friction is your biggest enemy. Every second a customer spends waiting for a menu to load decreases their average bill size.
 
-That's why we built Dineo.
+That's why we built Dineo Menu.
 - Instantly loads in under 1 second.
 - Beautiful, mobile-first responsive layout (no pinching or zooming required).
 - Toggle items 'Sold Out' instantly from your phone (saves waiter time).
@@ -112,14 +112,14 @@ Let me set up a free interactive demo for your restaurant. Comment below or send
 
 ### 2. Post Template 2: Building in Public (Authentic Storytelling)
 ```text
-We just launched our Dineo Beta version! 🚀
+We just launched our Dineo Menu Beta version! 🚀
 
 Building a product from scratch is hard, but hearing feedback from our first few restaurant owners makes it all worth it. 
 
 One restaurant owner told us: 
 "We used to print new menus every time we changed our prices by 10 rupees. It was a waste of paper and money. Now, we just update it on our phone in 2 seconds."
 
-Dineo is built to empower restaurant owners with tech that is:
+Dineo Menu is built to empower restaurant owners with tech that is:
 1. Dynamic (real-time edits).
 2. Frictionless (no app downloads needed).
 3. Highly visual.
@@ -134,14 +134,14 @@ We are currently onboarding 20 more restaurants for our Beta testing group. If y
 ## 🎁 Part 4: Zero-Investment Marketing Hacks (Low Friction Growth)
 
 ### 1. The "Free Sticker" Marketing Loop
-* **The Hack**: Print a batch of high-quality, cheap stickers with a beautiful Dineo logo and a QR code pointing to a page like `dineo.in/free-menu`.
+* **The Hack**: Print a batch of high-quality, cheap stickers with a beautiful Dineo Menu logo and a QR code pointing to a page like `dineo.in/free-menu`.
 * **Action**: Give these to local restaurant staff or place them strategically where cafe owners hang out.
-* **The Pitch**: *"Scan this to get a permanent digital menu for your cafe."* When other restaurant owners scan a menu at a cafe using Dineo, they see the small "⚡ Powered by Dineo" badge at the bottom. This creates a self-viral customer acquisition loop!
+* **The Pitch**: *"Scan this to get a permanent digital menu for your cafe."* When other restaurant owners scan a menu at a cafe using Dineo Menu, they see the small "⚡ Powered by Dineo Menu" badge at the bottom. This creates a self-viral customer acquisition loop!
 
 ### 2. Micro-Influencer / Food Blogger Partnership
 * **The Hack**: Partner with local food bloggers (5k–25k followers) who review local restaurants.
 * **Action**: Offer to build a beautiful digital menu for a restaurant they are planning to review. The blogger can highlight the high-tech dining experience (scanning the QR, the clean mobile-friendly layout) in their reel.
-* **Cost**: $0. The blogger gets a unique content angle (food tech review), the restaurant gets a free digital menu, and Dineo gets massive exposure to all local restaurants watching that food blogger!
+* **Cost**: $0. The blogger gets a unique content angle (food tech review), the restaurant gets a free digital menu, and Dineo Menu gets massive exposure to all local restaurants watching that food blogger!
 
 ---
 
@@ -149,6 +149,6 @@ We are currently onboarding 20 more restaurants for our Beta testing group. If y
 To see compounding growth, run this routine every week:
 1. **Source Leads**: Add 50 new local restaurants to your spreadsheet from Google Maps.
 2. **Cold Reachout**: Send 10 personalized Instagram DMs and 10 WhatsApp demo messages every single day (Mon–Fri).
-3. **Publish Reels**: Post 3 short Reels/Tiktok videos weekly highlighting restaurant pain points and Dineo features.
-4. **Founder Branding**: Share 2 LinkedIn updates weekly about building Dineo, restaurant tech tips, or merchant success stories.
+3. **Publish Reels**: Post 3 short Reels/Tiktok videos weekly highlighting restaurant pain points and Dineo Menu features.
+4. **Founder Branding**: Share 2 LinkedIn updates weekly about building Dineo Menu, restaurant tech tips, or merchant success stories.
 5. **Analyze & Close**: Follow up with leads after 48 hours. Offer to mail them a printed table standee prototype to seal the deal.

@@ -17,11 +17,11 @@ export const auth = betterAuth({
       const html = `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 25px;">
-            <img src="${baseUrl}/logo-light.png" alt="Dineo" style="height: 48px; width: auto; display: inline-block;" />
+            <img src="${baseUrl}/logo-light.png" alt="Dineo Menu" style="height: 48px; width: auto; display: inline-block;" />
           </div>
           <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; font-weight: 700; text-align: center;">Security: Password Reset Request</h2>
           <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-top: 15px;">Hi ${user.name},</p>
-          <p style="color: #475569; font-size: 14px; line-height: 1.6;">You requested a password reset for your Dineo merchant account. Click the button below to secure your account and set a new password:</p>
+          <p style="color: #475569; font-size: 14px; line-height: 1.6;">You requested a password reset for your Dineo Menu merchant account. Click the button below to secure your account and set a new password:</p>
           
           <div style="text-align: center; margin: 25px 0;">
             <a href="${url}" style="display: inline-block; padding: 12px 28px; background-color: #ea580c; color: #ffffff; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 14px; box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.2); transition: opacity 0.2s;">Reset Password</a>
@@ -30,14 +30,14 @@ export const auth = betterAuth({
           <p style="color: #64748b; font-size: 12px; line-height: 1.5; margin-top: 20px;">If you did not request a password reset, please ignore this security message. Your account remains secure.</p>
           
           <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; line-height: 1.5;">
-            © ${new Date().getFullYear()} Dineo. All rights reserved.<br/>
+            © ${new Date().getFullYear()} Dineo Menu. All rights reserved.<br/>
             Support: <a href="mailto:charanlabssupport@gmail.com" style="color: #ea580c; text-decoration: none;">charanlabssupport@gmail.com</a>
           </div>
         </div>
       `;
       await sendMail({
         to: user.email,
-        subject: "Dineo Security - Reset your password",
+        subject: "Dineo Menu Security - Reset your password",
         html,
       });
     },
@@ -66,11 +66,11 @@ export const auth = betterAuth({
       const html = `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 25px;">
-            <img src="${baseUrl}/logo-light.png" alt="Dineo" style="height: 48px; width: auto; display: inline-block;" />
+            <img src="${baseUrl}/logo-light.png" alt="Dineo Menu" style="height: 48px; width: auto; display: inline-block;" />
           </div>
           <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; font-weight: 700; text-align: center;">Verify Your Account Email</h2>
           <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-top: 15px;">Hi ${user.name},</p>
-          <p style="color: #475569; font-size: 14px; line-height: 1.6;">Thank you for registering on Dineo! Use the following 6-digit verification code to complete your registration:</p>
+          <p style="color: #475569; font-size: 14px; line-height: 1.6;">Thank you for registering on Dineo Menu! Use the following 6-digit verification code to complete your registration:</p>
           
           <div style="text-align: center; margin: 30px 0;">
             <span style="font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #ea580c; padding: 12px 28px; background-color: #fff7ed; border: 1px dashed #fdba74; border-radius: 12px; display: inline-block; box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.05);">
@@ -81,7 +81,7 @@ export const auth = betterAuth({
           <p style="color: #64748b; font-size: 11px; text-align: center; line-height: 1.5; margin-top: 20px;">This code is valid for 10 minutes. If you did not request this registration code, please ignore this email.</p>
           
           <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; line-height: 1.5;">
-            © ${new Date().getFullYear()} Dineo. All rights reserved.<br/>
+            © ${new Date().getFullYear()} Dineo Menu. All rights reserved.<br/>
             Support: <a href="mailto:charanlabssupport@gmail.com" style="color: #ea580c; text-decoration: none;">charanlabssupport@gmail.com</a>
           </div>
         </div>
@@ -89,7 +89,7 @@ export const auth = betterAuth({
 
       await sendMail({
         to: user.email,
-        subject: `Dineo Security - Verification Code: ${otpCode}`,
+        subject: `Dineo Menu Security - Verification Code: ${otpCode}`,
         html,
       });
     },
@@ -125,7 +125,7 @@ export const auth = betterAuth({
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
               <div style="text-align: center; margin-bottom: 25px;">
                 <span style="font-size: 24px; font-weight: 800; color: #ea580c; display: inline-flex; align-items: center; gap: 4px;">
-                  ⚡ Dineo
+                  ⚡ Dineo Menu
                 </span>
               </div>
               <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; font-weight: 700; text-align: center;">Security Alert: Password Changed</h2>
@@ -134,21 +134,21 @@ export const auth = betterAuth({
                 Hi ${user.name},
               </p>
               <p style="color: #475569; font-size: 14px; line-height: 1.6;">
-                This email confirms that the password for your Dineo account (<strong>${user.email}</strong>) has been changed successfully.
+                This email confirms that the password for your Dineo Menu account (<strong>${user.email}</strong>) has been changed successfully.
               </p>
               <p style="color: #475569; font-size: 14px; line-height: 1.6;">
                 If you made this change, you don't need to take any action. If you did not authorize this request, please contact our support team immediately to lock and secure your account.
               </p>
               
               <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; line-height: 1.5;">
-                © ${new Date().getFullYear()} Dineo. All rights reserved.<br/>
+                © ${new Date().getFullYear()} Dineo Menu. All rights reserved.<br/>
                 Support: <a href="mailto:charanlabssupport@gmail.com" style="color: #ea580c; text-decoration: none;">charanlabssupport@gmail.com</a>
               </div>
             </div>
           `;
           await sendMail({
             to: user.email,
-            subject: "Dineo Security - Your password was changed",
+            subject: "Dineo Menu Security - Your password was changed",
             html,
           });
         } catch (error) {

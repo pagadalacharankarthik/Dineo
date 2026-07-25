@@ -8,7 +8,7 @@ import {
 export const metadata: Metadata = {
   title: "Features",
   description:
-    "Explore all features of Dineo — QR code generation, real-time menu updates, analytics, and more.",
+    "Explore all features of Dineo Menu — QR code generation, real-time menu updates, analytics, and more.",
 };
 
 const allFeatures = [

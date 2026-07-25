@@ -12,7 +12,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Dineo Application Error Boundary Caught:", error);
+    console.error("Dineo Menu Application Error Boundary Caught:", error);
   }, [error]);
 
   return (

@@ -14,11 +14,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     select: { name: true, description: true, logo: true, address: true, mobile: true },
   });
 
-  const title = restaurant ? `${restaurant.name} — Digital Menu by Dineo` : `${slug.toUpperCase()} — Digital Menu by Dineo`;
-  const description = `Digital Menu by Dineo. Scan, view, and enjoy prices, categories, and items from ${restaurant?.name || slug}.`;
+  const title = restaurant ? `${restaurant.name} — Digital Menu by Dineo Menu` : `${slug.toUpperCase()} — Digital Menu by Dineo Menu`;
+  const description = `Digital Menu by Dineo Menu. Scan, view, and enjoy prices, categories, and items from ${restaurant?.name || slug}.`;
   
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  let imageUrl = `${baseUrl}/logo-light.png`; // Fallback to Dineo logo if no logo is uploaded
+  let imageUrl = `${baseUrl}/logo-light.png`; // Fallback to Dineo Menu logo if no logo is uploaded
   if (restaurant?.logo && restaurant.logo.trim() !== "") {
     imageUrl = restaurant.logo.startsWith("http") ? restaurant.logo : `${baseUrl}${restaurant.logo}`;
   }
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images,
       type: "website",
       url: `${baseUrl}/menu/${slug}`,
-      siteName: "Dineo",
+      siteName: "Dineo Menu",
     },
     twitter: {
       card: "summary_large_image",

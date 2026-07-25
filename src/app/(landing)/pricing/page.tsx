@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Simple, transparent pricing for Dineo. Free plan available.",
+  description: "Simple, transparent pricing for Dineo Menu. Free plan available.",
 };
 
 export default async function PricingPage() {
@@ -40,7 +40,7 @@ export default async function PricingPage() {
             {
               name: "Starter",
               price: "₹0/mo",
-              description: "Perfect for small restaurants getting a taste of Dineo",
+              description: "Perfect for small restaurants getting a taste of Dineo Menu",
               features: ["1 Permanent QR Code", "Up to 5 Categories", "Up to 25 Menu Items", "1 Promo Code limit", "Basic PNG Poster"],
               cta: "Get Started",
               highlighted: false,

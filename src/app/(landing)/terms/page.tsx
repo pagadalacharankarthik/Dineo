@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions",
-  description: "Dineo Terms and Conditions — rules and guidelines for using our platform.",
+  description: "Dineo Menu Terms and Conditions — rules and guidelines for using our platform.",
 };
 
 export default function TermsPage() {
@@ -20,11 +20,11 @@ export default function TermsPage() {
           {[
             {
               title: "1. Acceptance of Terms",
-              content: `By accessing or using Dineo, you agree to be bound by these Terms and Conditions. If you disagree with any part of the terms, you may not access the service.`,
+              content: `By accessing or using Dineo Menu, you agree to be bound by these Terms and Conditions. If you disagree with any part of the terms, you may not access the service.`,
             },
             {
               title: "2. Use of Service",
-              content: `Dineo provides a platform for restaurant owners to create and manage digital menus. You agree to use the service only for lawful purposes and in accordance with these terms.
+              content: `Dineo Menu provides a platform for restaurant owners to create and manage digital menus. You agree to use the service only for lawful purposes and in accordance with these terms.
 
 You must not:
 • Use the service in any way that violates applicable laws
@@ -38,7 +38,7 @@ You must not:
             },
             {
               title: "4. Content",
-              content: `You retain ownership of content you upload to Dineo (menu items, images, descriptions). By uploading content, you grant Dineo a license to display that content as part of the service. You are responsible for ensuring your content does not violate any laws or third-party rights.`,
+              content: `You retain ownership of content you upload to Dineo Menu (menu items, images, descriptions). By uploading content, you grant Dineo Menu a license to display that content as part of the service. You are responsible for ensuring your content does not violate any laws or third-party rights.`,
             },
             {
               title: "5. Service Availability",
@@ -50,7 +50,7 @@ You must not:
             },
             {
               title: "7. Limitation of Liability",
-              content: `Dineo is not liable for any indirect, incidental, or consequential damages arising from your use of the service. Our liability is limited to the amount you have paid for the service.`,
+              content: `Dineo Menu is not liable for any indirect, incidental, or consequential damages arising from your use of the service. Our liability is limited to the amount you have paid for the service.`,
             },
             {
               title: "8. Changes to Terms",

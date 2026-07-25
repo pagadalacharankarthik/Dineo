@@ -96,7 +96,7 @@ export function BetaFeedbackModal({
             </div>
             <h3 className="text-xl font-black">Feedback Sent!</h3>
             <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-              Your feedback has been successfully delivered to the Dineo product team. We appreciate your support during our Beta!
+              Your feedback has been successfully delivered to the Dineo Menu product team. We appreciate your support during our Beta!
             </p>
           </div>
         ) : (
@@ -109,7 +109,7 @@ export function BetaFeedbackModal({
                 How has your experience been?
               </h3>
               <p className="text-xs text-muted-foreground">
-                Help us improve Dineo during our initial launch. Let us know what you like or any issues you encountered!
+                Help us improve Dineo Menu during our initial launch. Let us know what you like or any issues you encountered!
               </p>
             </div>
 

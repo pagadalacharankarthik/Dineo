@@ -686,7 +686,7 @@ export default function HomePage() {
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">
                 Why restaurants choose{" "}
-                <span className="gradient-text">Dineo</span>
+                <span className="gradient-text">Dineo Menu</span>
               </h2>
               <div className="space-y-4">
                 {[
@@ -735,7 +735,7 @@ export default function HomePage() {
                       )}
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="bg-white p-1 rounded-xl shadow-md border border-zinc-100 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10">
-                          <img src="/logo.svg" alt="Dineo Logo" className="w-full h-full object-contain" />
+                          <img src="/logo.svg" alt="Dineo Menu Logo" className="w-full h-full object-contain" />
                         </div>
                       </div>
                     </div>
@@ -910,7 +910,7 @@ export default function HomePage() {
             Ready to go <span className="gradient-text">digital</span>?
           </h2>
           <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
-            Join hundreds of restaurants already using Dineo to delight their
+            Join hundreds of restaurants already using Dineo Menu to delight their
             customers and save on printing costs.
           </p>
           <Link

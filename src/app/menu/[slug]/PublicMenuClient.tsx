@@ -593,7 +593,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
             rel="noopener noreferrer"
             className="underline hover:opacity-90 font-black"
           >
-            Dineo
+            Dineo Menu
           </a>
           <span>for free! 🚀</span>
         </div>
@@ -999,7 +999,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
           rel="noopener noreferrer"
           className="font-bold gradient-text hover:underline cursor-pointer"
         >
-          Dineo
+          Dineo Menu
         </a>{" "}
         · Smart Digital Menu
       </div>

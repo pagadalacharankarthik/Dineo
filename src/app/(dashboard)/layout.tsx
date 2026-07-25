@@ -149,7 +149,7 @@ export default function DashboardLayout({
           <div className="flex items-center gap-2 text-center sm:text-left">
             <span className="text-base">✨</span>
             <span>
-              <strong>Dineo Beta Program:</strong> You&apos;ve been using Dineo for 7 days! We&apos;d love to hear your feedback to help us build a better experience.
+              <strong>Dineo Menu Beta Program:</strong> You&apos;ve been using Dineo Menu for 7 days! We&apos;d love to hear your feedback to help us build a better experience.
             </span>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">

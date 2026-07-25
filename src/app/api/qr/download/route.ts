@@ -136,7 +136,7 @@ export async function GET(req: Request) {
 
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(12);
-      doc.text("Powered by Dineo - Scan, Order, Enjoy!", 105, 280, { align: "center" });
+      doc.text("Powered by Dineo Menu - Scan, Order, Enjoy!", 105, 280, { align: "center" });
 
       const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
 

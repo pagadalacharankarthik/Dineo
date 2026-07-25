@@ -46,7 +46,7 @@ export async function PATCH(
       const approvalHtml = `
         <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
           <div style="text-align: center; margin-bottom: 25px;">
-            <img src="${baseUrl}/logo-light.png" alt="Dineo" style="height: 48px; width: auto; display: inline-block;" />
+            <img src="${baseUrl}/logo-light.png" alt="Dineo Menu" style="height: 48px; width: auto; display: inline-block;" />
           </div>
           <h2 style="color: #ea580c; margin-top: 0; margin-bottom: 8px; text-align: center;">Your Restaurant is Approved</h2>
           <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-top: 15px;">Hi ${restaurant.owner.name},</p>
@@ -62,7 +62,7 @@ export async function PATCH(
           <p style="color: #475569; font-size: 14px; line-height: 1.6;">You can now log in, configure your digital categories, customize items, and download high-definition QR poster templates for your dining tables.</p>
           
           <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; line-height: 1.5;">
-            © ${new Date().getFullYear()} Dineo. All rights reserved.<br/>
+            © ${new Date().getFullYear()} Dineo Menu. All rights reserved.<br/>
             Support: <a href="mailto:charanlabssupport@gmail.com" style="color: #ea580c; text-decoration: none;">charanlabssupport@gmail.com</a>
           </div>
         </div>

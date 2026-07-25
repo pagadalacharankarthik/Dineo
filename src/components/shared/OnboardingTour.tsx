@@ -13,7 +13,7 @@ export function OnboardingTour({ userCreatedAt }: { userCreatedAt?: Date | strin
   const steps = [
     {
       target: "body",
-      content: "Welcome to your Dineo Dashboard! Let's take a quick tour to get your QR menu up and running.",
+      content: "Welcome to your Dineo Menu Dashboard! Let's take a quick tour to get your QR menu up and running.",
       placement: "center" as const,
     },
     {

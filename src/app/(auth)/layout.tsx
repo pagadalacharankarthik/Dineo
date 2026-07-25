@@ -14,7 +14,7 @@ export default function AuthLayout({
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/logo.svg"
-            alt="Dineo Logo"
+            alt="Dineo Menu Logo"
             width={56}
             height={56}
             className="h-12 w-12 object-contain"
@@ -44,7 +44,7 @@ export default function AuthLayout({
         </div>
 
         <p className="text-white/60 text-sm">
-          © {new Date().getFullYear()} Dineo. All rights reserved.
+          © {new Date().getFullYear()} Dineo Menu. All rights reserved.
         </p>
       </div>
 
@@ -55,14 +55,14 @@ export default function AuthLayout({
           <div className="flex lg:hidden items-center justify-center gap-2 mb-8">
             <Image
               src="/logo.svg"
-              alt="Dineo Logo"
+              alt="Dineo Menu Logo"
               width={240}
               height={80}
               className="h-20 w-auto dark:hidden object-contain"
             />
             <Image
               src="/logo.svg"
-              alt="Dineo Logo"
+              alt="Dineo Menu Logo"
               width={240}
               height={80}
               className="h-20 w-auto hidden dark:block invert hue-rotate-180 brightness-110 object-contain"

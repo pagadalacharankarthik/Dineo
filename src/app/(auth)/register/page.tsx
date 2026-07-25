@@ -89,7 +89,7 @@ export default function RegisterPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold">Create your account</h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          Start your free Dineo account — no credit card required
+          Start your free Dineo Menu account — no credit card required
         </p>
       </div>
 

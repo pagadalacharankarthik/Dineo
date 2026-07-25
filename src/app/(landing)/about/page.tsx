@@ -3,7 +3,7 @@ import { QrCode, Heart, Target, Users } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Learn about Dineo — our mission to help restaurants go digital.",
+  description: "Learn about Dineo Menu — our mission to help restaurants go digital.",
 };
 
 export default function AboutPage() {
@@ -17,7 +17,7 @@ export default function AboutPage() {
             <span className="gradient-text">go digital</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Dineo was born from a simple idea — restaurant menus should be
+            Dineo Menu was born from a simple idea — restaurant menus should be
             dynamic, not static. We built the platform we always wished existed.
           </p>
         </div>
@@ -28,18 +28,18 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold mb-6">Our Story</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                We started Dineo after seeing restaurant owners struggle with
+                We started Dineo Menu after seeing restaurant owners struggle with
                 expensive, inflexible printed menus. Every price change meant a
                 new print run. Every new item required a redesign. It was costly
                 and time-consuming.
               </p>
               <p>
-                We believed there had to be a better way. So we built Dineo — a
+                We believed there had to be a better way. So we built Dineo Menu — a
                 platform that lets restaurant owners create and manage beautiful
                 digital menus that customers access by scanning a simple QR code.
               </p>
               <p>
-                Today, hundreds of restaurants across India use Dineo to save
+                Today, hundreds of restaurants across India use Dineo Menu to save
                 money on printing, deliver better customer experiences, and update
                 their menus instantly from any device.
               </p>

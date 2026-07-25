@@ -1,6 +1,6 @@
 # Walkthrough — Batch 3 Analytics, Contact Forms & QR Kit Leads
 
-This document records the architectural details and features established during Batch 3 of the Dineo platform.
+This document records the architectural details and features established during Batch 3 of the Dineo Menu platform.
 
 ---
 

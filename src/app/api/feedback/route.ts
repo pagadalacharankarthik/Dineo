@@ -17,10 +17,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const emailSubject = `Dineo Beta Feedback: [${type}] from ${restaurant.name}`;
+    const emailSubject = `Dineo Menu Beta Feedback: [${type}] from ${restaurant.name}`;
     const emailHtml = `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-        <h2 style="color: #ea580c; border-bottom: 2px solid #ea580c; padding-bottom: 8px;">Dineo Beta Feedback Report</h2>
+        <h2 style="color: #ea580c; border-bottom: 2px solid #ea580c; padding-bottom: 8px;">Dineo Menu Beta Feedback Report</h2>
         <p style="font-size: 14px; color: #475569;">A merchant has submitted beta feedback after experiencing the system.</p>
         
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
         </div>
         
         <p style="font-size: 11px; color: #94a3b8; margin-top: 30px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 10px;">
-          Dineo Beta Feedback System • Generated automatically
+          Dineo Menu Beta Feedback System • Generated automatically
         </p>
       </div>
     `;

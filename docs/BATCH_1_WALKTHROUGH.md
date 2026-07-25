@@ -1,6 +1,6 @@
 # Walkthrough — Batch 1 Branding, Landing & Auth (Phase 1 Baseline)
 
-This document records the architectural foundation established during Batch 1 of the Dineo platform.
+This document records the architectural foundation established during Batch 1 of the Dineo Menu platform.
 
 ---
 
@@ -11,7 +11,7 @@ This document records the architectural foundation established during Batch 1 of
 * **Schema Design**: Defined the baseline `User`, `Session`, and `Account` models to lay down the groundwork for modern secure session state.
 
 ### 2. Branding & Landing Page
-* **Branding**: Implemented a modern dark/light system styling (using `next-themes` and CSS variables) aligned with Dineo's vibrant orange primary color palette.
+* **Branding**: Implemented a modern dark/light system styling (using `next-themes` and CSS variables) aligned with Dineo Menu's vibrant orange primary color palette.
 * **Landing Page**: Built a responsive, high-performance landing page containing:
   - **Hero Section**: Powerful call-to-action hooks to attract restaurant owners.
   - **Features Grid**: Outlines the core benefits of digital QR menus (instant updates, no reprints, analytics).

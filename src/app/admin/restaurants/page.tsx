@@ -107,7 +107,7 @@ export default function AdminRestaurantsPage() {
     
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.text("Dineo Operations - Restaurants Report", 14, 20);
+    doc.text("Dineo Menu Operations - Restaurants Report", 14, 20);
     
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);

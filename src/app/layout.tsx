@@ -9,8 +9,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "Dineo — Smart QR Menu for Restaurants",
-    template: "%s | Dineo",
+    default: "Dineo Menu — Smart QR Menu for Restaurants",
+    template: "%s | Dineo Menu",
   },
   description:
     "Replace printed menus with smart QR menus. Create, manage, and update your restaurant menu instantly without reprinting menu cards.",
@@ -21,20 +21,20 @@ export const metadata: Metadata = {
     "QR code menu",
     "restaurant management",
   ],
-  authors: [{ name: "Dineo" }],
-  creator: "Dineo",
+  authors: [{ name: "Dineo Menu" }],
+  creator: "Dineo Menu",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_APP_URL,
-    title: "Dineo — Smart QR Menu for Restaurants",
+    title: "Dineo Menu — Smart QR Menu for Restaurants",
     description:
       "Replace printed menus with smart QR menus. Create, manage, and update your restaurant menu instantly.",
-    siteName: "Dineo",
+    siteName: "Dineo Menu",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dineo — Smart QR Menu for Restaurants",
+    title: "Dineo Menu — Smart QR Menu for Restaurants",
     description:
       "Replace printed menus with smart QR menus. Create, manage, and update your restaurant menu instantly.",
   },

@@ -1,6 +1,6 @@
 # Guide: Connecting DigitalPlat Free Domains to Vercel
 
-This guide explains how to connect your free domain registered on **DigitalPlat** (e.g., `yourname.us.kg`, `yourname.dpdns.org`) to your Vercel hosting dashboard, making your **Dineo** deployment live.
+This guide explains how to connect your free domain registered on **DigitalPlat** (e.g., `yourname.us.kg`, `yourname.dpdns.org`) to your Vercel hosting dashboard, making your **Dineo Menu** deployment live.
 
 ---
 
@@ -8,7 +8,7 @@ This guide explains how to connect your free domain registered on **DigitalPlat*
 
 ### Step 1: Add the Domain in Vercel
 1. Log in to your **[Vercel Dashboard](https://vercel.com/)**.
-2. Select your **Dineo** project.
+2. Select your **Dineo Menu** project.
 3. Click on the **Settings** tab at the top.
 4. From the left-hand menu, select **Domains**.
 5. In the input box, type your full registered DigitalPlat domain (e.g., `dineo.us.kg` or `dineo.dpdns.org`) and click **Add**.
@@ -63,6 +63,6 @@ While DigitalPlat doesn't charge fees, using free public namespaces comes with t
 2. **Spam & Reputation Filters**: Because these namespaces are free, bad actors often register them for temporary spam/phishing pages. This sometimes causes major security firewalls (like corporate networks, antivirus apps, or email spam filters) to block the parent domain extensions entirely.
 3. **No Support Guarantees**: There is no paid service agreement. If the domain has configuration errors, you rely on community help threads.
 
-### 💡 Recommendation for Dineo:
+### 💡 Recommendation for Dineo Menu:
 * **For Testing / Beta**: A free DigitalPlat domain is **perfect** to test your hosting, test QR scanning, and get initial merchant feedback.
 * **For Commercial Launch**: Once you onboard active paying restaurants, **invest in a professional domain** (e.g., `.in` costs around $5/year, `.com` costs around $10/year). A custom professional domain builds trust with merchants and ensures your business infrastructure is 100% secure.

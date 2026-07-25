@@ -352,7 +352,7 @@ export default function SettingsPage() {
       {/* Theme Settings */}
       <SectionCard title="Theme Preference" icon={Monitor}>
         <p className="text-sm text-muted-foreground">
-          Choose how Dineo looks for you.
+          Choose how Dineo Menu looks for you.
         </p>
         {mounted && (
           <div className="grid grid-cols-3 gap-3">

@@ -1,6 +1,6 @@
 # Product Requirement Document (PRD)
 
-## Product Name: Dineo
+## Product Name: Dineo Menu
 **Version:** 1.0 (Phase 1 Completed)  
 **Author:** AI Coding Assistant Team (Antigravity)  
 **Date:** July 2026  
@@ -8,7 +8,7 @@
 ---
 
 ## 1. Product Vision & Overview
-**Dineo** is a premium, modern, commercial-grade Software-as-a-Service (SaaS) platform designed for restaurants. It replaces outdated paper menus with dynamic, customizable digital QR menus. 
+**Dineo Menu** is a premium, modern, commercial-grade Software-as-a-Service (SaaS) platform designed for restaurants. It replaces outdated paper menus with dynamic, customizable digital QR menus. 
 
 ### Core Value Proposition
 - **Instant Menu Updates:** Restaurants update prices, availability, and descriptions in real-time without re-printing physical assets.

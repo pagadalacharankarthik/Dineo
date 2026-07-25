@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: 0 auto; padding: 30px; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); background-color: #ffffff;">
         <div style="text-align: center; margin-bottom: 25px;">
           <span style="font-size: 24px; font-weight: 800; color: #ea580c; display: inline-flex; align-items: center; gap: 4px;">
-            ⚡ Dineo
+            ⚡ Dineo Menu
           </span>
         </div>
         <h2 style="color: #0f172a; margin-top: 0; font-size: 18px; font-weight: 700; text-align: center;">Super Admin: Verification Code</h2>
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
         <p style="font-size: 12px; color: #64748b; text-align: center; line-height: 1.5;">This security code will expire in 10 minutes. If you did not initiate this change, please ignore this email and secure your administrator login credentials.</p>
         
         <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 20px; line-height: 1.5;">
-          © ${new Date().getFullYear()} Dineo. All rights reserved.<br/>
+          © ${new Date().getFullYear()} Dineo Menu. All rights reserved.<br/>
           Support: <a href="mailto:charanlabssupport@gmail.com" style="color: #ea580c; text-decoration: none;">charanlabssupport@gmail.com</a>
         </div>
       </div>
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
 
     const emailSent = await sendMail({
       to: newEmail,
-      subject: `Dineo - Your Admin Verification OTP (${otpCode})`,
+      subject: `Dineo Menu - Your Admin Verification OTP (${otpCode})`,
       html,
     });
 

@@ -85,7 +85,7 @@ export default function SubscriptionPage() {
       const options = {
         key: keyId,
         subscription_id: data.subscriptionId,
-        name: "Dineo SaaS",
+        name: "Dineo Menu SaaS",
         description: "Professional Tier Subscription",
         image: "/logo.svg",
         handler: function (response: any) {
@@ -139,7 +139,7 @@ export default function SubscriptionPage() {
     {
       name: "Starter",
       price: "₹0/mo",
-      description: "Perfect for small restaurants getting a taste of Dineo",
+      description: "Perfect for small restaurants getting a taste of Dineo Menu",
       features: ["1 Permanent QR Code", "Up to 5 Categories", "Up to 25 Menu Items", "1 Promo Code limit", "Basic PNG Poster"],
       highlighted: false,
     },

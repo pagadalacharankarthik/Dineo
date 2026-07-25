@@ -31,14 +31,14 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Image
                 src="/logo.svg"
-                alt="Dineo Logo"
+                alt="Dineo Menu Logo"
                 width={180}
                 height={60}
                 className="h-16 w-auto dark:hidden object-contain"
               />
               <Image
                 src="/logo.svg"
-                alt="Dineo Logo"
+                alt="Dineo Menu Logo"
                 width={180}
                 height={60}
                 className="h-16 w-auto hidden dark:block object-contain invert hue-rotate-180 brightness-110"
@@ -121,7 +121,7 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {year} Dineo. All rights reserved.
+            © {year} Dineo Menu. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link
