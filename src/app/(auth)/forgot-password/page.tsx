@@ -23,6 +23,20 @@ export default function ForgotPasswordPage() {
 
   const onSubmit = async (data: ForgotPasswordInput) => {
     try {
+      // 1. Verify if the email exists in our system
+      const checkRes = await fetch("/api/auth/check-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email }),
+      });
+      const checkData = await checkRes.json();
+      
+      if (checkData.success && !checkData.exists) {
+        toast.error("This email address is not registered in our system.");
+        return;
+      }
+
+      // 2. Trigger the reset email dispatch
       const result = await forgetPassword({
         email: data.email,
         redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
