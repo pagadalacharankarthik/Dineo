@@ -354,8 +354,85 @@ export default function QRCodePage() {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    if (!printRef.current || !qrData) return;
+    const toastId = toast.loading("Preparing poster for print...");
+    try {
+      const el = printRef.current;
+      
+      // Capture the card as a high-resolution PNG
+      const image = await htmlToImage.toPng(el, {
+        pixelRatio: 3.5, // High resolution for sharp prints
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        style: {
+          transform: 'none',
+          margin: '0',
+        },
+        backgroundColor: colorOptions[selectedTheme].qr,
+      });
+
+      // Create a temporary hidden iframe to handle printing cleanly
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "fixed";
+      iframe.style.right = "0";
+      iframe.style.bottom = "0";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "none";
+      document.body.appendChild(iframe);
+
+      const isSquare = posterFormat === "square";
+      const pageAspectRatio = isSquare ? "1/1" : "1/1.414";
+
+      const iframeDoc = iframe.contentWindow?.document || iframe.contentDocument;
+      if (iframeDoc) {
+        iframeDoc.write(`
+          <html>
+            <head>
+              <title>Print QR Poster</title>
+              <style>
+                @page {
+                  margin: 0;
+                  size: ${isSquare ? '210mm 210mm' : 'A4 portrait'};
+                }
+                body {
+                  margin: 0;
+                  padding: 0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 100vw;
+                  height: 100vh;
+                  background-color: #ffffff;
+                }
+                img {
+                  max-width: 90%;
+                  max-height: 90%;
+                  object-fit: contain;
+                  aspect-ratio: ${pageAspectRatio};
+                  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                  border-radius: 24px;
+                }
+              </style>
+            </head>
+            <body>
+              <img src="${image}" onload="window.print();" />
+            </body>
+          </html>
+        `);
+        iframeDoc.close();
+
+        // Remove iframe after print dialog is closed
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          toast.success("Ready to print!", { id: toastId });
+        }, 1000);
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(`Print preparation failed: ${err.message || "Unknown error"}`, { id: toastId });
+    }
   };
 
   const isProOrEnterprise = qrData?.planName === "PRO" || qrData?.planName === "ENTERPRISE";
