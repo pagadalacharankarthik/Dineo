@@ -545,40 +545,58 @@ export default function QRCodePage() {
             {/* Poster Preview */}
             <div
               id="printable-qr-poster"
-              className="bg-zinc-50 dark:bg-zinc-900 border border-border p-8 rounded-3xl max-w-sm mx-auto flex items-center justify-center overflow-hidden"
+              className={`bg-zinc-50 dark:bg-zinc-900 border border-border rounded-3xl max-w-sm mx-auto flex items-center justify-center overflow-hidden ${
+                posterFormat === "square" ? "p-4" : "p-8"
+              }`}
               style={{ aspectRatio: posterFormat === "square" ? "1/1" : "1/1.414" }}
             >
               <div
                 id="printable-qr-card"
                 ref={printRef}
-                className={`bg-gradient-to-br ${colorOptions[selectedTheme].gradient} p-8 rounded-2xl text-white shadow-xl flex flex-col items-center justify-center w-full h-full text-center`}
+                className={`bg-gradient-to-br ${
+                  colorOptions[selectedTheme].gradient
+                } rounded-2xl text-white shadow-xl flex flex-col items-center justify-center w-full h-full text-center ${
+                  posterFormat === "square" ? "p-5" : "p-8"
+                }`}
               >
-                <div className="flex items-center gap-2 mb-2">
+                <div className={`flex items-center gap-2 ${
+                  posterFormat === "square" ? "mb-1" : "mb-2"
+                }`}>
                   <Building2 className="h-6 w-6" />
                   <h2 className="text-2xl font-extrabold tracking-tight">
                     {qrData?.restaurantName}
                   </h2>
                 </div>
-                <p className="text-xs text-white/90 font-medium mb-6">
+                <p className={`text-xs text-white/90 font-medium ${
+                  posterFormat === "square" ? "mb-3" : "mb-6"
+                }`}>
                   Scan with any phone camera to view menu
                 </p>
 
-                <div className="bg-white p-4 rounded-2xl shadow-2xl mb-4">
+                <div className={`bg-white rounded-2xl shadow-2xl ${
+                  posterFormat === "square" ? "p-3 mb-3" : "p-4 mb-4"
+                }`}>
                   {dataUrl ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={dataUrl}
                       alt="Restaurant QR Code"
-                      className="w-48 h-48 object-contain"
+                      className={`object-contain transition-all ${
+                        posterFormat === "square" ? "w-36 h-36 sm:w-40 sm:h-40" : "w-48 h-48"
+                      }`}
                     />
                   ) : (
-                    <div className="w-48 h-48 flex items-center justify-center text-muted-foreground">
+                    <div className={`flex items-center justify-center text-muted-foreground ${
+                      posterFormat === "square" ? "w-36 h-36 sm:w-40 sm:h-40" : "w-48 h-48"
+                    }`}>
                       Generating...
                     </div>
                   )}
                 </div>
 
-                <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-full text-[10px] font-bold tracking-wider uppercase border border-white/30">
+                <div className={`bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold tracking-wider uppercase border border-white/30 ${
+                  posterFormat === "square" ? "py-1.5 px-3.5" : "py-2 px-4"
+                }`}>
                   ⚡ Powered by Dineo
                 </div>
               </div>
