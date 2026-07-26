@@ -42,6 +42,7 @@ interface Restaurant {
     menuItems: number;
     qrCodes: number;
   };
+  scansCount?: number;
 }
 
 export default function AdminRestaurantsPage() {
@@ -49,6 +50,7 @@ export default function AdminRestaurantsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("all");
+  const [sortBy, setSortBy] = useState<"signup-desc" | "scans-desc" | "scans-asc" | "name-asc">("signup-desc");
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [selectedRest, setSelectedRest] = useState<Restaurant | null>(null);
 
@@ -73,7 +75,7 @@ export default function AdminRestaurantsPage() {
   };
 
   const exportToCSV = (dataList: Restaurant[]) => {
-    const headers = ["ID", "Restaurant Name", "Slug", "Owner Name", "Owner Email", "Plan Name", "Plan Status", "Signup Date"];
+    const headers = ["ID", "Restaurant Name", "Slug", "Owner Name", "Owner Email", "Plan Name", "Plan Status", "Total Scans", "Signup Date"];
     const rows = dataList.map(r => [
       r.id,
       r.name,
@@ -82,6 +84,7 @@ export default function AdminRestaurantsPage() {
       r.owner.email,
       r.planName,
       r.planStatus,
+      r.scansCount ?? 0,
       new Date(r.createdAt).toLocaleDateString()
     ]);
     
@@ -128,7 +131,7 @@ export default function AdminRestaurantsPage() {
       
       doc.setFont("helvetica", "normal");
       doc.text(`Slug: /menu/${r.slug}  |  Owner: ${r.owner.name} (${r.owner.email})`, 14, y + 5);
-      doc.text(`Plan: ${r.planName} (${r.planStatus})  |  Registered: ${new Date(r.createdAt).toLocaleDateString()}`, 14, y + 10);
+      doc.text(`Plan: ${r.planName} (${r.planStatus})  |  Scans: ${r.scansCount ?? 0}  |  Registered: ${new Date(r.createdAt).toLocaleDateString()}`, 14, y + 10);
       
       y += 18;
     });
@@ -216,18 +219,31 @@ export default function AdminRestaurantsPage() {
     }
   };
 
-  const filtered = restaurants.filter((r) => {
-    const matchesSearch =
-      r.name.toLowerCase().includes(search.toLowerCase()) ||
-      r.owner.name.toLowerCase().includes(search.toLowerCase()) ||
-      r.owner.email.toLowerCase().includes(search.toLowerCase());
+  const filtered = restaurants
+    .filter((r) => {
+      const matchesSearch =
+        r.name.toLowerCase().includes(search.toLowerCase()) ||
+        r.owner.name.toLowerCase().includes(search.toLowerCase()) ||
+        r.owner.email.toLowerCase().includes(search.toLowerCase());
+        
+      if (selectedMonth === "all") return matchesSearch;
       
-    if (selectedMonth === "all") return matchesSearch;
-    
-    const date = new Date(r.createdAt);
-    const monthLabel = date.toLocaleString("default", { month: "long", year: "numeric" });
-    return matchesSearch && monthLabel === selectedMonth;
-  });
+      const date = new Date(r.createdAt);
+      const monthLabel = date.toLocaleString("default", { month: "long", year: "numeric" });
+      return matchesSearch && monthLabel === selectedMonth;
+    })
+    .sort((a, b) => {
+      if (sortBy === "scans-desc") {
+        return (b.scansCount ?? 0) - (a.scansCount ?? 0);
+      }
+      if (sortBy === "scans-asc") {
+        return (a.scansCount ?? 0) - (b.scansCount ?? 0);
+      }
+      if (sortBy === "name-asc") {
+        return a.name.localeCompare(b.name);
+      }
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
   return (
     <div className="space-y-6 text-zinc-900 dark:text-zinc-100">
@@ -260,6 +276,17 @@ export default function AdminRestaurantsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold px-3 py-2.5 rounded-xl outline-hidden focus:ring-2 focus:ring-red-500/30"
+          >
+            <option value="signup-desc">Sort: Newest First</option>
+            <option value="scans-desc">Sort: Scans (High to Low)</option>
+            <option value="scans-asc">Sort: Scans (Low to High)</option>
+            <option value="name-asc">Sort: Name (A-Z)</option>
+          </select>
+
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
@@ -373,7 +400,7 @@ export default function AdminRestaurantsPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <SlidersHorizontal className="w-4 h-4 text-zinc-400 dark:text-zinc-650" />
-                          <span>Menu Items: {rest._count.menuItems} | QRs: {rest._count.qrCodes}</span>
+                          <span>Menu Items: {rest._count.menuItems} | QRs: {rest._count.qrCodes} | Scans: {rest.scansCount ?? 0}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Eye className="w-4 h-4 text-zinc-400 dark:text-zinc-650" />

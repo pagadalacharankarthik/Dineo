@@ -115,7 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         fixed inset-y-0 left-0 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         md:relative md:translate-x-0 transition-transform duration-200 ease-in-out
         w-64 bg-white dark:bg-zinc-900/60 border-r border-zinc-200 dark:border-zinc-800/80 backdrop-blur-md flex flex-col z-40
-        md:h-screen sticky top-0 transition-colors duration-200
+        md:h-screen md:sticky md:top-0 transition-colors duration-200
       `}>
         {/* Brand / Logo */}
         <div className="p-6 border-b border-zinc-200 dark:border-zinc-800/80 hidden md:flex items-center justify-between">
