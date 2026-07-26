@@ -391,12 +391,12 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
 
   const getCardStyle = () => {
     if (restaurant?.planName === "ENTERPRISE") {
-      return "bg-zinc-900/80 border border-amber-500/20 backdrop-blur-md shadow-2xl hover:border-amber-500/40";
+      return "bg-zinc-900/80 border border-amber-500/20 backdrop-blur-md shadow-2xl hover:border-amber-500/40 hover:-translate-y-0.5 hover:shadow-amber-500/10 transition-all duration-300";
     }
     if (restaurant?.planName === "PRO") {
-      return "bg-slate-900/80 border border-orange-500/15 backdrop-blur-md shadow-xl hover:border-orange-500/30";
+      return "bg-slate-900/80 border border-orange-500/15 backdrop-blur-md shadow-xl hover:border-orange-500/30 hover:-translate-y-0.5 hover:shadow-orange-500/10 transition-all duration-300";
     }
-    return "bg-card border border-border shadow-xs";
+    return "bg-card border border-border shadow-xs hover:border-slate-350 dark:hover:border-zinc-700 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300";
   };
 
   useEffect(() => {
@@ -875,7 +875,7 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                 )}
 
                 {/* Items Grid */}
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {category.menuItems.map((item) => (
                     <div
                       key={item.id}
@@ -906,15 +906,15 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                       <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
                           <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <div className={`w-3.5 h-3.5 border flex items-center justify-center rounded-sm p-[1px] flex-shrink-0 ${
+                            <div className="flex items-start gap-2 min-w-0">
+                              <div className={`w-3.5 h-3.5 border flex items-center justify-center rounded-sm p-[1px] flex-shrink-0 mt-0.5 ${
                                 item.isVeg ? "border-green-600 dark:border-green-500" : "border-red-600 dark:border-red-500"
                               }`}>
                                 <div className={`w-1.5 h-1.5 rounded-full ${
                                   item.isVeg ? "bg-green-600 dark:bg-green-500" : "bg-red-600 dark:bg-red-500"
                                 }`} />
                               </div>
-                              <h3 className="font-bold text-sm sm:text-base leading-snug truncate">
+                              <h3 className="font-bold text-sm sm:text-base leading-snug break-words">
                                 {item.name}
                               </h3>
                             </div>
