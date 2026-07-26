@@ -16,7 +16,10 @@ import {
   Ticket,
   Download,
   Star,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import { toast } from "sonner";
 
@@ -200,6 +203,17 @@ const translations: Record<Language, Record<string, string>> = {
 };
 
 export default function PublicMenuClient({ slug }: { slug: string }) {
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const storedTheme = localStorage.getItem("theme");
+    if (!storedTheme) {
+      setTheme("light");
+    }
+  }, [setTheme]);
+
   const [lang, setLang] = useState<Language>("en");
   const t = (key: string) => translations[lang]?.[key] || translations["en"]?.[key] || key;
 
@@ -379,24 +393,24 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
   };
 
   const getPlanBackgroundClass = () => {
-    if (!restaurant) return "min-h-screen bg-muted/20 pb-20";
+    if (!restaurant) return "min-h-screen bg-slate-50/50 dark:bg-zinc-950 pb-20 text-slate-900 dark:text-zinc-100 transition-colors duration-300";
     if (restaurant.planName === "ENTERPRISE") {
-      return "min-h-screen bg-zinc-950 text-zinc-100 pb-20";
+      return "min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-20 text-zinc-900 dark:text-zinc-100 transition-colors duration-300";
     }
     if (restaurant.planName === "PRO") {
-      return "min-h-screen bg-slate-950 text-slate-100 pb-20";
+      return "min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100 transition-colors duration-300";
     }
-    return "min-h-screen bg-muted/20 pb-20 text-foreground";
+    return "min-h-screen bg-slate-50/50 dark:bg-zinc-950 pb-20 text-slate-900 dark:text-zinc-100 transition-colors duration-300";
   };
 
   const getCardStyle = () => {
     if (restaurant?.planName === "ENTERPRISE") {
-      return "bg-zinc-900/80 border border-amber-500/20 backdrop-blur-md shadow-2xl hover:border-amber-500/40 hover:-translate-y-0.5 hover:shadow-amber-500/10 transition-all duration-300";
+      return "bg-white dark:bg-zinc-900/80 border border-amber-200/60 dark:border-amber-500/20 backdrop-blur-md shadow-xs dark:shadow-2xl hover:border-amber-400 dark:hover:border-amber-500/40 hover:-translate-y-0.5 hover:shadow-amber-500/10 transition-all duration-300 text-slate-900 dark:text-zinc-100";
     }
     if (restaurant?.planName === "PRO") {
-      return "bg-slate-900/80 border border-orange-500/15 backdrop-blur-md shadow-xl hover:border-orange-500/30 hover:-translate-y-0.5 hover:shadow-orange-500/10 transition-all duration-300";
+      return "bg-white dark:bg-slate-900/80 border border-orange-200/60 dark:border-orange-500/15 backdrop-blur-md shadow-xs dark:shadow-xl hover:border-orange-400 dark:hover:border-orange-500/30 hover:-translate-y-0.5 hover:shadow-orange-500/10 transition-all duration-300 text-slate-900 dark:text-slate-100";
     }
-    return "bg-card border border-border shadow-xs hover:border-slate-350 dark:hover:border-zinc-700 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300";
+    return "bg-white dark:bg-card border border-slate-200 dark:border-border shadow-xs hover:border-slate-350 dark:hover:border-zinc-700 hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 text-slate-900 dark:text-foreground";
   };
 
   useEffect(() => {
@@ -638,8 +652,22 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
           </div>
         )}
 
-        {/* Language Selector */}
-        <div className="absolute top-4 right-4 z-10">
+        {/* Theme Toggle & Language Selector */}
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+          {mounted && (
+            <button
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+              className="bg-black/40 hover:bg-black/55 backdrop-blur-md text-white border border-white/20 p-2 rounded-xl cursor-pointer shadow-sm transition-all flex items-center justify-center"
+              aria-label="Toggle Theme"
+              title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {resolvedTheme === "dark" ? (
+                <Sun className="h-4.5 w-4.5 text-amber-400" />
+              ) : (
+                <Moon className="h-4.5 w-4.5 text-slate-100" />
+              )}
+            </button>
+          )}
           <select
             value={lang}
             onChange={(e) => setLang(e.target.value as Language)}
