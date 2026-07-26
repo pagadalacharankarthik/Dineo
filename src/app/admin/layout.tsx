@@ -14,7 +14,8 @@ import {
   X,
   Settings,
   Sun,
-  Moon
+  Moon,
+  Ticket
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin", label: "Overview", icon: LayoutDashboard },
     { href: "/admin/restaurants", label: "Restaurants", icon: Store },
     { href: "/admin/qr-kits", label: "QR Kit Requests", icon: QrCode },
+    { href: "/admin/promo-codes", label: "Promo Codes", icon: Ticket },
     { href: "/admin/contact", label: "Contact Enquiries", icon: Mail },
     { href: "/admin/settings", label: "Profile Settings", icon: Settings },
   ];

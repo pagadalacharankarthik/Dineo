@@ -338,3 +338,16 @@ enum EnquiryStatus {
 enum AdminRole {
   SUPER_ADMIN
 }
+
+model PromoCode {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  discountType  String    @default("PERCENT") // "PERCENT" or "FLAT"
+  discountValue Float
+  isActive      Boolean   @default(true)
+  expiresAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("promo_codes")
+}

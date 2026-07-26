@@ -573,22 +573,18 @@ export default function QRCodePage() {
                   Scan with any phone camera to view menu
                 </p>
 
-                <div className={`bg-white rounded-2xl shadow-2xl ${
-                  posterFormat === "square" ? "p-3 mb-3" : "p-4 mb-4"
+                <div className={`bg-white rounded-2xl shadow-2xl flex items-center justify-center aspect-square ${
+                  posterFormat === "square" ? "w-[50%] p-2.5 mb-2.5" : "w-[55%] p-3.5 mb-4"
                 }`}>
                   {dataUrl ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={dataUrl}
                       alt="Restaurant QR Code"
-                      className={`object-contain transition-all ${
-                        posterFormat === "square" ? "w-36 h-36 sm:w-40 sm:h-40" : "w-48 h-48"
-                      }`}
+                      className="w-full h-full object-contain"
                     />
                   ) : (
-                    <div className={`flex items-center justify-center text-muted-foreground ${
-                      posterFormat === "square" ? "w-36 h-36 sm:w-40 sm:h-40" : "w-48 h-48"
-                    }`}>
+                    <div className="text-muted-foreground text-xs">
                       Generating...
                     </div>
                   )}

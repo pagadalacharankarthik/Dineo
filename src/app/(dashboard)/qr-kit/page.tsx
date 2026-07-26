@@ -98,6 +98,50 @@ export default function QRKitPage() {
   const [notes, setNotes] = useState("");
   const [qrColor, setQrColor] = useState("orange");
 
+  // Promo code states
+  const [promoInput, setPromoInput] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState<{
+    code: string;
+    discountType: "PERCENT" | "FLAT";
+    discountValue: number;
+  } | null>(null);
+  const [promoError, setPromoError] = useState("");
+  const [validatingPromo, setValidatingPromo] = useState(false);
+
+  const handleApplyPromo = async () => {
+    if (!promoInput.trim()) return;
+    setValidatingPromo(true);
+    setPromoError("");
+    try {
+      const res = await fetch("/api/public/promo-code/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: promoInput }),
+      });
+      const json = await res.json();
+      if (json.success && json.data) {
+        setAppliedPromo(json.data);
+        setPromoError("");
+        toast.success(`Promo code "${json.data.code}" applied!`);
+        setPromoInput("");
+      } else {
+        setPromoError(json.error || "Invalid promo code");
+        toast.error(json.error || "Invalid promo code");
+      }
+    } catch {
+      setPromoError("Failed to validate promo code");
+      toast.error("Failed to validate promo code");
+    } finally {
+      setValidatingPromo(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoError("");
+    toast.success("Promo code removed");
+  };
+
   const colorOptions = {
     orange: { gradient: "from-orange-500 via-amber-500 to-amber-600", hex: "#ea580c" },
     black: { gradient: "from-zinc-800 via-neutral-900 to-black", hex: "#000000" },
@@ -148,6 +192,33 @@ export default function QRKitPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Calculate pricing and discounts to log in notes
+      const getKitPrice = (type: string) => {
+        switch (type) {
+          case "ACRYLIC_STAND": return 199;
+          case "STICKER_PACK": return 99;
+          case "WINDOW_STICKER": return 149;
+          case "COMBO_PACK": return 299;
+          default: return 0;
+        }
+      };
+      const unitPrice = getKitPrice(kitType);
+      const subtotal = unitPrice * Number(quantityNeeded);
+      const deliveryCharge = subtotal >= 1000 ? 0 : 99;
+      
+      let discount = 0;
+      if (appliedPromo) {
+        if (appliedPromo.discountType === "PERCENT") {
+          discount = Math.round((subtotal * appliedPromo.discountValue) / 100);
+        } else {
+          discount = appliedPromo.discountValue;
+        }
+        discount = Math.min(discount, subtotal);
+      }
+      
+      const totalAmount = subtotal - discount + deliveryCharge;
+      const promoInfo = appliedPromo ? ` | Applied Promo: ${appliedPromo.code} (Discount: -₹${discount}) | Paid Total: ₹${totalAmount}` : ` | Paid Total: ₹${totalAmount}`;
+
       const res = await fetch("/api/qr-kit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -162,7 +233,9 @@ export default function QRKitPage() {
           pincode,
           tableCount: Number(tableCount),
           quantityNeeded: Number(quantityNeeded),
-          notes: notes ? `${notes} | Kit Type: ${kitType} | Preferred Plan: ${preferredPlan}` : `Kit Type: ${kitType} | Preferred Plan: ${preferredPlan}`,
+          notes: notes 
+            ? `${notes} | Kit Type: ${kitType} | Preferred Plan: ${preferredPlan}${promoInfo}` 
+            : `Kit Type: ${kitType} | Preferred Plan: ${preferredPlan}${promoInfo}`,
           qrColor,
         }),
       });
@@ -173,6 +246,7 @@ export default function QRKitPage() {
         setNotes("");
         setTableCount(1);
         setQuantityNeeded(1);
+        setAppliedPromo(null);
         fetchRequests();
         setActiveTab("requests");
       } else {
@@ -501,6 +575,48 @@ export default function QRKitPage() {
                 />
               </div>
 
+              {/* Promo Code Section */}
+              <div className="space-y-1.5 pt-2">
+                <label className="text-xs font-semibold text-muted-foreground">Promo Code</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={promoInput}
+                    disabled={!!appliedPromo}
+                    onChange={(e) => setPromoInput(e.target.value)}
+                    placeholder={appliedPromo ? `Applied: ${appliedPromo.code}` : "e.g. STARTER50"}
+                    className="flex-1 text-sm font-medium px-4 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-hidden disabled:opacity-75 disabled:bg-muted/10 uppercase tracking-wider font-bold"
+                  />
+                  {appliedPromo ? (
+                    <button
+                      type="button"
+                      onClick={handleRemovePromo}
+                      className="px-4 py-2.5 bg-rose-500/10 border border-rose-500/25 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 font-bold text-xs rounded-xl transition-all"
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleApplyPromo}
+                      disabled={validatingPromo || !promoInput.trim()}
+                      className="px-4 py-2.5 bg-primary/10 border border-primary/20 text-primary hover:bg-primary/25 disabled:opacity-50 disabled:cursor-not-allowed font-bold text-xs rounded-xl transition-all flex items-center gap-1.5"
+                    >
+                      {validatingPromo && <Loader2 className="h-3 w-3 animate-spin" />}
+                      Apply
+                    </button>
+                  )}
+                </div>
+                {promoError && (
+                  <p className="text-[10px] text-rose-500 font-semibold">{promoError}</p>
+                )}
+                {appliedPromo && (
+                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                    🎉 Promo code active: {appliedPromo.discountType === "PERCENT" ? `${appliedPromo.discountValue}% discount applied!` : `₹${appliedPromo.discountValue} flat discount applied!`}
+                  </p>
+                )}
+              </div>
+
               {/* Dynamic Amount Summary Box */}
               {(() => {
                 const getKitPrice = (type: string) => {
@@ -523,8 +639,19 @@ export default function QRKitPage() {
                 };
                 const unitPrice = getKitPrice(kitType);
                 const subtotal = unitPrice * quantityNeeded;
+                
+                let discount = 0;
+                if (appliedPromo) {
+                  if (appliedPromo.discountType === "PERCENT") {
+                    discount = Math.round((subtotal * appliedPromo.discountValue) / 100);
+                  } else {
+                    discount = appliedPromo.discountValue;
+                  }
+                  discount = Math.min(discount, subtotal);
+                }
+
                 const deliveryCharge = subtotal >= 1000 ? 0 : 99;
-                const totalAmount = subtotal + deliveryCharge;
+                const totalAmount = subtotal - discount + deliveryCharge;
                 return (
                   <div className="p-4 rounded-xl bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/20 space-y-2 mt-4 text-xs">
                     <div className="flex justify-between items-center font-medium">
@@ -543,6 +670,12 @@ export default function QRKitPage() {
                       <span className="text-muted-foreground">Subtotal:</span>
                       <span className="font-semibold text-foreground">₹{subtotal}</span>
                     </div>
+                    {discount > 0 && (
+                      <div className="flex justify-between items-center font-bold text-emerald-600 dark:text-emerald-400">
+                        <span>Discount (Promo: {appliedPromo?.code}):</span>
+                        <span>-₹{discount}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between items-center font-medium">
                       <span className="text-muted-foreground">Delivery Charges:</span>
                       <span className="font-semibold text-foreground">
