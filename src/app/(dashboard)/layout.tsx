@@ -75,8 +75,13 @@ export default function DashboardLayout({
 
   const handleLogout = async () => {
     const { signOut } = await import("@/lib/auth-client");
-    await signOut();
-    router.replace("/login");
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.href = "/login";
+        }
+      }
+    });
   };
 
   if (isPending) {

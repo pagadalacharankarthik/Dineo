@@ -89,10 +89,14 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            window.location.href = "/login";
+          }
+        }
+      });
       toast.success("Signed out successfully");
-      router.push("/login");
-      router.refresh();
     } catch {
       toast.error("Failed to sign out");
     }
