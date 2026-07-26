@@ -4,13 +4,13 @@ import { db } from "@/lib/db";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { errorResponse } = await getAuthenticatedAdmin();
   if (errorResponse) return errorResponse;
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     await db.promoCode.delete({
       where: { id },
@@ -28,13 +28,13 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { errorResponse } = await getAuthenticatedAdmin();
   if (errorResponse) return errorResponse;
 
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     const promoCode = await db.promoCode.update({
