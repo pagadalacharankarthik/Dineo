@@ -7,7 +7,10 @@ export async function GET() {
     const { restaurant, errorResponse } = await getAuthenticatedRestaurant();
     if (errorResponse) return errorResponse;
 
-    const [totalCategories, totalMenuItems, availableItems, outOfStockItems, qrCode, settings] =
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const [totalCategories, totalMenuItems, availableItems, outOfStockItems, qrCode, settings, totalQrScans, todayScans] =
       await Promise.all([
         db.category.count({ where: { restaurantId: restaurant!.id } }),
         db.menuItem.count({ where: { restaurantId: restaurant!.id } }),
@@ -15,6 +18,13 @@ export async function GET() {
         db.menuItem.count({ where: { restaurantId: restaurant!.id, isAvailable: false } }),
         db.qRCode.findFirst({ where: { restaurantId: restaurant!.id, qrType: "RESTAURANT_MAIN" } }),
         db.globalSettings.findUnique({ where: { id: "singleton" } }),
+        db.qRScan.count({ where: { restaurantId: restaurant!.id } }),
+        db.qRScan.count({
+          where: {
+            restaurantId: restaurant!.id,
+            scannedAt: { gte: todayStart },
+          },
+        }),
       ]);
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -33,8 +43,8 @@ export async function GET() {
         outOfStockItems,
         qrStatus: qrCode ? "active" : "pending",
         qrCodeId: qrCode?.id ?? null,
-        todayScans: qrCode?.scansCount ?? 0,
-        totalQrScans: qrCode?.scansCount ?? 0,
+        todayScans,
+        totalQrScans,
         qrDownloads: qrCode?.downloadsCount ?? 0,
         isActive: restaurant!.isActive,
         showTrialBanner: restaurant!.planName === "FREE_TRIAL" ? restaurant!.showTrialBanner : false,

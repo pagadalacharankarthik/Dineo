@@ -32,8 +32,8 @@ export async function GET() {
       qrDetails,
       scansLast7Days,
     ] = await Promise.all([
-      // Total Scans (Restricted to last 30 days for db optimization)
-      db.qRScan.count({ where: { restaurantId, scannedAt: { gte: thirtyDaysAgo } } }),
+      // Total Scans (All-time scans)
+      db.qRScan.count({ where: { restaurantId } }),
       // Today's Scans
       db.qRScan.count({
         where: {
