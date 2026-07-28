@@ -569,31 +569,38 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
     );
   }
 
-  // Filter Categories & Items
-  const filteredCategories = restaurant.categories
-    .map((cat) => {
-      const items = cat.menuItems.filter((item) => {
-        // Search filter match
-        const matchesSearch =
-          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (item.description &&
-            item.description.toLowerCase().includes(searchQuery.toLowerCase()));
+  // Filter Items in each category based on search and diet filters
+  const categoriesWithFilteredItems = restaurant.categories.map((cat) => {
+    const items = cat.menuItems.filter((item) => {
+      // Search filter match
+      const matchesSearch =
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.description &&
+          item.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
-        // Diet (Veg/Non-veg) filter match
-        let matchesDiet = true;
-        if (dietFilter === "veg") {
-          matchesDiet = item.isVeg;
-        } else if (dietFilter === "non-veg") {
-          matchesDiet = !item.isVeg;
-        }
+      // Diet (Veg/Non-veg) filter match
+      let matchesDiet = true;
+      if (dietFilter === "veg") {
+        matchesDiet = item.isVeg;
+      } else if (dietFilter === "non-veg") {
+        matchesDiet = !item.isVeg;
+      }
 
-        return matchesSearch && matchesDiet;
-      });
-      return { ...cat, menuItems: items };
-    })
-    .filter((cat) =>
-      activeCategory === "all" ? cat.menuItems.length > 0 : cat.id === activeCategory
-    );
+      return matchesSearch && matchesDiet;
+    });
+    return { ...cat, menuItems: items };
+  });
+
+  // Calculate total matching items across categories for All Items button
+  const totalMatchingItems = categoriesWithFilteredItems.reduce(
+    (sum, cat) => sum + cat.menuItems.length,
+    0
+  );
+
+  // Filter Categories to render in sections based on selection
+  const filteredCategories = categoriesWithFilteredItems.filter((cat) =>
+    activeCategory === "all" ? cat.menuItems.length > 0 : cat.id === activeCategory
+  );
 
   return (
     <div className={getPlanBackgroundClass()}>
@@ -857,21 +864,23 @@ export default function PublicMenuClient({ slug }: { slug: string }) {
                 : "bg-card text-muted-foreground hover:text-foreground hover:scale-102 border-border/40"
             }`}
           >
-            {t("allItems")}
+            {t("allItems")} ({totalMatchingItems})
           </button>
-          {restaurant.categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => selectCategory(cat.id)}
-              className={`px-4.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-300 transform ease-out border cursor-pointer ${
-                activeCategory === cat.id
-                  ? "gradient-primary text-white scale-105 shadow-[0_0_14px_rgba(249,115,22,0.45)] border-amber-400/30"
-                  : "bg-card text-muted-foreground hover:text-foreground hover:scale-102 border-border/40"
-              }`}
-            >
-              {cat.name} ({cat.menuItems.length})
-            </button>
-          ))}
+          {categoriesWithFilteredItems
+            .filter((cat) => cat.menuItems.length > 0)
+            .map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => selectCategory(cat.id)}
+                className={`px-4.5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-300 transform ease-out border cursor-pointer ${
+                  activeCategory === cat.id
+                    ? "gradient-primary text-white scale-105 shadow-[0_0_14px_rgba(249,115,22,0.45)] border-amber-400/30"
+                    : "bg-card text-muted-foreground hover:text-foreground hover:scale-102 border-border/40"
+                }`}
+              >
+                {cat.name} ({cat.menuItems.length})
+              </button>
+            ))}
         </div>
 
         {/* Category Sections */}
