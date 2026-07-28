@@ -141,39 +141,6 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-background">
       <OnboardingTour userCreatedAt={session?.user?.createdAt} />
       
-      {/* Suspension banner */}
-      {isSuspended && (
-        <div className="bg-amber-600 text-zinc-950 font-bold text-center px-4 py-2 text-xs flex items-center justify-center gap-2 relative z-50 animate-pulse shadow-md">
-          ⚠️ Your restaurant menu is suspended. It is hidden from public view. Please contact the administrator.
-        </div>
-      )}
-
-      {/* Beta Feedback Banner */}
-      {showFeedbackBanner && (
-        <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white px-4 py-3 text-xs sm:text-sm font-semibold flex flex-col sm:flex-row items-center justify-between gap-3 relative z-40 shadow-md">
-          <div className="flex items-center gap-2 text-center sm:text-left">
-            <span className="text-base">✨</span>
-            <span>
-              <strong>Dineo Menu Beta Program:</strong> You&apos;ve been using Dineo Menu for 7 days! We&apos;d love to hear your feedback to help us build a better experience.
-            </span>
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={() => setIsFeedbackOpen(true)}
-              className="bg-white text-orange-600 hover:bg-orange-50 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-sm border-none"
-            >
-              Give Feedback
-            </button>
-            <button
-              onClick={dismissFeedbackBanner}
-              className="bg-black/10 hover:bg-black/20 text-white/90 border border-white/20 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-            >
-              Dismiss
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Sidebar */}
       <Sidebar 
         collapsed={collapsed} 
@@ -197,6 +164,39 @@ export default function DashboardLayout({
           collapsed ? "lg:ml-16" : "lg:ml-64"
         )}
       >
+        {/* Suspension banner */}
+        {isSuspended && (
+          <div className="bg-amber-600 text-zinc-950 font-bold text-center px-4 py-2 text-xs flex items-center justify-center gap-2 relative z-50 animate-pulse shadow-md">
+            ⚠️ Your restaurant menu is suspended. It is hidden from public view. Please contact the administrator.
+          </div>
+        )}
+
+        {/* Beta Feedback Banner */}
+        {showFeedbackBanner && (
+          <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white px-4 py-3 text-xs sm:text-sm font-semibold flex flex-col sm:flex-row items-center justify-between gap-3 relative z-40 shadow-md">
+            <div className="flex items-center gap-2 text-center sm:text-left">
+              <span className="text-base">✨</span>
+              <span>
+                <strong>Dineo Menu Beta Program:</strong> You&apos;ve been using Dineo Menu for 7 days! We&apos;d love to hear your feedback to help us build a better experience.
+              </span>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={() => setIsFeedbackOpen(true)}
+                className="bg-white text-orange-600 hover:bg-orange-50 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-sm border-none"
+              >
+                Give Feedback
+              </button>
+              <button
+                onClick={dismissFeedbackBanner}
+                className="bg-black/10 hover:bg-black/20 text-white/90 border border-white/20 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        )}
+
         <Topbar user={user} onMobileMenuOpen={() => setMobileOpen(true)} />
         <main className="p-4 sm:p-6 lg:p-8">{children}</main>
       </div>

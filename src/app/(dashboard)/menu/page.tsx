@@ -217,67 +217,305 @@ export default function MenuPage() {
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF();
+
+      // Fetch restaurant details first
+      let restaurantName = "Restaurant Digital Menu";
+      let restaurantLogo = "";
+      let restaurantDescription = "";
+      let restaurantMobile = "";
+      let restaurantAddress = "";
+      let restaurantSlug = "restaurant";
       
-      // Header Branding banner
+      try {
+        const res = await fetch("/api/restaurant");
+        const data = await res.json();
+        if (data.success && data.data) {
+          restaurantName = data.data.name || restaurantName;
+          restaurantLogo = data.data.logo || "";
+          restaurantDescription = data.data.description || "";
+          restaurantMobile = data.data.mobile || "";
+          restaurantAddress = data.data.address || "";
+          restaurantSlug = data.data.slug || "restaurant";
+        }
+      } catch (e) {
+        console.error("Failed to load restaurant details for PDF:", e);
+      }
+
+      // Helper function to clean unicode emojis/shapes
+      const cleanTextForPDF = (text: string) => {
+        if (!text) return "";
+        let cleaned = text.replace(/[\p{Extended_Pictographic}\p{Emoji_Component}]/gu, "");
+        cleaned = cleaned.replace(/[\u2190-\u21FF\u2600-\u26FF\u2700-\u27BF]/g, "");
+        return cleaned.replace(/\s+/g, " ").trim();
+      };
+
+      // Helper function to preload restaurant logo image
+      const loadImage = (url: string): Promise<HTMLImageElement> => {
+        return new Promise((resolve, reject) => {
+          if (typeof window === "undefined") {
+            reject(new Error("Window is not defined"));
+            return;
+          }
+          const img = new window.Image();
+          img.crossOrigin = "anonymous";
+          img.src = url;
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error("Failed to load image"));
+        });
+      };
+
+      // Preload logo
+      let logoImg: HTMLImageElement | null = null;
+      if (restaurantLogo) {
+        try {
+          logoImg = await loadImage(restaurantLogo);
+        } catch (e) {
+          console.error("Failed to load restaurant logo in PDF builder:", e);
+        }
+      }
+
+      let pageNumber = 1;
+      const drawFooter = (d: typeof doc, pNum: number) => {
+        d.setFont("helvetica", "normal");
+        d.setFontSize(7.5);
+        d.setTextColor(156, 163, 175); // gray-400
+        d.text("Smart QR Digital Menu by Dineo Menu (dineo.in)", 14, 287);
+        const pText = `Page ${pNum}`;
+        d.text(pText, 196 - d.getTextWidth(pText), 287);
+      };
+
+      const addPageWithFooter = () => {
+        drawFooter(doc, pageNumber);
+        doc.addPage();
+        pageNumber++;
+        
+        // Redraw Header Banner on subsequent pages
+        doc.setFillColor(249, 115, 22);
+        doc.rect(0, 0, 210, 40, "F");
+        
+        if (logoImg) {
+          try {
+            doc.addImage(logoImg, "PNG", 14, 8, 24, 24);
+          } catch {}
+        }
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.text(cleanTextForPDF(restaurantName), logoImg ? 44 : 14, 25);
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        if (restaurantDescription) {
+          doc.text(cleanTextForPDF(restaurantDescription).substring(0, 85), logoImg ? 44 : 14, 32);
+        }
+      };
+
+      // Draw Header Branding banner on first page
       doc.setFillColor(249, 115, 22);
       doc.rect(0, 0, 210, 40, "F");
+      
+      if (logoImg) {
+        try {
+          doc.addImage(logoImg, "PNG", 14, 8, 24, 24);
+        } catch {}
+      }
       
       doc.setFont("helvetica", "bold");
       doc.setFontSize(22);
       doc.setTextColor(255, 255, 255);
-      doc.text("Restaurant Digital Menu", 14, 25);
+      doc.text(cleanTextForPDF(restaurantName), logoImg ? 44 : 14, 25);
       
-      let y = 50;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9.5);
+      doc.setTextColor(255, 255, 255);
+      if (restaurantDescription) {
+        doc.text(cleanTextForPDF(restaurantDescription).substring(0, 80), logoImg ? 44 : 14, 32);
+      }
+      
+      // Draw Contact Details in Banner
+      let contactDetails = [];
+      if (restaurantMobile) contactDetails.push(`Phone: ${restaurantMobile}`);
+      if (restaurantAddress) contactDetails.push(`Address: ${restaurantAddress}`);
+      if (contactDetails.length > 0) {
+        doc.setFontSize(8);
+        doc.text(cleanTextForPDF(contactDetails.join("  |  ")), logoImg ? 44 : 14, 37);
+      }
+      
+      let y = 52;
       categories.forEach((cat) => {
+        // Filter items for this category
         const catItems = items.filter((i) => i.categoryId === cat.id);
-        if (catItems.length === 0) return;
+        const vegItems = catItems.filter((i) => i.isVeg && i.isAvailable);
+        const nonVegItems = catItems.filter((i) => !i.isVeg && i.isAvailable);
         
-        if (y > 250) {
-          doc.addPage();
-          y = 20;
+        if (vegItems.length === 0 && nonVegItems.length === 0) return;
+        
+        if (y > 240) {
+          addPageWithFooter();
+          y = 52;
         }
         
+        // Category Header
         doc.setFont("helvetica", "bold");
         doc.setFontSize(14);
         doc.setTextColor(249, 115, 22);
-        doc.text(cat.name, 14, y);
+        doc.text(cleanTextForPDF(cat.name), 14, y);
+        doc.setDrawColor(249, 115, 22);
+        doc.setLineWidth(0.5);
         doc.line(14, y + 2, 196, y + 2);
         
         y += 10;
-        
-        catItems.forEach((item) => {
-          if (y > 270) {
-            doc.addPage();
-            y = 20;
+
+        // Render Veg Section
+        if (vegItems.length > 0) {
+          if (y > 260) {
+            addPageWithFooter();
+            y = 52;
           }
           
           doc.setFont("helvetica", "bold");
-          doc.setFontSize(11);
-          doc.setTextColor(30, 41, 59);
+          doc.setFontSize(10);
+          doc.setTextColor(16, 185, 129); // green-500
+          doc.text("Vegetarian Dishes", 14, y);
+          y += 7;
           
-          const vegSymbol = item.isVeg ? "[V]" : "[N]";
-          doc.text(`${vegSymbol} ${item.name}`, 14, y);
-          
-          const activePrice = item.discountPrice !== null && item.discountPrice !== undefined 
-            ? `Rs. ${item.discountPrice.toFixed(2)} (Offer!)` 
-            : `Rs. ${item.price.toFixed(2)}`;
-          doc.text(activePrice, 196 - doc.getTextWidth(activePrice), y);
-          
-          if (item.description) {
-            doc.setFont("helvetica", "italic");
-            doc.setFontSize(9);
-            doc.setTextColor(100, 116, 139);
-            doc.text(item.description.substring(0, 100), 14, y + 5);
-            y += 12;
-          } else {
-            y += 8;
+          vegItems.forEach((item) => {
+            if (y > 270) {
+              addPageWithFooter();
+              y = 52;
+            }
+            
+            // Draw Item Name
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.setTextColor(30, 41, 59); // slate-800
+            doc.text(`[V] ${cleanTextForPDF(item.name)}`, 14, y);
+            
+            // Draw Item Price & Strikethrough if discount exists
+            if (item.discountPrice !== null && item.discountPrice !== undefined) {
+              const originalPrice = `Rs. ${item.price.toFixed(2)}`;
+              const offerPrice = `Rs. ${item.discountPrice.toFixed(2)} (Offer)`;
+              
+              // Offer Price
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(10);
+              doc.setTextColor(249, 115, 22); // orange-500
+              const offerWidth = doc.getTextWidth(offerPrice);
+              doc.text(offerPrice, 196 - offerWidth, y);
+              
+              // Original Price
+              doc.setFont("helvetica", "normal");
+              doc.setFontSize(8.5);
+              doc.setTextColor(156, 163, 175); // gray-450
+              const origWidth = doc.getTextWidth(originalPrice);
+              const origX = 196 - offerWidth - 5 - origWidth;
+              doc.text(originalPrice, origX, y);
+              
+              // Strike line
+              doc.setDrawColor(156, 163, 175);
+              doc.setLineWidth(0.4);
+              doc.line(origX - 0.5, y - 3, origX + origWidth + 0.5, y - 3);
+            } else {
+              // Regular Price
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(10);
+              doc.setTextColor(30, 41, 59);
+              const regPrice = `Rs. ${item.price.toFixed(2)}`;
+              doc.text(regPrice, 196 - doc.getTextWidth(regPrice), y);
+            }
+            
+            // Draw description
+            if (item.description) {
+              doc.setFont("helvetica", "italic");
+              doc.setFontSize(8.5);
+              doc.setTextColor(100, 116, 139);
+              doc.text(cleanTextForPDF(item.description).substring(0, 100), 14, y + 4.5);
+              y += 11.5;
+            } else {
+              y += 7.5;
+            }
+          });
+          y += 3;
+        }
+
+        // Render Non-Veg Section
+        if (nonVegItems.length > 0) {
+          if (y > 260) {
+            addPageWithFooter();
+            y = 52;
           }
-        });
+          
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10);
+          doc.setTextColor(239, 68, 68); // red-500
+          doc.text("Non-Vegetarian Dishes", 14, y);
+          y += 7;
+          
+          nonVegItems.forEach((item) => {
+            if (y > 270) {
+              addPageWithFooter();
+              y = 52;
+            }
+            
+            // Draw Item Name
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.setTextColor(30, 41, 59); // slate-800
+            doc.text(`[N] ${cleanTextForPDF(item.name)}`, 14, y);
+            
+            // Draw Item Price & Strikethrough if discount exists
+            if (item.discountPrice !== null && item.discountPrice !== undefined) {
+              const originalPrice = `Rs. ${item.price.toFixed(2)}`;
+              const offerPrice = `Rs. ${item.discountPrice.toFixed(2)} (Offer)`;
+              
+              // Offer Price
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(10);
+              doc.setTextColor(249, 115, 22); // orange-500
+              const offerWidth = doc.getTextWidth(offerPrice);
+              doc.text(offerPrice, 196 - offerWidth, y);
+              
+              // Original Price
+              doc.setFont("helvetica", "normal");
+              doc.setFontSize(8.5);
+              doc.setTextColor(156, 163, 175); // gray-450
+              const origWidth = doc.getTextWidth(originalPrice);
+              const origX = 196 - offerWidth - 5 - origWidth;
+              doc.text(originalPrice, origX, y);
+              
+              // Strike line
+              doc.setDrawColor(156, 163, 175);
+              doc.setLineWidth(0.4);
+              doc.line(origX - 0.5, y - 3, origX + origWidth + 0.5, y - 3);
+            } else {
+              // Regular Price
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(10);
+              doc.setTextColor(30, 41, 59);
+              const regPrice = `Rs. ${item.price.toFixed(2)}`;
+              doc.text(regPrice, 196 - doc.getTextWidth(regPrice), y);
+            }
+            
+            // Draw description
+            if (item.description) {
+              doc.setFont("helvetica", "italic");
+              doc.setFontSize(8.5);
+              doc.setTextColor(100, 116, 139);
+              doc.text(cleanTextForPDF(item.description).substring(0, 100), 14, y + 4.5);
+              y += 11.5;
+            } else {
+              y += 7.5;
+            }
+          });
+          y += 3;
+        }
         
-        y += 6;
+        y += 4;
       });
-      
-      doc.save(`restaurant-menu.pdf`);
+
+      drawFooter(doc, pageNumber);
+      doc.save(`${restaurantSlug}-menu.pdf`);
       toast.success("Menu PDF downloaded successfully!");
     } catch (err) {
       console.error(err);
