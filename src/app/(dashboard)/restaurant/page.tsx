@@ -411,6 +411,17 @@ export default function RestaurantPage() {
                 disabled={planName === "FREE_TRIAL"}
                 {...register("googleReviewUrl")} 
               />
+              <div className="mt-2.5 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 text-[11px] text-zinc-600 dark:text-zinc-400 space-y-1">
+                <span className="font-bold flex items-center gap-1 text-zinc-800 dark:text-zinc-200">
+                  💡 How to get your Google Reviews link:
+                </span>
+                <ol className="list-decimal pl-4 space-y-1 mt-1 text-zinc-500 dark:text-zinc-450">
+                  <li>Open <strong>Google Maps</strong> on your phone or web browser.</li>
+                  <li>Search for your exact restaurant/business name.</li>
+                  <li>Click the <strong>Share</strong> button on your business profile.</li>
+                  <li>Select <strong>Copy link</strong> and paste it directly into this input box.</li>
+                </ol>
+              </div>
             </FormField>
           </div>
         </div>

@@ -433,9 +433,14 @@ export default function AnalyticsPage() {
 
       {/* Locations breakdown */}
       <div className="p-6 rounded-2xl border border-border bg-card">
-        <h2 className="font-bold text-base flex items-center gap-2 mb-4">
-          <MapPin className="h-5 w-5 text-primary" /> Scans by Location
-        </h2>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-4">
+          <h2 className="font-bold text-base flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-primary" /> Scans by Location
+          </h2>
+          <span className="text-[10px] text-muted-foreground font-medium">
+            (Estimated by network IP routing; ISP gateways may map to regional hubs like Mumbai)
+          </span>
+        </div>
         {data.locations.length === 0 ? (
           <p className="text-xs text-muted-foreground">No location scans recorded yet.</p>
         ) : (
