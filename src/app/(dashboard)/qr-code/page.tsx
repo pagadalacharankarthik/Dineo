@@ -74,14 +74,16 @@ const templatesConfig = [
     name: "Autumn Leaves Menu Template",
     src: "/templates/template6.png",
     qr: { top: "43.5%", left: "28.5%", width: "43%", height: "30.5%" },
-    text: { top: "16.0%", fontSize: 22, color: "#c13f15", fontStyle: "uppercase", bgHideColor: "#ffffff", hideWidth: "73%", hideHeight: "8%" }
+    text: { top: "16.0%", fontSize: 22, color: "#c13f15", fontStyle: "uppercase", bgHideColor: "#ffffff", hideWidth: "73%", hideHeight: "8%" },
+    discount: { top: "89.5%", fontSize: 13, color: "#a80c0c", bgHideColor: "#ffffff", hideWidth: "62%", hideHeight: "5%" }
   },
   {
     id: "template7",
     name: "Royal Biryani Menu Template",
     src: "/templates/template7.png",
     qr: { top: "41.5%", left: "21.8%", width: "56.4%", height: "40%" },
-    text: { top: "15.7%", fontSize: 22, color: "#7f1d1d", fontStyle: "uppercase", bgHideColor: "#ffffff", hideWidth: "73%", hideHeight: "8%" }
+    text: { top: "15.7%", fontSize: 22, color: "#7f1d1d", fontStyle: "uppercase", bgHideColor: "#ffffff", hideWidth: "73%", hideHeight: "8%" },
+    discount: { top: "89.2%", fontSize: 13, color: "#fefefe", bgHideColor: "#8c1616", hideWidth: "60%", hideHeight: "5%" }
   }
 ];
 
@@ -108,12 +110,20 @@ export default function QRCodePage() {
   const [hidingColor, setHidingColor] = useState<string>("");
   
   // Custom Website State Customizations
-  const [customWebsite, setCustomWebsite] = useState<string>("");
+  const [customWebsite, setCustomWebsite] = useState<string>("" );
   const [websiteFontSize, setWebsiteFontSize] = useState<number>(13);
   const [websiteTopOffset, setWebsiteTopOffset] = useState<number>(0);
   const [websiteLeftOffset, setWebsiteLeftOffset] = useState<number>(0);
   const [websiteHidingWidthOffset, setWebsiteHidingWidthOffset] = useState<number>(0);
   const [websiteHidingHeightOffset, setWebsiteHidingHeightOffset] = useState<number>(0);
+
+  // Custom Discount State Customizations (Templates 6 & 7)
+  const [customDiscount, setCustomDiscount] = useState<string>("");
+  const [discountFontSize, setDiscountFontSize] = useState<number>(13);
+  const [discountTopOffset, setDiscountTopOffset] = useState<number>(0);
+  const [discountLeftOffset, setDiscountLeftOffset] = useState<number>(0);
+  const [discountHidingWidthOffset, setDiscountHidingWidthOffset] = useState<number>(0);
+  const [discountHidingHeightOffset, setDiscountHidingHeightOffset] = useState<number>(0);
 
   const [downloadingTemplate, setDownloadingTemplate] = useState<boolean>(false);
   const templateRef = useRef<HTMLDivElement>(null);
@@ -340,6 +350,25 @@ export default function QRCodePage() {
         setWebsiteLeftOffset(0);
         setWebsiteHidingWidthOffset(0);
         setWebsiteHidingHeightOffset(0);
+
+        // Reset discount overlay settings
+        if (currentTpl.discount) {
+          setDiscountFontSize(currentTpl.discount.fontSize);
+          if (currentTpl.id === "template6") {
+            setCustomDiscount("GET DISCOUNT UP TO 10% OFF USE FIRST10");
+          } else if (currentTpl.id === "template7") {
+            setCustomDiscount("Get Discount Up To 10% Off Use: FIRST10");
+          } else {
+            setCustomDiscount("");
+          }
+        } else {
+          setDiscountFontSize(13);
+          setCustomDiscount("");
+        }
+        setDiscountTopOffset(0);
+        setDiscountLeftOffset(0);
+        setDiscountHidingWidthOffset(0);
+        setDiscountHidingHeightOffset(0);
       }
     }
   }, [qrData, selectedTemplate]);
@@ -1122,6 +1151,64 @@ export default function QRCodePage() {
                     );
                   })()}
 
+                  {/* Hide Canva discount placeholder overlay block (if template supports discount customization) */}
+                  {(() => {
+                    const tpl = templatesConfig.find(t => t.id === selectedTemplate);
+                    if (!tpl || !tpl.discount) return null;
+                    
+                    const baseWidth = parseFloat(tpl.discount.hideWidth);
+                    const baseHeight = parseFloat(tpl.discount.hideHeight);
+                    const baseTop = parseFloat(tpl.discount.top);
+                    
+                    const computedWidth = `${baseWidth + discountHidingWidthOffset}%`;
+                    const computedHeight = `${baseHeight + discountHidingHeightOffset}%`;
+                    const computedLeft = `calc(50% + ${discountLeftOffset}%)`;
+                    const computedTop = `${baseTop + discountTopOffset}%`;
+                    
+                    return (
+                      <div 
+                        className="absolute -translate-x-1/2"
+                        style={{
+                          left: computedLeft,
+                          top: computedTop,
+                          width: computedWidth,
+                          height: computedHeight,
+                          backgroundColor: hidingColor || tpl.discount.bgHideColor,
+                          opacity: hidingOpacity / 100,
+                          zIndex: 10,
+                        }}
+                      />
+                    );
+                  })()}
+
+                  {/* Dynamic Restaurant Discount Text Overlay (if template supports discount) */}
+                  {(() => {
+                    const tpl = templatesConfig.find(t => t.id === selectedTemplate);
+                    if (!tpl || !tpl.discount) return null;
+                    
+                    const baseTop = parseFloat(tpl.discount.top);
+                    const computedTop = `${baseTop + discountTopOffset}%`;
+                    const computedLeft = `calc(50% + ${discountLeftOffset}%)`;
+                    
+                    return (
+                      <div 
+                        className="absolute -translate-x-1/2 text-center font-bold flex items-center justify-center w-[85%] select-text"
+                        style={{
+                          left: computedLeft,
+                          top: computedTop,
+                          fontSize: `${discountFontSize}px`,
+                          color: customTextColor || tpl.discount.color,
+                          fontFamily: "var(--font-sans), sans-serif",
+                          zIndex: 20,
+                          lineHeight: 1.1,
+                          letterSpacing: "0.02em",
+                        }}
+                      >
+                        {customDiscount}
+                      </div>
+                    );
+                  })()}
+
                   {/* Overlaid QR Code in Canva Placement Box */}
                   {(() => {
                     const tpl = templatesConfig.find(t => t.id === selectedTemplate);
@@ -1303,6 +1390,115 @@ export default function QRCodePage() {
                         step="0.1"
                         value={websiteHidingHeightOffset}
                         onChange={(e) => setWebsiteHidingHeightOffset(parseFloat(e.target.value))}
+                        className="w-full accent-primary cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Restaurant Discount Text Control (only for templates that support discount overlays) */}
+              {templatesConfig.find(t => t.id === selectedTemplate)?.discount && (
+                <div className="space-y-4 pt-4 border-t border-border/70">
+                  <h4 className="text-xs font-extrabold uppercase text-foreground tracking-wider flex items-center gap-1.5">
+                    <span className="w-1.5 h-3 bg-primary rounded-full inline-block" />
+                    Discount Section Customizer
+                  </h4>
+
+                  {/* Discount Text Value */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-extrabold uppercase text-muted-foreground">
+                      Discount Promo Text
+                    </label>
+                    <input
+                      type="text"
+                      value={customDiscount}
+                      onChange={(e) => setCustomDiscount(e.target.value)}
+                      placeholder="e.g. GET DISCOUNT UP TO 10% OFF"
+                      className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary font-bold"
+                    />
+                  </div>
+
+                  {/* Discount Font Size */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                      <span>Discount Font Size</span>
+                      <span className="text-primary font-mono">{discountFontSize}px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="8"
+                      max="24"
+                      step="0.5"
+                      value={discountFontSize}
+                      onChange={(e) => setDiscountFontSize(parseFloat(e.target.value))}
+                      className="w-full accent-primary cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Discount Vertical Position Offset */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                      <span>Discount Vertical Offset</span>
+                      <span className="text-primary font-mono">{discountTopOffset > 0 ? `+${discountTopOffset}` : discountTopOffset}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="-4"
+                      max="4"
+                      step="0.1"
+                      value={discountTopOffset}
+                      onChange={(e) => setDiscountTopOffset(parseFloat(e.target.value))}
+                      className="w-full accent-primary cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Discount Horizontal Position Offset */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                      <span>Discount Horizontal Offset</span>
+                      <span className="text-primary font-mono">{discountLeftOffset > 0 ? `+${discountLeftOffset}` : discountLeftOffset}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="-15"
+                      max="15"
+                      step="0.1"
+                      value={discountLeftOffset}
+                      onChange={(e) => setDiscountLeftOffset(parseFloat(e.target.value))}
+                      className="w-full accent-primary cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Hiding Block width/height adjuster for Discount */}
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-extrabold uppercase text-muted-foreground">
+                        <span>Hide Box Width</span>
+                        <span className="text-primary font-mono">{discountHidingWidthOffset >= 0 ? `+${discountHidingWidthOffset}` : discountHidingWidthOffset}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="-20"
+                        max="20"
+                        step="0.5"
+                        value={discountHidingWidthOffset}
+                        onChange={(e) => setDiscountHidingWidthOffset(parseFloat(e.target.value))}
+                        className="w-full accent-primary cursor-pointer"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-extrabold uppercase text-muted-foreground">
+                        <span>Hide Box Height</span>
+                        <span className="text-primary font-mono">{discountHidingHeightOffset >= 0 ? `+${discountHidingHeightOffset}` : discountHidingHeightOffset}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="-3"
+                        max="3"
+                        step="0.1"
+                        value={discountHidingHeightOffset}
+                        onChange={(e) => setDiscountHidingHeightOffset(parseFloat(e.target.value))}
                         className="w-full accent-primary cursor-pointer"
                       />
                     </div>
