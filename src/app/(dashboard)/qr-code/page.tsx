@@ -953,8 +953,8 @@ export default function QRCodePage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Template Preview Panel */}
-            <div className="lg:col-span-7 bg-card border border-border rounded-3xl p-6 flex flex-col items-center justify-center space-y-6 shadow-md">
+            {/* Template Preview Panel (Sticky on Desktop) */}
+            <div className="lg:col-span-7 lg:sticky lg:top-6 bg-card border border-border rounded-3xl p-6 flex flex-col items-center justify-center space-y-6 shadow-md self-start">
               {/* The Poster Element container to capture */}
               <div className="border border-border/70 rounded-2xl shadow-xl overflow-hidden bg-white max-w-sm w-full relative">
                 <div 
@@ -1273,62 +1273,70 @@ export default function QRCodePage() {
                 </div>
               )}
 
-              {/* Font Size Adjuster Control */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
-                  <span>Font Size</span>
-                  <span className="text-primary font-mono">{customFontSize}px</span>
-                </div>
-                <input
-                  type="range"
-                  min="10"
-                  max="40"
-                  step="0.5"
-                  value={customFontSize}
-                  onChange={(e) => setCustomFontSize(parseFloat(e.target.value))}
-                  className="w-full accent-primary cursor-pointer"
-                />
-              </div>
+              {/* Restaurant Name Control Section */}
+              <div className="pt-4 border-t border-border/70 space-y-4">
+                <h4 className="text-xs font-extrabold uppercase text-foreground tracking-wider flex items-center gap-1.5">
+                  <span className="w-1.5 h-3 bg-primary rounded-full inline-block" />
+                  Restaurant Name Customizer
+                </h4>
 
-              {/* Vertical Alignment Control */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
-                  <span>Vertical Position Offset</span>
-                  <span className="text-primary font-mono">{textTopOffset > 0 ? `+${textTopOffset}` : textTopOffset}%</span>
+                {/* Font Size Adjuster Control */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                    <span>Name Font Size</span>
+                    <span className="text-primary font-mono">{customFontSize}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="40"
+                    step="0.5"
+                    value={customFontSize}
+                    onChange={(e) => setCustomFontSize(parseFloat(e.target.value))}
+                    className="w-full accent-primary cursor-pointer"
+                  />
                 </div>
-                <input
-                  type="range"
-                  min="-6"
-                  max="6"
-                  step="0.1"
-                  value={textTopOffset}
-                  onChange={(e) => setTextTopOffset(parseFloat(e.target.value))}
-                  className="w-full accent-primary cursor-pointer"
-                />
-              </div>
 
-              {/* Horizontal Alignment Control */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
-                  <span>Horizontal Position Offset</span>
-                  <span className="text-primary font-mono">{textLeftOffset > 0 ? `+${textLeftOffset}` : textLeftOffset}%</span>
+                {/* Vertical Alignment Control */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                    <span>Name Vertical Offset</span>
+                    <span className="text-primary font-mono">{textTopOffset > 0 ? `+${textTopOffset}` : textTopOffset}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-6"
+                    max="6"
+                    step="0.1"
+                    value={textTopOffset}
+                    onChange={(e) => setTextTopOffset(parseFloat(e.target.value))}
+                    className="w-full accent-primary cursor-pointer"
+                  />
                 </div>
-                <input
-                  type="range"
-                  min="-15"
-                  max="15"
-                  step="0.1"
-                  value={textLeftOffset}
-                  onChange={(e) => setTextLeftOffset(parseFloat(e.target.value))}
-                  className="w-full accent-primary cursor-pointer"
-                />
+
+                {/* Horizontal Alignment Control */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                    <span>Name Horizontal Offset</span>
+                    <span className="text-primary font-mono">{textLeftOffset > 0 ? `+${textLeftOffset}` : textLeftOffset}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-15"
+                    max="15"
+                    step="0.1"
+                    value={textLeftOffset}
+                    onChange={(e) => setTextLeftOffset(parseFloat(e.target.value))}
+                    className="w-full accent-primary cursor-pointer"
+                  />
+                </div>
               </div>
 
               {/* Hiding Block custom styling controls */}
               <div className="pt-4 border-t border-border space-y-4">
                 <h4 className="text-xs font-extrabold uppercase text-foreground tracking-wider flex items-center gap-1.5">
                   <span className="w-1.5 h-3 bg-primary rounded-full inline-block" />
-                  Background Hiding Box Adjuster
+                  Hiding Box Customizer (Global)
                 </h4>
 
                 {/* Hiding Block Opacity */}
@@ -1351,7 +1359,7 @@ export default function QRCodePage() {
                 {/* Hiding Block Width */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
-                    <span>Hiding Box Width</span>
+                    <span>Name Hide Box Width</span>
                     <span className="text-primary font-mono">{hidingWidthOffset >= 0 ? `+${hidingWidthOffset}` : hidingWidthOffset}%</span>
                   </div>
                   <input
@@ -1368,7 +1376,7 @@ export default function QRCodePage() {
                 {/* Hiding Block Height */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
-                    <span>Hiding Box Height</span>
+                    <span>Name Hide Box Height</span>
                     <span className="text-primary font-mono">{hidingHeightOffset >= 0 ? `+${hidingHeightOffset}` : hidingHeightOffset}%</span>
                   </div>
                   <input
