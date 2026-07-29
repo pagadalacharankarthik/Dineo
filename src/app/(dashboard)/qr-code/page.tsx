@@ -84,6 +84,11 @@ export default function QRCodePage() {
   const [customFontSize, setCustomFontSize] = useState<number>(22);
   const [customTextColor, setCustomTextColor] = useState<string>("");
   const [textTopOffset, setTextTopOffset] = useState<number>(0);
+  const [textLeftOffset, setTextLeftOffset] = useState<number>(0);
+  const [hidingWidthOffset, setHidingWidthOffset] = useState<number>(0);
+  const [hidingHeightOffset, setHidingHeightOffset] = useState<number>(0);
+  const [hidingOpacity, setHidingOpacity] = useState<number>(100);
+  const [hidingColor, setHidingColor] = useState<string>("");
   const [downloadingTemplate, setDownloadingTemplate] = useState<boolean>(false);
   const templateRef = useRef<HTMLDivElement>(null);
 
@@ -286,6 +291,11 @@ export default function QRCodePage() {
         setCustomTextColor(currentTpl.text.color);
         setCustomFontSize(currentTpl.text.fontSize);
         setTextTopOffset(0);
+        setTextLeftOffset(0);
+        setHidingWidthOffset(0);
+        setHidingHeightOffset(0);
+        setHidingOpacity(100);
+        setHidingColor(currentTpl.text.bgHideColor);
       }
     }
   }, [qrData, selectedTemplate]);
@@ -935,14 +945,26 @@ export default function QRCodePage() {
                   {(() => {
                     const tpl = templatesConfig.find(t => t.id === selectedTemplate);
                     if (!tpl) return null;
+                    
+                    const baseWidth = parseFloat(tpl.text.hideWidth);
+                    const baseHeight = parseFloat(tpl.text.hideHeight);
+                    const baseTop = parseFloat(tpl.text.top);
+                    
+                    const computedWidth = `${baseWidth + hidingWidthOffset}%`;
+                    const computedHeight = `${baseHeight + hidingHeightOffset}%`;
+                    const computedLeft = `calc(50% + ${textLeftOffset}%)`;
+                    const computedTop = `${baseTop + textTopOffset}%`;
+                    
                     return (
                       <div 
-                        className="absolute left-1/2 -translate-x-1/2"
+                        className="absolute -translate-x-1/2"
                         style={{
-                          top: tpl.text.top,
-                          width: tpl.text.hideWidth,
-                          height: tpl.text.hideHeight,
-                          backgroundColor: tpl.text.bgHideColor,
+                          left: computedLeft,
+                          top: computedTop,
+                          width: computedWidth,
+                          height: computedHeight,
+                          backgroundColor: hidingColor || tpl.text.bgHideColor,
+                          opacity: hidingOpacity / 100,
                           zIndex: 10,
                         }}
                       />
@@ -954,14 +976,15 @@ export default function QRCodePage() {
                     const tpl = templatesConfig.find(t => t.id === selectedTemplate);
                     if (!tpl) return null;
                     
-                    // Compute active top pos + offset percentage
                     const baseTop = parseFloat(tpl.text.top);
                     const computedTop = `${baseTop + textTopOffset}%`;
+                    const computedLeft = `calc(50% + ${textLeftOffset}%)`;
                     
                     return (
                       <div 
-                        className="absolute left-1/2 -translate-x-1/2 text-center font-bold flex items-center justify-center w-[85%] select-text"
+                        className="absolute -translate-x-1/2 text-center font-bold flex items-center justify-center w-[85%] select-text"
                         style={{
+                          left: computedLeft,
                           top: computedTop,
                           fontSize: `${customFontSize}px`,
                           color: customTextColor || tpl.text.color,
@@ -1087,6 +1110,116 @@ export default function QRCodePage() {
                   onChange={(e) => setTextTopOffset(parseFloat(e.target.value))}
                   className="w-full accent-primary cursor-pointer"
                 />
+              </div>
+
+              {/* Horizontal Alignment Control */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                  <span>Horizontal Position Offset</span>
+                  <span className="text-primary font-mono">{textLeftOffset > 0 ? `+${textLeftOffset}` : textLeftOffset}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="-15"
+                  max="15"
+                  step="0.1"
+                  value={textLeftOffset}
+                  onChange={(e) => setTextLeftOffset(parseFloat(e.target.value))}
+                  className="w-full accent-primary cursor-pointer"
+                />
+              </div>
+
+              {/* Hiding Block custom styling controls */}
+              <div className="pt-4 border-t border-border space-y-4">
+                <h4 className="text-xs font-extrabold uppercase text-foreground tracking-wider flex items-center gap-1.5">
+                  <span className="w-1.5 h-3 bg-primary rounded-full inline-block" />
+                  Background Hiding Box Adjuster
+                </h4>
+
+                {/* Hiding Block Opacity */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                    <span>Hiding Box Opacity</span>
+                    <span className="text-primary font-mono">{hidingOpacity}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={hidingOpacity}
+                    onChange={(e) => setHidingOpacity(parseInt(e.target.value, 10))}
+                    className="w-full accent-primary cursor-pointer"
+                  />
+                </div>
+
+                {/* Hiding Block Width */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                    <span>Hiding Box Width</span>
+                    <span className="text-primary font-mono">{hidingWidthOffset >= 0 ? `+${hidingWidthOffset}` : hidingWidthOffset}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-30"
+                    max="30"
+                    step="0.5"
+                    value={hidingWidthOffset}
+                    onChange={(e) => setHidingWidthOffset(parseFloat(e.target.value))}
+                    className="w-full accent-primary cursor-pointer"
+                  />
+                </div>
+
+                {/* Hiding Block Height */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                    <span>Hiding Box Height</span>
+                    <span className="text-primary font-mono">{hidingHeightOffset >= 0 ? `+${hidingHeightOffset}` : hidingHeightOffset}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-5"
+                    max="5"
+                    step="0.1"
+                    value={hidingHeightOffset}
+                    onChange={(e) => setHidingHeightOffset(parseFloat(e.target.value))}
+                    className="w-full accent-primary cursor-pointer"
+                  />
+                </div>
+
+                {/* Hiding Block Color */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-extrabold uppercase text-muted-foreground">
+                    Hiding Box Color
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={hidingColor || "#ffffff"}
+                      onChange={(e) => setHidingColor(e.target.value)}
+                      className="w-8 h-8 rounded-lg border border-border cursor-pointer bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={hidingColor}
+                      onChange={(e) => setHidingColor(e.target.value)}
+                      placeholder="#ffffff"
+                      className="flex-1 rounded-xl border border-input bg-background px-3 py-1.5 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentTpl = templatesConfig.find(t => t.id === selectedTemplate);
+                        if (currentTpl) {
+                          setHidingColor(currentTpl.text.bgHideColor);
+                        }
+                      }}
+                      className="text-[10px] font-bold bg-muted hover:bg-muted/80 px-2 py-1.5 rounded-lg border border-border transition-colors cursor-pointer"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Text Color Picker Control */}

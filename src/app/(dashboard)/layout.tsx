@@ -31,7 +31,22 @@ export default function DashboardLayout({
       const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
       const isOldEnough = (new Date().getTime() - createdTime) >= sevenDaysMs;
       
-      const isDismissed = localStorage.getItem("dineo_feedback_dismissed") === "true";
+      const oldDismissed = localStorage.getItem("dineo_feedback_dismissed") === "true";
+      const dismissedTimeStr = localStorage.getItem("dineo_feedback_dismissed_time");
+      let isDismissed = false;
+      
+      if (oldDismissed && !dismissedTimeStr) {
+        // If they already dismissed before, set a baseline timestamp so it starts counting down
+        localStorage.setItem("dineo_feedback_dismissed_time", new Date().getTime().toString());
+        isDismissed = true;
+      } else if (dismissedTimeStr) {
+        const dismissedTime = parseInt(dismissedTimeStr, 10);
+        const fourteenDaysMs = 14 * 24 * 60 * 60 * 1000;
+        if (new Date().getTime() - dismissedTime < fourteenDaysMs) {
+          isDismissed = true;
+        }
+      }
+      
       if (isOldEnough && !isDismissed) {
         setShowFeedbackBanner(true);
       }
@@ -40,11 +55,13 @@ export default function DashboardLayout({
 
   const dismissFeedbackBanner = () => {
     localStorage.setItem("dineo_feedback_dismissed", "true");
+    localStorage.setItem("dineo_feedback_dismissed_time", new Date().getTime().toString());
     setShowFeedbackBanner(false);
   };
 
   const handleFeedbackSuccess = () => {
     localStorage.setItem("dineo_feedback_dismissed", "true");
+    localStorage.setItem("dineo_feedback_dismissed_time", new Date().getTime().toString());
     setShowFeedbackBanner(false);
   };
 
