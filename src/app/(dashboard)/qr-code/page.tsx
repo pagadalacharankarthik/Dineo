@@ -30,6 +30,44 @@ interface QRDetails {
   planName?: string;
 }
 
+const templatesConfig = [
+  {
+    id: "template1",
+    name: "Classic Plaid Pizza Template",
+    src: "/templates/template1.png",
+    qr: { top: "40.5%", left: "29.5%", width: "41%", height: "29%" },
+    text: { top: "14.5%", fontSize: 20, color: "#3e3e3e", fontStyle: "uppercase", bgHideColor: "#fdf8ec", hideWidth: "60%", hideHeight: "4%" }
+  },
+  {
+    id: "template2",
+    name: "Dark Gourmet Grill Template",
+    src: "/templates/template2.png",
+    qr: { top: "43.5%", left: "25.5%", width: "49%", height: "35%" },
+    text: { top: "14.2%", fontSize: 24, color: "#f3f4f6", fontStyle: "capitalize", bgHideColor: "#1d1715", hideWidth: "70%", hideHeight: "5%" }
+  },
+  {
+    id: "template3",
+    name: "Rustic Pizza & Tomatoes Template",
+    src: "/templates/template3.png",
+    qr: { top: "37.5%", left: "25.8%", width: "48.4%", height: "34.5%" },
+    text: { top: "12.8%", fontSize: 20, color: "#4f3521", fontStyle: "uppercase", bgHideColor: "#ffffff", hideWidth: "60%", hideHeight: "4%" }
+  },
+  {
+    id: "template4",
+    name: "Classic Steak House Template",
+    src: "/templates/template4.png",
+    qr: { top: "43.5%", left: "25.5%", width: "49%", height: "35%" },
+    text: { top: "14.2%", fontSize: 24, color: "#f3f4f6", fontStyle: "capitalize", bgHideColor: "#1d1715", hideWidth: "70%", hideHeight: "5%" }
+  },
+  {
+    id: "template5",
+    name: "Premium Chef's Specials Template",
+    src: "/templates/template5.png",
+    qr: { top: "42%", left: "28.5%", width: "43%", height: "30.5%" },
+    text: { top: "12.5%", fontSize: 22, color: "#473229", fontStyle: "uppercase", bgHideColor: "#ffffff", hideWidth: "70%", hideHeight: "5%" }
+  }
+];
+
 export default function QRCodePage() {
   const [qrData, setQrData] = useState<QRDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,6 +77,15 @@ export default function QRCodePage() {
   const [selectedColor, setSelectedColor] = useState<"orange" | "black" | "blue" | "purple" | "dark" | "emerald" | "rose" | "gold" | "red">("orange");
   const [isShaking, setIsShaking] = useState(false);
   const [posterFormat, setPosterFormat] = useState<"a4" | "a5" | "square">("a4");
+
+  // Canva Templates State
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("template1");
+  const [customName, setCustomName] = useState<string>("");
+  const [customFontSize, setCustomFontSize] = useState<number>(22);
+  const [customTextColor, setCustomTextColor] = useState<string>("");
+  const [textTopOffset, setTextTopOffset] = useState<number>(0);
+  const [downloadingTemplate, setDownloadingTemplate] = useState<boolean>(false);
+  const templateRef = useRef<HTMLDivElement>(null);
 
   const colorOptions = {
     orange: { gradient: "from-orange-500 via-amber-500 to-amber-600", qr: "#ea580c" },
@@ -230,6 +277,18 @@ export default function QRCodePage() {
       generateQRCodes(qrData, selectedColor);
     }
   }, [selectedColor]);
+
+  useEffect(() => {
+    if (qrData) {
+      setCustomName(qrData.restaurantName);
+      const currentTpl = templatesConfig.find(t => t.id === selectedTemplate);
+      if (currentTpl) {
+        setCustomTextColor(currentTpl.text.color);
+        setCustomFontSize(currentTpl.text.fontSize);
+        setTextTopOffset(0);
+      }
+    }
+  }, [qrData, selectedTemplate]);
 
   const handleCopyLink = () => {
     if (!qrData?.targetUrl) return;
@@ -432,6 +491,73 @@ export default function QRCodePage() {
     } catch (err: any) {
       console.error(err);
       toast.error(`Print preparation failed: ${err.message || "Unknown error"}`, { id: toastId });
+    }
+  };
+
+  const handleDownloadTemplatePNG = async () => {
+    if (!templateRef.current || !qrData) return;
+    setDownloadingTemplate(true);
+    const toastId = toast.loading("Generating customized Canva template PNG...");
+    try {
+      await new Promise(resolve => setTimeout(resolve, 200));
+      const el = templateRef.current;
+      const dataUrlStr = await htmlToImage.toPng(el, {
+        pixelRatio: 3,
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        style: {
+          transform: 'none',
+          margin: '0',
+        },
+        backgroundColor: "#ffffff",
+      });
+      const link = document.createElement("a");
+      link.href = dataUrlStr;
+      link.download = `${qrData.restaurantSlug}-${selectedTemplate}-poster.png`;
+      link.click();
+      toast.success("Downloaded customized Canva poster PNG!", { id: toastId });
+    } catch (e: any) {
+      console.error(e);
+      toast.error(`Download failed: ${e.message || "Unknown error"}`, { id: toastId });
+    } finally {
+      setDownloadingTemplate(false);
+    }
+  };
+
+  const handleDownloadTemplatePDF = async () => {
+    if (!templateRef.current || !qrData) return;
+    setDownloadingTemplate(true);
+    const toastId = toast.loading("Generating customized Canva template PDF...");
+    try {
+      const { jsPDF } = await import("jspdf");
+      await new Promise(resolve => setTimeout(resolve, 200));
+      const el = templateRef.current;
+      const dataUrlStr = await htmlToImage.toPng(el, {
+        pixelRatio: 3,
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+        style: {
+          transform: 'none',
+          margin: '0',
+        },
+        backgroundColor: "#ffffff",
+      });
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      
+      doc.addImage(dataUrlStr, "PNG", 0, 0, pageWidth, pageHeight);
+      doc.save(`${qrData.restaurantSlug}-${selectedTemplate}-poster-a4.pdf`);
+      toast.success("Downloaded customized Canva poster PDF!", { id: toastId });
+    } catch (e: any) {
+      console.error(e);
+      toast.error(`Download failed: ${e.message || "Unknown error"}`, { id: toastId });
+    } finally {
+      setDownloadingTemplate(false);
     }
   };
 
@@ -770,6 +896,259 @@ export default function QRCodePage() {
                 <li>Ensure high contrast when printing (dark QR on light background).</li>
                 <li>Updates to prices or items happen instantly — no reprinting needed!</li>
               </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Premium Canva Templates Section ─── */}
+      {!loading && qrData && (
+        <div className="border-t border-border/80 pt-8 mt-12 space-y-6">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-extrabold flex items-center gap-2 text-foreground">
+              <Sparkles className="h-6 w-6 text-primary" /> Premium Canva Poster Templates
+            </h2>
+            <p className="text-muted-foreground text-xs sm:text-sm mt-1">
+              Choose from 5 designer Canva templates. Customize your restaurant name, adjust font sizes, and download print-ready posters!
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Template Preview Panel */}
+            <div className="lg:col-span-7 bg-card border border-border rounded-3xl p-6 flex flex-col items-center justify-center space-y-6 shadow-md">
+              {/* The Poster Element container to capture */}
+              <div className="border border-border/70 rounded-2xl shadow-xl overflow-hidden bg-white max-w-sm w-full relative">
+                <div 
+                  ref={templateRef}
+                  className="relative w-full overflow-hidden select-none"
+                  style={{ aspectRatio: "1/1.414" }} // Clean A4 aspect ratio preview
+                >
+                  {/* Background template image */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img 
+                    src={templatesConfig.find(t => t.id === selectedTemplate)?.src} 
+                    alt="Canva Template Background"
+                    className="w-full h-full object-cover"
+                  />
+
+                  {/* Hide Canva template name placeholder overlay block */}
+                  {(() => {
+                    const tpl = templatesConfig.find(t => t.id === selectedTemplate);
+                    if (!tpl) return null;
+                    return (
+                      <div 
+                        className="absolute left-1/2 -translate-x-1/2"
+                        style={{
+                          top: tpl.text.top,
+                          width: tpl.text.hideWidth,
+                          height: tpl.text.hideHeight,
+                          backgroundColor: tpl.text.bgHideColor,
+                          zIndex: 10,
+                        }}
+                      />
+                    );
+                  })()}
+
+                  {/* Dynamic Restaurant Name Text Overlay */}
+                  {(() => {
+                    const tpl = templatesConfig.find(t => t.id === selectedTemplate);
+                    if (!tpl) return null;
+                    
+                    // Compute active top pos + offset percentage
+                    const baseTop = parseFloat(tpl.text.top);
+                    const computedTop = `${baseTop + textTopOffset}%`;
+                    
+                    return (
+                      <div 
+                        className="absolute left-1/2 -translate-x-1/2 text-center font-bold flex items-center justify-center w-[85%] select-text"
+                        style={{
+                          top: computedTop,
+                          fontSize: `${customFontSize}px`,
+                          color: customTextColor || tpl.text.color,
+                          textTransform: tpl.text.fontStyle as any,
+                          fontFamily: "var(--font-sans), sans-serif",
+                          zIndex: 20,
+                          lineHeight: 1.1,
+                        }}
+                      >
+                        {customName || qrData?.restaurantName}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Overlaid QR Code in Canva Placement Box */}
+                  {(() => {
+                    const tpl = templatesConfig.find(t => t.id === selectedTemplate);
+                    if (!tpl) return null;
+                    return (
+                      <div 
+                        className="absolute bg-white flex items-center justify-center p-1.5 shadow-sm rounded-lg"
+                        style={{
+                          top: tpl.qr.top,
+                          left: tpl.qr.left,
+                          width: tpl.qr.width,
+                          height: tpl.qr.height,
+                          zIndex: 20,
+                        }}
+                      >
+                        {dataUrl ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img 
+                            src={dataUrl} 
+                            alt="QR Code" 
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <div className="text-[8px] text-muted-foreground">QR Code</div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Template select grid */}
+              <div className="w-full space-y-3">
+                <h3 className="text-xs font-extrabold text-foreground uppercase tracking-wider text-center lg:text-left">
+                  Select Template layout:
+                </h3>
+                <div className="grid grid-cols-5 gap-2">
+                  {templatesConfig.map((tpl) => (
+                    <button
+                      key={tpl.id}
+                      onClick={() => setSelectedTemplate(tpl.id)}
+                      className={`aspect-[1/1.414] rounded-xl border relative overflow-hidden transition-all duration-200 cursor-pointer ${
+                        selectedTemplate === tpl.id 
+                          ? "border-primary ring-2 ring-primary/20 scale-105" 
+                          : "border-border hover:border-foreground"
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={tpl.src} 
+                        alt={tpl.name} 
+                        className="w-full h-full object-cover" 
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Template Editor Controls Panel */}
+            <div className="lg:col-span-5 bg-card border border-border rounded-3xl p-6 space-y-6 shadow-md">
+              <h3 className="font-bold text-base flex items-center gap-2 border-b border-border pb-3">
+                <Layers className="h-5 w-5 text-primary" /> Template Customizations
+              </h3>
+
+              {/* Restaurant Name Control */}
+              <div className="space-y-2">
+                <label className="block text-xs font-extrabold uppercase text-muted-foreground">
+                  Restaurant Name Text
+                </label>
+                <input
+                  type="text"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  placeholder="Enter Restaurant Name"
+                  className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+
+              {/* Font Size Adjuster Control */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                  <span>Font Size</span>
+                  <span className="text-primary font-mono">{customFontSize}px</span>
+                </div>
+                <input
+                  type="range"
+                  min="10"
+                  max="40"
+                  step="0.5"
+                  value={customFontSize}
+                  onChange={(e) => setCustomFontSize(parseFloat(e.target.value))}
+                  className="w-full accent-primary cursor-pointer"
+                />
+              </div>
+
+              {/* Vertical Alignment Control */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                  <span>Vertical Position Offset</span>
+                  <span className="text-primary font-mono">{textTopOffset > 0 ? `+${textTopOffset}` : textTopOffset}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="-6"
+                  max="6"
+                  step="0.1"
+                  value={textTopOffset}
+                  onChange={(e) => setTextTopOffset(parseFloat(e.target.value))}
+                  className="w-full accent-primary cursor-pointer"
+                />
+              </div>
+
+              {/* Text Color Picker Control */}
+              <div className="space-y-2.5">
+                <label className="block text-xs font-extrabold uppercase text-muted-foreground">
+                  Text Color Theme
+                </label>
+                <div className="flex flex-wrap gap-2.5">
+                  {[
+                    { value: "#3e3e3e", label: "Charcoal" },
+                    { value: "#ffffff", label: "White" },
+                    { value: "#4f3521", label: "Wood Brown" },
+                    { value: "#ea580c", label: "Dineo Orange" },
+                    { value: "#dc2626", label: "Rose Crimson" },
+                    { value: "#14532d", label: "Forest Green" }
+                  ].map((c) => (
+                    <button
+                      key={c.value}
+                      onClick={() => setCustomTextColor(c.value)}
+                      className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                        (customTextColor || templatesConfig.find(t => t.id === selectedTemplate)?.text.color) === c.value
+                          ? "border-primary bg-primary/5 text-primary scale-105"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <span 
+                        className="w-2.5 h-2.5 rounded-full border border-black/10 inline-block shrink-0" 
+                        style={{ backgroundColor: c.value }} 
+                      />
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Download Buttons */}
+              <div className="pt-4 border-t border-border flex flex-col sm:flex-row gap-3">
+                <button
+                  disabled={downloadingTemplate}
+                  onClick={handleDownloadTemplatePNG}
+                  className="flex-1 inline-flex items-center justify-center gap-2 gradient-primary text-white font-semibold px-5 py-3 rounded-xl text-sm shadow-md hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {downloadingTemplate ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                  Download Poster PNG
+                </button>
+                <button
+                  disabled={downloadingTemplate}
+                  onClick={handleDownloadTemplatePDF}
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-card border border-border hover:bg-muted font-semibold px-5 py-3 rounded-xl text-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {downloadingTemplate ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4 text-rose-500" />
+                  )}
+                  Download Poster PDF (A4)
+                </button>
+              </div>
             </div>
           </div>
         </div>
