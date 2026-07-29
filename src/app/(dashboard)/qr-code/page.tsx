@@ -68,6 +68,20 @@ const templatesConfig = [
     src: "/templates/template5.png",
     qr: { top: "42%", left: "28.5%", width: "43%", height: "30.5%" },
     text: { top: "12.5%", fontSize: 22, color: "#473229", fontStyle: "uppercase", bgHideColor: "#ffffff", hideWidth: "70%", hideHeight: "5%" }
+  },
+  {
+    id: "template6",
+    name: "Autumn Leaves Menu Template",
+    src: "/templates/template6.png",
+    qr: { top: "43.5%", left: "28.5%", width: "43%", height: "30.5%" },
+    text: { top: "16.0%", fontSize: 22, color: "#c13f15", fontStyle: "uppercase", bgHideColor: "#ffffff", hideWidth: "73%", hideHeight: "8%" }
+  },
+  {
+    id: "template7",
+    name: "Royal Biryani Menu Template",
+    src: "/templates/template7.png",
+    qr: { top: "41.5%", left: "21.8%", width: "56.4%", height: "40%" },
+    text: { top: "15.7%", fontSize: 22, color: "#7f1d1d", fontStyle: "uppercase", bgHideColor: "#ffffff", hideWidth: "73%", hideHeight: "8%" }
   }
 ];
 
@@ -1144,7 +1158,7 @@ export default function QRCodePage() {
                 <h3 className="text-xs font-extrabold text-foreground uppercase tracking-wider text-center lg:text-left">
                   Select Template layout:
                 </h3>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
                   {templatesConfig.map((tpl) => (
                     <button
                       key={tpl.id}
