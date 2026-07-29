@@ -43,7 +43,8 @@ const templatesConfig = [
     name: "Dark Gourmet Grill Template",
     src: "/templates/template2.png",
     qr: { top: "43.5%", left: "25.5%", width: "49%", height: "35%" },
-    text: { top: "14.2%", fontSize: 24, color: "#f3f4f6", fontStyle: "capitalize", bgHideColor: "#1d1715", hideWidth: "70%", hideHeight: "5%" }
+    text: { top: "14.2%", fontSize: 24, color: "#f3f4f6", fontStyle: "capitalize", bgHideColor: "#1d1715", hideWidth: "70%", hideHeight: "5%" },
+    website: { top: "89.2%", fontSize: 13, color: "#fefefe", bgHideColor: "#1d1715", hideWidth: "50%", hideHeight: "2.5%" }
   },
   {
     id: "template3",
@@ -57,7 +58,8 @@ const templatesConfig = [
     name: "Classic Steak House Template",
     src: "/templates/template4.png",
     qr: { top: "43.5%", left: "25.5%", width: "49%", height: "35%" },
-    text: { top: "14.2%", fontSize: 24, color: "#f3f4f6", fontStyle: "capitalize", bgHideColor: "#1d1715", hideWidth: "70%", hideHeight: "5%" }
+    text: { top: "14.2%", fontSize: 24, color: "#f3f4f6", fontStyle: "capitalize", bgHideColor: "#1d1715", hideWidth: "70%", hideHeight: "5%" },
+    website: { top: "89.2%", fontSize: 13, color: "#fefefe", bgHideColor: "#1d1715", hideWidth: "50%", hideHeight: "2.5%" }
   },
   {
     id: "template5",
@@ -89,6 +91,15 @@ export default function QRCodePage() {
   const [hidingHeightOffset, setHidingHeightOffset] = useState<number>(0);
   const [hidingOpacity, setHidingOpacity] = useState<number>(100);
   const [hidingColor, setHidingColor] = useState<string>("");
+  
+  // Custom Website State Customizations
+  const [customWebsite, setCustomWebsite] = useState<string>("");
+  const [websiteFontSize, setWebsiteFontSize] = useState<number>(13);
+  const [websiteTopOffset, setWebsiteTopOffset] = useState<number>(0);
+  const [websiteLeftOffset, setWebsiteLeftOffset] = useState<number>(0);
+  const [websiteHidingWidthOffset, setWebsiteHidingWidthOffset] = useState<number>(0);
+  const [websiteHidingHeightOffset, setWebsiteHidingHeightOffset] = useState<number>(0);
+
   const [downloadingTemplate, setDownloadingTemplate] = useState<boolean>(false);
   const templateRef = useRef<HTMLDivElement>(null);
 
@@ -286,6 +297,13 @@ export default function QRCodePage() {
   useEffect(() => {
     if (qrData) {
       setCustomName(qrData.restaurantName);
+      
+      // Extract clean host name for the website link placeholder text
+      let displayUrl = qrData.targetUrl || "";
+      if (displayUrl.startsWith("http://")) displayUrl = displayUrl.substring(7);
+      if (displayUrl.startsWith("https://")) displayUrl = displayUrl.substring(8);
+      setCustomWebsite(displayUrl);
+
       const currentTpl = templatesConfig.find(t => t.id === selectedTemplate);
       if (currentTpl) {
         setCustomTextColor(currentTpl.text.color);
@@ -296,6 +314,17 @@ export default function QRCodePage() {
         setHidingHeightOffset(0);
         setHidingOpacity(100);
         setHidingColor(currentTpl.text.bgHideColor);
+
+        // Reset website overlay settings
+        if (currentTpl.website) {
+          setWebsiteFontSize(currentTpl.website.fontSize);
+        } else {
+          setWebsiteFontSize(13);
+        }
+        setWebsiteTopOffset(0);
+        setWebsiteLeftOffset(0);
+        setWebsiteHidingWidthOffset(0);
+        setWebsiteHidingHeightOffset(0);
       }
     }
   }, [qrData, selectedTemplate]);
@@ -999,6 +1028,63 @@ export default function QRCodePage() {
                     );
                   })()}
 
+                  {/* Hide Canva website link placeholder overlay block (if template supports website) */}
+                  {(() => {
+                    const tpl = templatesConfig.find(t => t.id === selectedTemplate);
+                    if (!tpl || !tpl.website) return null;
+                    
+                    const baseWidth = parseFloat(tpl.website.hideWidth);
+                    const baseHeight = parseFloat(tpl.website.hideHeight);
+                    const baseTop = parseFloat(tpl.website.top);
+                    
+                    const computedWidth = `${baseWidth + websiteHidingWidthOffset}%`;
+                    const computedHeight = `${baseHeight + websiteHidingHeightOffset}%`;
+                    const computedLeft = `calc(50% + ${websiteLeftOffset}%)`;
+                    const computedTop = `${baseTop + websiteTopOffset}%`;
+                    
+                    return (
+                      <div 
+                        className="absolute -translate-x-1/2"
+                        style={{
+                          left: computedLeft,
+                          top: computedTop,
+                          width: computedWidth,
+                          height: computedHeight,
+                          backgroundColor: hidingColor || tpl.website.bgHideColor,
+                          opacity: hidingOpacity / 100,
+                          zIndex: 10,
+                        }}
+                      />
+                    );
+                  })()}
+
+                  {/* Dynamic Restaurant Website Link Overlay (if template supports website) */}
+                  {(() => {
+                    const tpl = templatesConfig.find(t => t.id === selectedTemplate);
+                    if (!tpl || !tpl.website) return null;
+                    
+                    const baseTop = parseFloat(tpl.website.top);
+                    const computedTop = `${baseTop + websiteTopOffset}%`;
+                    const computedLeft = `calc(50% + ${websiteLeftOffset}%)`;
+                    
+                    return (
+                      <div 
+                        className="absolute -translate-x-1/2 text-center font-bold flex items-center justify-center w-[85%] select-text"
+                        style={{
+                          left: computedLeft,
+                          top: computedTop,
+                          fontSize: `${websiteFontSize}px`,
+                          color: customTextColor || tpl.website.color,
+                          fontFamily: "var(--font-sans), sans-serif",
+                          zIndex: 20,
+                          lineHeight: 1.1,
+                        }}
+                      >
+                        {customWebsite}
+                      </div>
+                    );
+                  })()}
+
                   {/* Overlaid QR Code in Canva Placement Box */}
                   {(() => {
                     const tpl = templatesConfig.find(t => t.id === selectedTemplate);
@@ -1077,6 +1163,115 @@ export default function QRCodePage() {
                   className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
+
+              {/* Restaurant Website link control (only for templates that support website URL overlays) */}
+              {templatesConfig.find(t => t.id === selectedTemplate)?.website && (
+                <div className="space-y-4 pt-4 border-t border-border/70">
+                  <h4 className="text-xs font-extrabold uppercase text-foreground tracking-wider flex items-center gap-1.5">
+                    <span className="w-1.5 h-3 bg-primary rounded-full inline-block" />
+                    Website / Link Overlay
+                  </h4>
+
+                  {/* Website Text Value */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-extrabold uppercase text-muted-foreground">
+                      Website URL Text
+                    </label>
+                    <input
+                      type="text"
+                      value={customWebsite}
+                      onChange={(e) => setCustomWebsite(e.target.value)}
+                      placeholder="e.g. dineo.in/menu/slug"
+                      className="w-full rounded-xl border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary font-mono"
+                    />
+                  </div>
+
+                  {/* Website Font Size */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                      <span>Website Font Size</span>
+                      <span className="text-primary font-mono">{websiteFontSize}px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="8"
+                      max="24"
+                      step="0.5"
+                      value={websiteFontSize}
+                      onChange={(e) => setWebsiteFontSize(parseFloat(e.target.value))}
+                      className="w-full accent-primary cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Website Vertical Position Offset */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                      <span>Website Vertical Offset</span>
+                      <span className="text-primary font-mono">{websiteTopOffset > 0 ? `+${websiteTopOffset}` : websiteTopOffset}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="-4"
+                      max="4"
+                      step="0.1"
+                      value={websiteTopOffset}
+                      onChange={(e) => setWebsiteTopOffset(parseFloat(e.target.value))}
+                      className="w-full accent-primary cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Website Horizontal Position Offset */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs font-extrabold uppercase text-muted-foreground">
+                      <span>Website Horizontal Offset</span>
+                      <span className="text-primary font-mono">{websiteLeftOffset > 0 ? `+${websiteLeftOffset}` : websiteLeftOffset}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="-15"
+                      max="15"
+                      step="0.1"
+                      value={websiteLeftOffset}
+                      onChange={(e) => setWebsiteLeftOffset(parseFloat(e.target.value))}
+                      className="w-full accent-primary cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Hiding Block width/height adjuster for Website */}
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-extrabold uppercase text-muted-foreground">
+                        <span>Hide Box Width</span>
+                        <span className="text-primary font-mono">{websiteHidingWidthOffset >= 0 ? `+${websiteHidingWidthOffset}` : websiteHidingWidthOffset}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="-20"
+                        max="20"
+                        step="0.5"
+                        value={websiteHidingWidthOffset}
+                        onChange={(e) => setWebsiteHidingWidthOffset(parseFloat(e.target.value))}
+                        className="w-full accent-primary cursor-pointer"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-extrabold uppercase text-muted-foreground">
+                        <span>Hide Box Height</span>
+                        <span className="text-primary font-mono">{websiteHidingHeightOffset >= 0 ? `+${websiteHidingHeightOffset}` : websiteHidingHeightOffset}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="-3"
+                        max="3"
+                        step="0.1"
+                        value={websiteHidingHeightOffset}
+                        onChange={(e) => setWebsiteHidingHeightOffset(parseFloat(e.target.value))}
+                        className="w-full accent-primary cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Font Size Adjuster Control */}
               <div className="space-y-2">
