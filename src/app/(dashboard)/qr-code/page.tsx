@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import {
   QrCode,
   Download,
@@ -952,7 +953,29 @@ export default function QRCodePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="relative">
+            {/* Lock Overlay for Free Plan */}
+            {!isProOrEnterprise && (
+              <div className="absolute inset-0 bg-background/40 backdrop-blur-[3.5px] z-50 rounded-3xl flex flex-col items-center justify-center text-center p-8 border border-border/40 shadow-2xl">
+                <div className="bg-primary/15 p-4 rounded-full mb-4 ring-8 ring-primary/5">
+                  <Lock className="h-8 w-8 text-primary animate-pulse" />
+                </div>
+                <h3 className="text-xl font-black text-foreground mb-2">
+                  Unlock Premium Poster Templates
+                </h3>
+                <p className="text-muted-foreground text-sm max-w-md mb-6 leading-relaxed">
+                  Customize A4 printable poster designs, add website footers, and download high-resolution exports. Available on the <span className="font-extrabold text-primary">Pro Plan</span>.
+                </p>
+                <Link
+                  href="/subscription"
+                  className="inline-flex items-center gap-2 gradient-primary text-white font-bold px-6 py-3.5 rounded-xl shadow-lg hover:shadow-primary/20 hover:scale-105 transition-all cursor-pointer pointer-events-auto"
+                >
+                  <Sparkles className="h-4 w-4" /> Upgrade to Pro Plan
+                </Link>
+              </div>
+            )}
+
+            <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 items-start ${!isProOrEnterprise ? "select-none pointer-events-none filter blur-[1.5px]" : ""}`}>
             {/* Template Preview Panel (Sticky on Desktop) */}
             <div className="lg:col-span-7 lg:sticky lg:top-6 bg-card border border-border rounded-3xl p-6 flex flex-col items-center justify-center space-y-6 shadow-md self-start">
               {/* The Poster Element container to capture */}
@@ -1486,6 +1509,7 @@ export default function QRCodePage() {
                 </button>
               </div>
             </div>
+          </div>
           </div>
         </div>
       )}
